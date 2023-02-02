@@ -11,6 +11,8 @@ month = now.month
 win32api.SetSystemTime(year,month,3,1,2,30,3,100)
 n = 28 # feb = 28
 
+print("System date and time changed")
+
 for i in range(n):
     #input("press enter"
     now = datetime.now()
