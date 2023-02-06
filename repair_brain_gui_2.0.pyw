@@ -819,7 +819,7 @@ def show_plot(clear=False,warn=True):
     pyplot.xlabel("Habit")
     pyplot.ylabel("Days")
     pyplot.ylim(0,100)
-    pyplot.bar(x=x_names,height=y_values,color=["blue","red","pink","yellow","violet","magenda","green"])
+    pyplot.bar(x=x_names,height=y_values,color=["yellow","pink","red","violet","magenta","green","blue"])
     
     pyplot.tight_layout(h_pad=1,w_pad=1)
     pyplot.show()
