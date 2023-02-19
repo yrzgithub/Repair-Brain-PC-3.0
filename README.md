@@ -21,7 +21,7 @@ If you use PC regularly, This app is highly recommended.**
 
 2. [Mun andhi hey hey penne](https://drive.google.com/file/d/1fF9IBlgqaG16cdYfZP3x4HF7gqWhArh-/view?usp=share_link)
 
-3. [Mun andhi kalainthalum](https://drive.google.com/file/d/1_8ow1JTToVVZfZUxooLsFMMO9wNqEj0x/view?usp=share_link)
+3. [Mun andhi kalainthaalum](https://drive.google.com/file/d/1_8ow1JTToVVZfZUxooLsFMMO9wNqEj0x/view?usp=share_link)
 
 4. [Elankaathu Veesuthey karum paara manasula](https://drive.google.com/file/d/15taJYkQjMAiqnZ6tK_uWy_wR1LcClJ3d/view?usp=share_link)
 
@@ -62,11 +62,11 @@ If you use PC regularly, This app is highly recommended.**
 ## How to use?
 
     * Run the app_setup.exe file to install the app. (Ignore this step in case of using python)
-    * Click on "repair_brain_gui.exe" or "repair_brain_gui.pyw" file.
-    * In the app, right-click and select "run on start".
+    * Click on "repair_brain_gui_2.0.exe" or "repair_brain_gui_2.0.pyw" file.
+    * In the app, right-click -> Settings -> run on start.
     * Create shortcut for .exe or .pyw file.
     * Now, the app starts automatically when your PC is turned on.
-    * Again right click and select "Add songs".
+    * Again right click -> Settings -> Add songs.
     * Select your favourite songs.
     * You can also add them directly by placing them in "bgm" folder.
     * If You had relapsed, click on "handcuffed image" else click on "free image".
@@ -79,6 +79,7 @@ If you use PC regularly, This app is highly recommended.**
     * To remove a replace habit, Right click -> Settings -> Remove replace habit.
 ![menu](https://user-images.githubusercontent.com/85425005/219947693-3ffa52f3-51f2-4024-bfd4-0231451e8d16.jpg)
 
+
 ## Note
   
     * Press space bar to play or pause the song.
@@ -89,11 +90,13 @@ If you use PC regularly, This app is highly recommended.**
     * Replacing habit range is from 3 to 7.
     * Plot data should be greater than 1 to view the plot.
     
+    
 ## Future Plans
 
     * Same will be developed for android.
     * Windows app and Android app can be synced via cloud.
     * Options for cutting the audio files will be added.
+
 
 ## Developer Contact
 
