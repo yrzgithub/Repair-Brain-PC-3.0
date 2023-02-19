@@ -56,6 +56,7 @@ If you use PC regularly, This app is highly recommended.**
    * It shows Accuracy Plot and Habit Plot.
       1. Accuracy Plot : Plot between week days and accuracies noted in the respective days as percentage.
       2. Habit Plot : Plot between replace habits and their frequency expressed as percentage.
+      
  ![plot](https://user-images.githubusercontent.com/85425005/219947451-4c2a7521-7cf8-447b-9829-7847e2c62715.png)
 
 
