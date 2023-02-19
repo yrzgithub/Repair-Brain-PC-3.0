@@ -9,23 +9,26 @@ If you use PC regularly, This app is highly recommended.**
         2. Python app
     * Rewards you if you didn't relapse (Contact developer if you want the way of rewarding).
     
-    
-## Default Audios
-
-#### Special Thanks to [Na Muthukumar](https://en.wikipedia.org/wiki/Na._Muthukumar) and [Vaali](https://en.wikipedia.org/wiki/Vaali_(poet))
-
-[Kathorathil Epothume - Akkam Pakkam - Kireedam ! Tamil Song](https://drive.google.com/file/d/1AdTOdhL-PsDkJxr4BB_bwCpzX6jnicnb/view?usp=share_link)
-
-[Mun andhi hey hey penne](https://drive.google.com/file/d/1fF9IBlgqaG16cdYfZP3x4HF7gqWhArh-/view?usp=share_link)
-
-[Mun andhi kalainthalum](https://drive.google.com/file/d/1_8ow1JTToVVZfZUxooLsFMMO9wNqEj0x/view?usp=share_link)
-
-[Elankaathu Veesuthey karum paara manasula](https://drive.google.com/file/d/15taJYkQjMAiqnZ6tK_uWy_wR1LcClJ3d/view?usp=share_link)
-    
 ## Requirements
+     * Vlc
+     * Python (optional)
+ 
+## Audios
 
-    * Vlc
-    * Python (optional)
+#### Default Audios
+
+1. [Kathorathil Epothume - Akkam Pakkam - Kireedam ! Tamil Song](https://drive.google.com/file/d/1AdTOdhL-PsDkJxr4BB_bwCpzX6jnicnb/view?usp=share_link)
+
+2. [Mun andhi hey hey penne](https://drive.google.com/file/d/1fF9IBlgqaG16cdYfZP3x4HF7gqWhArh-/view?usp=share_link)
+
+3. [Mun andhi kalainthalum](https://drive.google.com/file/d/1_8ow1JTToVVZfZUxooLsFMMO9wNqEj0x/view?usp=share_link)
+
+4. [Elankaathu Veesuthey karum paara manasula](https://drive.google.com/file/d/15taJYkQjMAiqnZ6tK_uWy_wR1LcClJ3d/view?usp=share_link)
+
+#### Special Thanks to 
+
+1. [Na Muthukumar (lyricist)](https://en.wikipedia.org/wiki/Na._Muthukumar)
+2. [Vaali (lyricist)](https://en.wikipedia.org/wiki/Vaali_(poet))
 
 ## The Problem
 
