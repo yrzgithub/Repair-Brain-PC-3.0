@@ -53,10 +53,9 @@ If you use PC regularly, This app is highly recommended.**
     * This app tracks whether your are replacing your habits or not and shows habit replacing accuracy.
 ![replacing_accuracy](https://user-images.githubusercontent.com/85425005/219947228-65a813f3-e9f1-46fb-8c08-4b093b7d03a6.jpg)
 
-   * It shows Accuracy Plot and Habit Plot.
-      1. Accuracy Plot : Plot between week days and accuracies noted in the respective days as percentage.
-      2. Habit Plot : Plot between replace habits and their frequency expressed as percentage.
-      
+    * It shows Accuracy Plot and Habit Plot.
+       1. Accuracy Plot : Plot between week days and accuracies noted in the respective days as percentage.
+       2. Habit Plot : Plot between replace habits and their frequency expressed as percentage.
  ![plot](https://user-images.githubusercontent.com/85425005/219947451-4c2a7521-7cf8-447b-9829-7847e2c62715.png)
 
 
