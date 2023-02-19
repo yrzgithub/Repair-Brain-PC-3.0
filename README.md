@@ -1,4 +1,4 @@
-**"Repair Brain 2.0" is an advanced version of [Repair Brain](https://github.com/yrzgithub/Repair-Brain) developed to help people with addictions and compulsive behaviours.
+**"Repair Brain 2.0" is an advanced version of [Repair Brain](https://github.com/yrzgithub/Repair-Brain), developed to help people with addictions and compulsive behaviours.
 If you use PC regularly, This app is highly recommended.**
 
 
