@@ -67,10 +67,7 @@ How to use?
     * As said earlier, You can add Positive effects, Side effects and Steps to overcome the compulsion. 
     * Modifications can be done directly via their respective .txt files or through the app.
     * The clock will run accordingly. 
-    * You will be asked to add replace habits.
-    * When the app shows the list of replace habits, select the habits which you followed on that particular day.
-    * Habit plot and Accuracy plot will be show on every sunday. To view them on any day, Right click -> Show Plot.
-    * To remove a replace habit, Right click -> Settings -> Remove replace habit.
+    * You will be asked to add replace habits and days to show them.
 
 
 Note
