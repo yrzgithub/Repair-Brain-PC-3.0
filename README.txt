@@ -91,13 +91,8 @@ Future Plans
 Developer Contact
 
 Instagram : https://www.instagram.com/alpha_yr/
-
 Linked In : https://www.linkedin.com/in/sanjay-kumar-y-r-6a88b6207/
-
 Coding YT channel : https://www.youtube.com/channel/UCPOkSZ7GGwgVjVQqP2MjviA
-
 Info & Fun YT channel : https://www.youtube.com/channel/UC6wZDLRN5RPimxqIdoR6g_g
-
 Facebook : https://www.facebook.com/y.r.kumar.1232
-
 GMail : seenusanjay20102002@gmail.com
