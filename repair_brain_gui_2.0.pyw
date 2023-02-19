@@ -809,7 +809,7 @@ def show_plot(clear=False,warn=True):
     pyplot.gca().title.set_text("Accuracy Plot")
     pyplot.xlabel("Date")
     pyplot.ylabel("Percentage")
-    pyplot.ylim(0,100)
+    pyplot.ylim(0,100) 
     pyplot.plot_date(date,value,linestyle="-",color="blue",label="Accuracy")
     pyplot.legend()
 
@@ -819,7 +819,7 @@ def show_plot(clear=False,warn=True):
     pyplot.xlabel("Habit")
     pyplot.ylabel("Days")
     pyplot.ylim(0,100)
-    pyplot.bar(x=x_names,height=y_values,color=["yellow","pink","red","violet","magenta","green","blue"])
+    pyplot.bar(x=x_names,height=y_values,color=["red","pink","yellow","violet","magenta","green","blue"])
     
     pyplot.tight_layout(h_pad=1,w_pad=1)
     pyplot.show()
