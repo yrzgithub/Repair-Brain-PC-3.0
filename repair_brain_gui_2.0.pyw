@@ -37,7 +37,7 @@ key_last_accuracy_percent = "last_accuracy_percent"
 
 max_replace_habit_len = 7
 min_replace_habit_len = 3
-show_plot_after = 6 # days
+show_plot_after = 7 # days
 today = datetime.now().weekday()
 
 file_name = "pkls\\data.pkl"
@@ -168,6 +168,8 @@ def msgbox(msg,master=root,title=box_title,destroy_root=False):
     Label(msg_root,font=("Times New Roman",18),text=msg).place(relx=.5,rely=.3,anchor=CENTER,relwidth=.9)
     ok_msg_btn = Button(msg_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = msg_root.destroy if not destroy_root else root.destroy)
     ok_msg_btn.place(relx=0.5,rely=0.8,width=50,height=30,anchor=CENTER)
+
+    MessageBeep()
 
     return msg_root,ok_msg_btn
 
@@ -445,6 +447,8 @@ def add_habit_frame(msg="Enter the new habit"):
 
     tp_root.protocol("WM_DELETE_WINDOW",lambda : add_replace_habits(tp_root,new_habit_entry))
 
+    MessageBeep()
+
 
 def on_window_close_tp(tp_root):
     add_button.configure(state=NORMAL,bg="blue",disabledforeground="white")
@@ -683,6 +687,9 @@ def plot_data(key_plot_name,day_name,perc):
     if len(list_date)>0 and list_date[-1]==day_name:
         list_date.pop()
         list_value.pop()
+
+    if day_name in list_date:
+        show_plot(clear=True,warn=False)
     
     list_date.append(day_name)
     list_value.append(perc)
@@ -713,7 +720,7 @@ def on_window_close():
     print(data[key_replace_habits])
     
     if percent is None:
-        percent = data[key_last_accuracy_percent]
+        percent = 0
 
     percent_difference = percent - data[key_last_accuracy_percent]
     print("Percent diff",percent_difference)
@@ -747,12 +754,10 @@ def show_main_menu(event):
 
 
 def add_songs():
-    MessageBeep()
     bgm_files = listdir(bgm_folder)
     ask_files_path = askopenfilenames(title="Select music files",filetypes=[("Audio files","*.mp3")])
 
     if len(ask_files_path)==0:
-        MessageBeep()
         msgbox(title=box_title,msg="No song selected")
         return 
 
@@ -764,12 +769,10 @@ def add_songs():
         else:
             print(f"{file_name} - File already found")
         
-    MessageBeep()
     msgbox(title=box_title,msg="Songs Added")
 
 
 def run_on_start():
-    MessageBeep()
     start_up_folder_path = expanduser("~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup")
     system("explorer.exe "+start_up_folder_path)
     msgbox(title=box_title,msg="Create shortcut for .pyw or .exe file here (start up folder)")
@@ -797,7 +800,7 @@ def show_plot(clear=False,warn=True):
     relplace_habits_dict = data[key_replace_habits]
     x_names = relplace_habits_dict.keys()
     print(replace_habits)
-    y_values = [sum(relplace_habits_dict[key]["days_data"].values()) for key in x_names]
+    y_values = [(sum(relplace_habits_dict[key]["days_data"].values())*100)//len(relplace_habits_dict[key]["show_on"]) for key in x_names]
 
     if len(x_names)==0:
         x_names = ["Example"]
@@ -815,7 +818,7 @@ def show_plot(clear=False,warn=True):
     pyplot.gca().title.set_text("Habits Plot")
     pyplot.xlabel("Habit")
     pyplot.ylabel("Days")
-    pyplot.ylim(0,7)
+    pyplot.ylim(0,100)
     pyplot.bar(x=x_names,height=y_values)
     
     pyplot.tight_layout(h_pad=1,w_pad=1)
@@ -838,7 +841,6 @@ def reset():
         print(f"{file_d} deleted")
         remove(file_d)
     
-    MessageBeep()
     root.withdraw()
     msgbox(title=box_title,msg="Successfully reseted",destroy_root=True)
 
