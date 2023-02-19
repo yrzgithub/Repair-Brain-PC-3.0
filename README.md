@@ -12,6 +12,8 @@ If you use PC regularly, This app is highly recommended.**
     
 ## Default Audios
 
+#### Special Thanks to [Na Muthukumar](https://en.wikipedia.org/wiki/Na._Muthukumar) and [Vaali](https://en.wikipedia.org/wiki/Vaali_(poet))
+
 [Kathorathil Epothume - Akkam Pakkam - Kireedam ! Tamil Song](https://drive.google.com/file/d/1AdTOdhL-PsDkJxr4BB_bwCpzX6jnicnb/view?usp=share_link)
 
 [Mun andhi hey hey penne](https://drive.google.com/file/d/1fF9IBlgqaG16cdYfZP3x4HF7gqWhArh-/view?usp=share_link)
@@ -19,7 +21,6 @@ If you use PC regularly, This app is highly recommended.**
 [Mun andhi kalainthalum](https://drive.google.com/file/d/1_8ow1JTToVVZfZUxooLsFMMO9wNqEj0x/view?usp=share_link)
 
 [Elankaathu Veesuthey karum paara manasula](https://drive.google.com/file/d/15taJYkQjMAiqnZ6tK_uWy_wR1LcClJ3d/view?usp=share_link)
-    
     
 ## Requirements
 
