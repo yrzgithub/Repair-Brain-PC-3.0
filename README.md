@@ -34,6 +34,8 @@ If you use PC regularly, This app is highly recommended.**
 
     * The major problem in overcoming addictions or compulsions (physical or psychological) is forgetting our goal ie..To become independent.
     * Forgetting denies us from breaking the addiction cycle and it continues.
+    * We didn't know whether we are progressing or not.
+    * We fail to replace our addictive habits.
 
 ## How does this app help?
 
@@ -48,6 +50,13 @@ If you use PC regularly, This app is highly recommended.**
 
     * As a reward, whenever you didn't relapse, A song or part of it starts playing.
     * To use a part of a song, search "<song name> or <favourite line> ringtone" in google.
+    * This app tracks whether your are replacing your habits or not and shows habit replacing accuracy.
+![replacing_accuracy](https://user-images.githubusercontent.com/85425005/219947228-65a813f3-e9f1-46fb-8c08-4b093b7d03a6.jpg)
+
+   * It shows "Accuracy Plot" and "Habit Plot".
+      1. Accuracy Plot : Plot between week days and accuracies noted in the respective days as percentage.
+      2. Habit Plot : Plot between replace habits and their frequency expressed as percentage.
+    
     
 ## How to use?
 
