@@ -786,6 +786,7 @@ def contact_developer(media_name):
 
 
 def show_plot(clear=False,warn=True):
+    colors = ["red","cyan","blue","yellow","green","magenta"]
     date = data[key_plot_accuracy]["date"]
     value = data[key_plot_accuracy]["value"]
 
@@ -807,19 +808,19 @@ def show_plot(clear=False,warn=True):
 
     pyplot.subplot(2,1,1)
     pyplot.gca().title.set_text("Accuracy Plot")
-    pyplot.xlabel("Date")
+    pyplot.xlabel("Day")
     pyplot.ylabel("Percentage")
     pyplot.ylim(0,100) 
-    pyplot.plot_date(date,value,linestyle="-",color="blue",label="Accuracy")
+    pyplot.plot_date(date,value,linestyle="-",color=choice(colors),label="Accuracy")
     pyplot.legend()
 
     pyplot.subplot(2,1,2)
 
     pyplot.gca().title.set_text("Habits Plot")
     pyplot.xlabel("Habit")
-    pyplot.ylabel("Days")
+    pyplot.ylabel("Percentage")
     pyplot.ylim(0,100)
-    pyplot.bar(x=x_names,height=y_values,color=["red","pink","yellow","violet","magenta","green","blue"])
+    pyplot.bar(x=x_names,height=y_values,color=colors)
     
     pyplot.tight_layout(h_pad=1,w_pad=1)
     pyplot.show()

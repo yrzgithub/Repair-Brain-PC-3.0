@@ -1,36 +1,35 @@
-**"Repair Brain 2.0" is an advanced version of [Repair Brain](https://github.com/yrzgithub/Repair-Brain), developed to help people with addictions and compulsive behaviours.
+**"Repair Brain 2.0" is an advanced version of Repair Brain, developed to help people with addictions and compulsive behaviours.
 If you use PC regularly, This app is highly recommended.**
 
 
-## Usage
+Usage
 
     * Can be used as 
         1. Windows app (Recommended)
         2. Python app
     * Rewards you if you didn't relapse (Contact developer if you want the way of rewarding).
     
-## Requirements
-     * Vlc
-     * Python (optional)
+
+Requirements
+
+    * Vlc
+    * Python (optional)
  
-## Audios
 
-#### Default Audios
+Audios
 
-1. [Kathorathil Epothume - Akkam Pakkam - Kireedam ! Tamil Song](https://drive.google.com/file/d/1AdTOdhL-PsDkJxr4BB_bwCpzX6jnicnb/view?usp=share_link)
+    Default Audios
+        1.https://drive.google.com/file/d/1AdTOdhL-PsDkJxr4BB_bwCpzX6jnicnb/view?usp=share_link
+        2.https://drive.google.com/file/d/1fF9IBlgqaG16cdYfZP3x4HF7gqWhArh-/view?usp=share_link
+        3.https://drive.google.com/file/d/1_8ow1JTToVVZfZUxooLsFMMO9wNqEj0x/view?usp=share_link
+        4.https://drive.google.com/file/d/15taJYkQjMAiqnZ6tK_uWy_wR1LcClJ3d/view?usp=share_link
 
-2. [Mun andhi hey hey penne](https://drive.google.com/file/d/1fF9IBlgqaG16cdYfZP3x4HF7gqWhArh-/view?usp=share_link)
+    Special Thanks to 
 
-3. [Mun andhi kalainthalum](https://drive.google.com/file/d/1_8ow1JTToVVZfZUxooLsFMMO9wNqEj0x/view?usp=share_link)
+        1. Na Muthukumar (lyricist)
+        2. Vaali (lyricist)
 
-4. [Elankaathu Veesuthey karum paara manasula](https://drive.google.com/file/d/15taJYkQjMAiqnZ6tK_uWy_wR1LcClJ3d/view?usp=share_link)
-
-#### Special Thanks to 
-
-1. [Na Muthukumar (lyricist)](https://en.wikipedia.org/wiki/Na._Muthukumar)
-2. [Vaali (lyricist)](https://en.wikipedia.org/wiki/Vaali_(poet))
-
-## The Problem
+The Problem
 
     * The major problem in overcoming addictions or compulsions (physical or psychological) is forgetting our goal ie..To become independent.
     * Forgetting denies us from breaking the addiction cycle and it continues.
