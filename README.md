@@ -84,6 +84,10 @@ If you use PC regularly, This app is highly recommended.**
     * Press space bar to play or pause the song.
     * Song will not play after you click on any entry.
     * Right click to show menu.
+    * If no box is checked in the accuracy frame, the replacing accuracy will be interpreted as zero.
+    * Replacing accuracy data and habit plot data will be overriden when the data is given more than one time in the same day.
+    * Replacing habit range is from 3 to 7.
+    * Plot data should be greater than 1 to view the plot.
     
 ## Future Plans
 
