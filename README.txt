@@ -56,11 +56,11 @@ How does this app help?
 How to use?
 
     * Run the app_setup.exe file to install the app. (Ignore this step in case of using python)
-    * Click on "repair_brain_gui.exe" or "repair_brain_gui.pyw" file.
-    * In the app, right-click and select "run on start".
+    * Click on "repair_brain_gui_2.0.exe" or "repair_brain_gui_2.0.pyw" file.
+    * In the app, right-click -> Settings -> run on start.
     * Create shortcut for .exe or .pyw file.
     * Now, the app starts automatically when your PC is turned on.
-    * Again right click and select "Add songs".
+    * Again right click -> Settings -> Add songs.
     * Select your favourite songs.
     * You can also add them directly by placing them in "bgm" folder.
     * If You had relapsed, click on "handcuffed image" else click on "free image".
