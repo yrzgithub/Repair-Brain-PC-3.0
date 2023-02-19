@@ -9,6 +9,10 @@ If you use PC regularly, This app is highly recommended.**
         2. Python app
     * Rewards you if you didn't relapse (Contact developer if you want the way of rewarding).
     
+
+https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-b726-eee1729c13e9.mp4
+    
+    
 ## Requirements
      * Vlc
      * Python (optional)
