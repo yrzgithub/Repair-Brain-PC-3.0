@@ -15,6 +15,8 @@ from matplotlib import pyplot
 from webbrowser import open_new_tab
 from collections import OrderedDict
 from sys import exit
+from requests import get
+from json import loads
 import pyperclip
 import vlc
 
@@ -30,15 +32,9 @@ key_lastly_noted_change = "lastly_noted_change"
 key_lastly_noted_side_effect = "lastly_noted_side_effect"
 key_start_time = "start_time"
 key_next_step = "next_step"
-
 key_replace_habits = "replace_habits"
 key_plot_accuracy = "accuracy_plot"
 key_last_accuracy_percent = "last_accuracy_percent"
-
-max_replace_habit_len = 7
-min_replace_habit_len = 3
-show_plot_after = 7 # days
-today = datetime.now().weekday()
 
 file_name = "pkls\\data.pkl"
 icon_name = "icon\\favicon.ico"
@@ -55,8 +51,23 @@ yt_coding_channel_link = "https://www.youtube.com/channel/UCPOkSZ7GGwgVjVQqP2Mjv
 yt_personal_channel = "https://www.youtube.com/channel/UC6wZDLRN5RPimxqIdoR6g_g"
 developer_mail = "seenusanjay20102002@gmail.com"
 
+database_link = "https://repair-brain-20-default-rtdb.firebaseio.com/versions.json"
 
 week_days = ("Mon","Tue","Wed","Thur","Fri","Sat","Sun")
+
+percent = None
+msg_root = None
+replace_habits = None
+check_btn_vars = None
+tp_root = None
+stop_thread = False
+
+max_replace_habit_len = 7
+min_replace_habit_len = 3
+show_plot_after = 7 # days
+current_version_name = 2.0
+today = datetime.now().weekday()
+
 
 
 bgms = listdir(bgm_folder)
@@ -68,14 +79,6 @@ for dir in dir_list:
     if not isdir(dir):
         mkdir(dir)
         print(dir," created")
-
-
-percent = None
-msg_root = None
-replace_habits = None
-check_btn_vars = None
-tp_root = None
-stop_thread = False
 
 vlc_instane = vlc.Instance()
 player = vlc_instane.media_player_new()
@@ -159,6 +162,31 @@ def data_file(mode="rb",path=file_name,to_write=None):
     return out
 
 
+def check_version():
+    try:
+        database_data = loads(get(database_link).text)["latest_version"]
+        print("Connected to data base")
+        print(database_data)
+        latest_version_name = database_data["name"]
+        assert current_version_name<latest_version_name
+        msg_root,ok_msg_btn = msgbox("New version Available")
+        latest_version_link = database_data["link"]
+        ok_msg_btn.configure(text="update",command=lambda : update_app(msg_root,latest_version_link))
+        ok_msg_btn.place(relx=0.5,rely=0.73,anchor=CENTER,width=90,height=40)
+
+    except AssertionError:
+        print("Already in the latest version")
+
+    except:
+        print("Can't connect to database")
+
+
+def update_app(msg_root,link):
+    msg_root.destroy()
+    open_new_tab(link)
+
+
+        
 def msgbox(msg,master=root,title=box_title,destroy_root=False):
     msg_root = Toplevel(master=master)
     msg_root.wm_geometry(f"650x200+{(screen_width//2)-325}+{(screen_height//2)+100}")
@@ -847,6 +875,8 @@ def reset():
 
 
 def ask_frame_window():
+    Thread(target=check_version).start()
+
     top = Label(frame_ask,textvariable=top_string,font=("Times New Roman",38),anchor=CENTER)
 
     relapsed_button = Button(frame_ask,cursor="hand2",image=hand_cuffed_img,border=0,command=relaped_click)
