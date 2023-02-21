@@ -169,7 +169,7 @@ def check_version():
         print(database_data)
         latest_version_name = database_data["name"]
         assert current_version_name<latest_version_name
-        msg_root,ok_msg_btn = msgbox("New version Available")
+        msg_root,ok_msg_btn = msgbox("New Version Available")
         latest_version_link = database_data["link"]
         ok_msg_btn.configure(text="update",command=lambda : update_app(msg_root,latest_version_link))
         ok_msg_btn.place(relx=0.5,rely=0.73,anchor=CENTER,width=90,height=40)
