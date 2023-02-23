@@ -88,7 +88,7 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
     * To remove a replace habit, Right click -> Settings -> Remove replace habit.
 ![remove habits](https://user-images.githubusercontent.com/85425005/219949816-61730899-9d24-4d09-8439-554f66834a5f.jpg)
 
-    * You will be notified when the app update is available. 
+    * You will be notified when an app update is available. 
 ![new version](https://user-images.githubusercontent.com/85425005/220839993-5c0a2755-0f28-46f0-ba08-d9cb87b73f46.jpg)
 
 
