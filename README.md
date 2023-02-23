@@ -86,9 +86,10 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
     * When the app shows the list of replace habits, select the habits which you followed on that particular day.
     * Habit plot and Accuracy plot will be show on every sunday. To view them on any day, Right click -> Show Plot.
     * To remove a replace habit, Right click -> Settings -> Remove replace habit.
-![menu](https://user-images.githubusercontent.com/85425005/219947693-3ffa52f3-51f2-4024-bfd4-0231451e8d16.jpg)
-
 ![remove habits](https://user-images.githubusercontent.com/85425005/219949816-61730899-9d24-4d09-8439-554f66834a5f.jpg)
+
+    * You will be notified when the app update is available. 
+![new version](https://user-images.githubusercontent.com/85425005/220839993-5c0a2755-0f28-46f0-ba08-d9cb87b73f46.jpg)
 
 
 ## Note
@@ -96,6 +97,8 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
     * Press space bar to play or pause the song.
     * Song will not play after you click on any entry.
     * Right click to show menu.
+![menu](https://user-images.githubusercontent.com/85425005/220840582-ac628d70-0018-4f3f-b250-284fad30d9f2.jpg)
+
     * If no box is checked in the accuracy frame, the replacing accuracy will be interpreted as zero.
     * Replacing accuracy data and habit plot data will be overriden when the data is given more than one time in the same day.
     * Replacing habit range is from 3 to 7.
@@ -107,6 +110,7 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
     * Same will be developed for android.
     * Windows app and Android app can be synced via cloud.
     * Options for cutting the audio files will be added.
+    * Web app for the same will be developed.
 
 
 ## Developer Contact
