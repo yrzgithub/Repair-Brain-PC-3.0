@@ -2,7 +2,7 @@
 If you use PC regularly, This app is highly recommended.**
 
 ## App Link
-[Repair Brain 2.0](https://drive.google.com/file/d/1wGgTza55aXFnD5N5lz_8zNoqwFzYIVPV/view?usp=sharing)
+[Repair Brain 2.0](https://drive.google.com/file/d/1T-fX5K_0BUapYWM2bt-MtjJP7xtnQr_c/view?usp=share_link)
 
 
 ## Usage
