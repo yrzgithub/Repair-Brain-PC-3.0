@@ -39,8 +39,8 @@ key_last_accuracy_percent = "last_accuracy_percent"
 file_name = "pkls\\data.pkl"
 icon_name = "icon\\favicon.ico"
 txt_file_path = "text\\data_txt.txt"
-txt_changes = "text\\changes.txt"
-txt_effects = "text\\effects.txt"
+txt_changes = "text\\pos_effects.txt"
+txt_effects = "text\\neg_effects.txt"
 txt_next_step = "text\\next_step.txt"
 
 bgm_folder = "bgm"
@@ -926,11 +926,23 @@ for name in create_file_names:
         data_file(mode="a",path=name,to_write="")
 
 
+        
+open_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 
+menu_open_file = Menu(open_menu,tearoff=0,font=("Times New Roman",12))
+menu_open_file.add_command(label="Positive effects",command = lambda : system(f"explorer.exe {txt_changes}"))
+menu_open_file.add_command(label="Negative effects",command = lambda : system(f"explorer.exe {txt_effects}"))
+menu_open_file.add_command(label="Next Steps",command = lambda : system(f"explorer.exe {txt_next_step}"))
+
+menu_open_folder = Menu(open_menu,tearoff=0,font=("Times New Roman",12))
+menu_open_folder.add_command(label="bgm",command = lambda : system(f"explorer.exe {bgm_folder}"))
+menu_open_folder.add_command(label="text",command = lambda : system(f"explorer.exe text"))
+
+open_menu.add_cascade(label="File",menu=menu_open_file)
+open_menu.add_cascade(label="Folder",menu=menu_open_folder) 
 
 settings_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 settings_menu.add_command(label="Add songs",command=add_songs)  
-settings_menu.add_command(label="Open bgm folder",command=lambda : system(f"explorer.exe {bgm_folder}"))  
 settings_menu.add_command(label="Run on start",command=run_on_start)
 settings_menu.add_command(label="Remove replace habits",command=change_replace_habits) 
 settings_menu.add_command(label="Reset",command=reset)
@@ -952,6 +964,7 @@ email_menu.add_command(label="copy Mail ID",command=lambda : contact_developer("
 contact_developer_menu.add_cascade(label="Email",menu=email_menu)
 
 main_menu = Menu(root,tearoff=0,font=("Times New Roman",12))  
+main_menu.add_cascade(label="Open",menu=open_menu)
 main_menu.add_cascade(label="Settings",menu=settings_menu)
 main_menu.add_command(label="Show plot",command=show_plot)
 main_menu.add_command(label="Open in Github",command=lambda : open_new_tab(git_link))
