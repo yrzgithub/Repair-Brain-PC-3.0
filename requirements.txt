@@ -3,3 +3,5 @@ matplotlib
 pytest-shutil
 pyperclip
 python-vlc
+pypi-json
+requests
