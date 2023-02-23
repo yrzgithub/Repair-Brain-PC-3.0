@@ -68,6 +68,10 @@ How to use?
     * Modifications can be done directly via their respective .txt files or through the app.
     * The clock will run accordingly. 
     * You will be asked to add replace habits and days to show them.
+    * When the app shows the list of replace habits, select the habits which you followed on that particular day.
+    * Habit plot and Accuracy plot will be show on every sunday. To view them on any day, Right click -> Show Plot.
+    * To remove a replace habit, Right click -> Settings -> Remove replace habit.
+    * You will be notified when the app update is available. 
 
 
 Note
@@ -86,6 +90,7 @@ Future Plans
     * Same will be developed for android.
     * Windows app and Android app can be synced via cloud.
     * Options for cutting the audio files will be added.
+    * Web app for the same will be developed.
 
 
 Developer Contact
