@@ -63,9 +63,11 @@ How to use?
     * Again right click -> Settings -> Add songs.
     * Select your favourite songs.
     * You can also add them directly by placing them in "bgm" folder.
+    * To open the required folder, Right click-> open-> folder-> bgm.
     * If You had relapsed, click on "handcuffed image" else click on "free image".
     * As said earlier, You can add Positive effects, Side effects and Steps to overcome the compulsion. 
     * Modifications can be done directly via their respective .txt files or through the app.
+    * To open the desired text file, Right click-> open-> file-> file name.
     * The clock will run accordingly. 
     * You will be asked to add replace habits and days to show them.
     * When the app shows the list of replace habits, select the habits which you followed on that particular day.

@@ -76,9 +76,15 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
     * Again right click -> Settings -> Add songs.
     * Select your favourite songs.
     * You can also add them directly by placing them in "bgm" folder.
+    * To open the required folder, Right click-> open-> folder-> bgm.
+![open_folder_menu](https://user-images.githubusercontent.com/85425005/220936494-873c98a4-f752-45e8-942b-b0ec011adc3f.jpg)
+
     * If You had relapsed, click on "handcuffed image" else click on "free image".
     * As said earlier, You can add Positive effects, Side effects and Steps to overcome the compulsion. 
     * Modifications can be done directly via their respective .txt files or through the app.
+    * To open the desired text file, Right click-> open-> file-> file name.
+![open_file_menu](https://user-images.githubusercontent.com/85425005/220935985-5e695ccd-1a57-4f9f-a18c-dc4fc1d14f76.jpg)
+
     * The clock will run accordingly. 
     * You will be asked to add replace habits and days to show them.
 ![add_habit2](https://user-images.githubusercontent.com/85425005/219949881-5155a083-9ef7-422d-9152-dde309eebb6a.jpg)
@@ -98,7 +104,7 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
     * Press space bar to play or pause the song.
     * Song will not play after you click on any entry.
     * Right click to show menu.
-![menu](https://user-images.githubusercontent.com/85425005/220840582-ac628d70-0018-4f3f-b250-284fad30d9f2.jpg)
+![main menu](https://user-images.githubusercontent.com/85425005/220937115-54ca0293-bac0-4eae-b6eb-601f88279d2a.jpg)
 
     * If no box is checked in the accuracy frame, the replacing accuracy will be interpreted as zero.
     * Replacing accuracy data and habit plot data will be overriden when the data is given more than one time in the same day.
