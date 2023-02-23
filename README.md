@@ -94,7 +94,7 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
 
 ## Note
   
-    * Ignore virus warnings while downloading.
+    * Ignore virus warnings while downloading the app.
     * Press space bar to play or pause the song.
     * Song will not play after you click on any entry.
     * Right click to show menu.
