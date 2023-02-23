@@ -76,13 +76,13 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
     * Again right click -> Settings -> Add songs.
     * Select your favourite songs.
     * You can also add them directly by placing them in "bgm" folder.
-    * To open the desired folder, Right-click->open->folder->folder name.
+    * To open the desired folder, Right click->open->folder->folder name.
 ![open_folder_menu](https://user-images.githubusercontent.com/85425005/220936494-873c98a4-f752-45e8-942b-b0ec011adc3f.jpg)
 
     * If You had relapsed, click on "handcuffed image" else click on "free image".
     * As said earlier, You can add Positive effects, Side effects and Steps to overcome the compulsion. 
     * Modifications can be done directly via their respective .txt files or through the app.
-    * To open the desired text file, Right-click->open->file->file_name.
+    * To open the desired text file, Right click->open->file->file_name.
 ![open_file_menu](https://user-images.githubusercontent.com/85425005/220935985-5e695ccd-1a57-4f9f-a18c-dc4fc1d14f76.jpg)
 
     * The clock will run accordingly. 
