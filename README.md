@@ -120,6 +120,12 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
     * Web app for the same will be developed.
 
 
+## Special Thanks To
+
+(Python Software Foundation)[https://www.python.org/psf-landing/]
+(VideoLAN)[https://www.videolan.org/]
+
+
 ## Developer Contact
 
 [Instagram](https://www.instagram.com/alpha_yr/)
