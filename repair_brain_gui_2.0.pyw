@@ -38,10 +38,12 @@ key_last_accuracy_percent = "last_accuracy_percent"
 
 file_name = "pkls\\data.pkl"
 icon_name = "icon\\favicon.ico"
+
 txt_file_path = "text\\data_txt.txt"
 txt_changes = "text\\pos_effects.txt"
 txt_effects = "text\\neg_effects.txt"
 txt_next_step = "text\\next_step.txt"
+txt_notes = "text\\notes.txt"
 
 bgm_folder = "bgm"
 
@@ -109,6 +111,7 @@ top_string.set("Are you Free or Addicted?")
 
 edit_button_var = StringVar()
 done_button_var = StringVar()
+txt_done_btn_var = StringVar()
 
 days_gone = IntVar()
 hours_gone = IntVar()
@@ -169,7 +172,7 @@ def check_version():
         print(database_data)
         latest_version_name = database_data["name"]
         assert current_version_name<latest_version_name
-        msg_root,ok_msg_btn = msgbox("New Version Available")
+        msg_root,ok_msg_btn,create = msgbox("New Version Available")
         latest_version_link = database_data["link"]
         ok_msg_btn.configure(text="update",command=lambda : update_app(msg_root,latest_version_link))
         ok_msg_btn.place(relx=0.5,rely=0.73,anchor=CENTER,width=90,height=40)
@@ -187,19 +190,28 @@ def update_app(msg_root,link):
     msgbox(r"Follow the instructions in this github page")
 
         
-def msgbox(msg,master=root,title=box_title,destroy_root=False):
+def msgbox(msg,master=root,title=box_title,destroy_root=False,entry=False,width=650,height=200):
     msg_root = Toplevel(master=master)
-    msg_root.wm_geometry(f"650x200+{(screen_width//2)-325}+{(screen_height//2)+100}")
+    msg_root.wm_geometry(f"{width}x{height}+{(screen_width//2)-(width)//2}+{(screen_height//2)+(height)//2}")
     msg_root.wm_iconbitmap(bitmap=icon_name)
     msg_root.wm_title(title)
     msg_root.wm_resizable(False,False)
-    Label(msg_root,font=("Times New Roman",18),text=msg).place(relx=.5,rely=.3,anchor=CENTER,relwidth=.9)
+
+    if entry:
+        create = Entry(msg_root,font=("Times New Roman",18),fg="grey",justify=CENTER) 
+        create.insert(INSERT,msg)
+        create.bind("<Button>",lambda e : entry_button_click(create))
+
+    else:
+        create = Label(msg_root,font=("Times New Roman",18),text=msg)
+        
+    create.place(relx=.5,rely=.3,anchor=CENTER,relwidth=.9)
     ok_msg_btn = Button(msg_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = msg_root.destroy if not destroy_root else root.destroy)
     ok_msg_btn.place(relx=0.5,rely=0.8,width=50,height=30,anchor=CENTER)
 
     MessageBeep()
 
-    return msg_root,ok_msg_btn
+    return msg_root,ok_msg_btn,create
 
 
 def next():
@@ -398,6 +410,7 @@ def tp_root_check(checked_vars):
             btn_var.set(1)
                 
 
+
 def add_habit_frame(msg="Enter the new habit"):
     global days_list,check_btn_vars_tp,days_var_dict,tp_root
 
@@ -501,7 +514,7 @@ def add_replace_habits(tp,habit_entry):
                 check_days.append(key)
                 
         if len(check_days)==0:
-            msg_root,msg_ok_btn = msgbox(title=box_title,msg="Days not selected")
+            msg_root,msg_ok_btn,create = msgbox(title=box_title,msg="Days not selected")
             msg_ok_btn.configure(command=lambda : msg_root_del(msg_root))
             msg_root.protocol("WM_DELETE_WINDOW",lambda : msg_root_del(msg_root))
             return
@@ -511,7 +524,7 @@ def add_replace_habits(tp,habit_entry):
             accuracy_frame(frame_accuracy,False)
 
     else:
-        msg_root,msg_ok_btn = msgbox(title=box_title,msg="Invalid habit name")
+        msg_root,msg_ok_btn,create = msgbox(title=box_title,msg="Invalid habit name")
         msg_ok_btn.configure(command=lambda :  msg_root_del(msg_root))
         msg_root.protocol("WM_DELETE_WINDOW",lambda : msg_root_del(msg_root))
         return
@@ -800,6 +813,69 @@ def add_songs():
     msgbox(title=box_title,msg="Songs Added")
 
 
+def edit_notes():
+    if txt_done_btn_var.get()=="Edit":
+        note_text.bind("<Button>",lambda e : on_edit_note_click())
+    
+    else:
+        save_notes(to_write=note_text.get(2.0,END).strip(),mode="w")
+
+    note_text.configure(state=NORMAL)
+    txt_done_btn_var.set("Saved")
+    
+
+def add_note():
+    msg_root,ok_button,create = msgbox("Enter the note",master=root,entry=True,width=500,height=150)
+    ok_button.configure(command= lambda : save_notes(mode="a",to_write=None,widget=msg_root,create=create))
+
+
+def save_notes(to_write,mode,widget=None,create=None):
+    if widget is None:
+        data_file(mode=mode,path=txt_notes,to_write=to_write)
+
+    else:
+        note = "\n" + create.get().strip()
+        if note!="Enter the note":
+            data_file(mode=mode,path=txt_notes,to_write=note)
+        widget.destroy()
+
+
+def on_edit_note_click():
+    txt_done_btn_var.set("Save")
+
+
+def note_menu_cmd():
+    global note_text
+
+    root.withdraw()
+
+    txt_done_btn_var.set("Edit")
+
+    note_text_data = data_file(mode="r",path=txt_notes)
+
+    top_level = Toplevel(master=root)
+    top_level.wm_geometry(f"600x450+{(screen_width//2)-300}+{(screen_height//2)}")
+
+    note_text = Text(top_level,font=("Times New Roman",20),padx=5,pady=5)
+    note_text.insert(0.0,"Notes : \n\n")
+    note_text.insert(INSERT,note_text_data)
+    note_text.configure(state=DISABLED)
+    note_text.place(relwidth=1,relheight=.9)
+
+    edit_btn = Button(top_level,command=edit_notes,textvariable=txt_done_btn_var,font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+    edit_btn.place(relx=.4,anchor=CENTER,rely=.95,relheight=.08)
+
+    done_btn = Button(top_level,text="Done",command = lambda : on_note_close(top_level),font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+    done_btn.place(relx=.6,anchor=CENTER,rely=.95,relheight=.08)
+
+    top_level.wm_protocol("WM_DELETE_WINDOW",lambda : on_note_close(top_level))
+
+    
+def on_note_close(tpr):
+    tpr.destroy()
+    root.deiconify()
+
+    
 def run_on_start():
     start_up_folder_path = expanduser("~\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup")
     system("explorer.exe "+start_up_folder_path)
@@ -920,7 +996,7 @@ else:
         print("Data file deleted")
 
 
-create_file_names = (txt_effects,txt_changes,txt_next_step)
+create_file_names = (txt_effects,txt_changes,txt_next_step,txt_notes)
 for name in create_file_names:
     if not isfile(name):
         data_file(mode="a",path=name,to_write="")
@@ -965,6 +1041,12 @@ contact_developer_menu.add_cascade(label="Email",menu=email_menu)
 
 main_menu = Menu(root,tearoff=0,font=("Times New Roman",12))  
 main_menu.add_cascade(label="Open",menu=open_menu)
+
+note_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
+note_menu.add_command(label="Add note",command = add_note)
+note_menu.add_command(label="Show note",command = note_menu_cmd)
+
+main_menu.add_cascade(label="Notes",menu = note_menu)
 main_menu.add_cascade(label="Settings",menu=settings_menu)
 main_menu.add_command(label="Show plot",command=show_plot)
 main_menu.add_command(label="Open in Github",command=lambda : open_new_tab(git_link))
