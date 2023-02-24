@@ -818,26 +818,24 @@ def edit_notes():
         note_text.bind("<Button>",lambda e : on_edit_note_click())
     
     else:
-        save_notes(to_write=note_text.get(2.0,END).strip(),mode="w")
-
+        data_file(to_write="\n   " + note_text.get(2.0,END).strip(),mode="w",path=txt_notes)
+ 
     note_text.configure(state=NORMAL)
     txt_done_btn_var.set("Saved")
     
 
 def add_note():
     msg_root,ok_button,create = msgbox("Enter the note",master=root,entry=True,width=500,height=150)
-    ok_button.configure(command= lambda : save_notes(mode="a",to_write=None,widget=msg_root,create=create))
+    ok_button.configure(command= lambda : save_notes_from_wid(mode="a",widget=msg_root,create=create))
 
 
-def save_notes(to_write,mode,widget=None,create=None):
-    if widget is None:
-        data_file(mode=mode,path=txt_notes,to_write=to_write)
-
-    else:
-        note = "\n" + create.get().strip()
-        if note!="Enter the note":
-            data_file(mode=mode,path=txt_notes,to_write=note)
-        widget.destroy()
+def save_notes_from_wid(mode,widget=None,create=None):
+    note = create.get().strip()
+    if note!="Enter the note":
+        time_now_f = datetime.now().strftime(" (%d : %m : %y)")
+        note = f"\n   * {note}{time_now_f}"
+        data_file(mode=mode,path=txt_notes,to_write=note)
+    widget.destroy()
 
 
 def on_edit_note_click():
@@ -857,7 +855,7 @@ def note_menu_cmd():
     top_level.wm_geometry(f"600x450+{(screen_width//2)-300}+{(screen_height//2)}")
 
     note_text = Text(top_level,font=("Times New Roman",20),padx=5,pady=5)
-    note_text.insert(0.0,"Notes : \n\n")
+    note_text.insert(0.0,"Notes : \n")
     note_text.insert(INSERT,note_text_data)
     note_text.configure(state=DISABLED)
     note_text.place(relwidth=1,relheight=.9)
@@ -941,7 +939,7 @@ def show_plot(clear=False,warn=True):
 
 def reset():
     player.stop()
-    delete_files = [txt_next_step,txt_changes,txt_effects,txt_file_path,file_name]
+    delete_files = [txt_next_step,txt_changes,txt_effects,txt_file_path,file_name,txt_notes]
     for file_d in delete_files:
         print(f"{file_d} deleted")
         remove(file_d)
