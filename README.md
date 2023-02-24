@@ -34,9 +34,9 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
 
 #### Special Thanks to 
 
-[Na Muthukumar (lyricist)](https://en.wikipedia.org/wiki/Na._Muthukumar)
+*  [Na Muthukumar (lyricist)](https://en.wikipedia.org/wiki/Na._Muthukumar)
 
-[Vaali (lyricist)](https://en.wikipedia.org/wiki/Vaali_(poet))
+*  [Vaali (lyricist)](https://en.wikipedia.org/wiki/Vaali_(poet))
 
 ## The Problem
 
@@ -123,9 +123,9 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
 
 ## Special Thanks To
 
-[Python Software Foundation](https://www.python.org/psf-landing/)
+*  [Python Software Foundation](https://www.python.org/psf-landing/)
 
-[VideoLAN](https://www.videolan.org/)
+*  [VideoLAN](https://www.videolan.org/)
 
 
 ## Developer Contact
