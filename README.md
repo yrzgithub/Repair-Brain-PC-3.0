@@ -2,7 +2,7 @@
 If you use PC regularly, This app is highly recommended.**
 
 ## App Link
-[Repair Brain 2.0](https://drive.google.com/file/d/1T-fX5K_0BUapYWM2bt-MtjJP7xtnQr_c/view?usp=share_link)
+[Repair Brain 2.0]()
 
 
 ## Usage
@@ -122,9 +122,9 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
 
 ## Special Thanks To
 
-(Python Software Foundation)[https://www.python.org/psf-landing/]
+[Python Software Foundation](https://www.python.org/psf-landing/)
 
-(VideoLAN)[https://www.videolan.org/]
+[VideoLAN](https://www.videolan.org/)
 
 
 ## Developer Contact
