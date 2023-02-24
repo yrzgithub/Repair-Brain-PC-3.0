@@ -2,7 +2,7 @@
 If you use PC regularly, This app is highly recommended.**
 
 ## App Link
-[Repair Brain 2.0](https://drive.google.com/file/d/1wGgTza55aXFnD5N5lz_8zNoqwFzYIVPV/view?usp=sharing)
+[Repair Brain 2.0]()
 
 
 ## Usage
@@ -34,8 +34,9 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
 
 #### Special Thanks to 
 
-1. [Na Muthukumar (lyricist)](https://en.wikipedia.org/wiki/Na._Muthukumar)
-2. [Vaali (lyricist)](https://en.wikipedia.org/wiki/Vaali_(poet))
+*  [Na Muthukumar (lyricist)](https://en.wikipedia.org/wiki/Na._Muthukumar)
+
+*  [Vaali (lyricist)](https://en.wikipedia.org/wiki/Vaali_(poet))
 
 ## The Problem
 
@@ -118,6 +119,13 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
     * Windows app and Android app can be synced via cloud.
     * Options for cutting the audio files will be added.
     * Web app for the same will be developed.
+
+
+## Special Thanks To
+
+*  [Python Software Foundation](https://www.python.org/psf-landing/)
+
+*  [VideoLAN](https://www.videolan.org/)
 
 
 ## Developer Contact
