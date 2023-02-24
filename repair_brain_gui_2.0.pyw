@@ -818,7 +818,7 @@ def edit_notes():
         note_text.bind("<Button>",lambda e : on_edit_note_click())
     
     else:
-        data_file(to_write="\n   " + note_text.get(2.0,END).strip(),mode="w",path=txt_notes)
+        data_file(to_write="\n   "+note_text.get(2.0,END).strip().strip("\n")+"\n",mode="w",path=txt_notes)
  
     note_text.configure(state=NORMAL)
     txt_done_btn_var.set("Saved")
@@ -1004,9 +1004,10 @@ for name in create_file_names:
 open_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 
 menu_open_file = Menu(open_menu,tearoff=0,font=("Times New Roman",12))
+menu_open_file.add_command(label="Notes",command = lambda : system(f"explorer.exe {txt_notes}"))
+menu_open_file.add_command(label="Next Steps",command = lambda : system(f"explorer.exe {txt_next_step}"))
 menu_open_file.add_command(label="Positive effects",command = lambda : system(f"explorer.exe {txt_changes}"))
 menu_open_file.add_command(label="Negative effects",command = lambda : system(f"explorer.exe {txt_effects}"))
-menu_open_file.add_command(label="Next Steps",command = lambda : system(f"explorer.exe {txt_next_step}"))
 
 menu_open_folder = Menu(open_menu,tearoff=0,font=("Times New Roman",12))
 menu_open_folder.add_command(label="bgm",command = lambda : system(f"explorer.exe {bgm_folder}"))
