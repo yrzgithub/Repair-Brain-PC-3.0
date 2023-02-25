@@ -361,6 +361,7 @@ def edit_steps():
     done_button_var.set("Next")
     edit_button_var.set("Save")
     text_widget.bind("<Button-1>",func=lambda e : edit_button_var.set("Save"))
+    text_widget.bind("<Key>",func=lambda e : edit_button_var.set("Save"))
     text_widget.configure(state=NORMAL)
     text_widget.delete(1.0,END)
     text_widget.insert(END,f" Next Step :\n\n   {next_steps}")
@@ -393,6 +394,10 @@ def save_txt(file_name):
         txt_data = widget_data + "\n"
         print("Text data : ",txt_data)
         data_file(mode="w",path=file_name,to_write=txt_data)
+    
+    else:
+        print("Empty text file saved")
+        data_file(mode="w",path=file_name,to_write="")
 
     if file_name==txt_effects:
         if edit_button_var.get()=="Show":
@@ -408,6 +413,7 @@ def tp_root_check(checked_vars):
     if checked_vars[0].get()==1:
         for btn_var in checked_vars:
             btn_var.set(1)
+                
 
 
 def add_habit_frame(msg="Enter the new habit"):
@@ -815,12 +821,13 @@ def add_songs():
 def edit_notes():
     if txt_done_btn_var.get()=="Edit":
         note_text.bind("<Button>",lambda e : on_edit_note_click())
+        note_text.bind("<Key>",lambda e : on_edit_note_click())
+        txt_done_btn_var.set("Save")
+        note_text.configure(state=NORMAL)
     
     else:
-        data_file(to_write="\n   "+note_text.get(2.0,END).strip().strip("\n")+"\n",mode="w",path=txt_notes)
- 
-    note_text.configure(state=NORMAL)
-    txt_done_btn_var.set("Saved")
+        data_file(to_write=note_text.get(2.0,END).strip().strip("\n").replace("\n    ","\n")+"\n",mode="w",path=txt_notes)
+        txt_done_btn_var.set("Saved")
     
 
 def add_note():
@@ -830,9 +837,9 @@ def add_note():
 
 def save_notes_from_wid(mode,widget=None,create=None):
     note = create.get().strip()
-    if note!="Enter the note":
+    if note!="Enter the note" and note!="":
         time_now_f = datetime.now().strftime(" (%d : %m : %y)")
-        note = f"\n   * {note}{time_now_f}"
+        note = f"* {note}{time_now_f}\n"
         data_file(mode=mode,path=txt_notes,to_write=note)
     widget.destroy()
 
@@ -848,7 +855,8 @@ def note_menu_cmd():
 
     txt_done_btn_var.set("Edit")
 
-    note_text_data = data_file(mode="r",path=txt_notes)
+    note_text_data = "\n    " +data_file(mode="r",path=txt_notes).replace("\n","\n    ")
+    print(note_text_data)
 
     top_level = Toplevel(master=root)
     top_level.wm_geometry(f"600x450+{(screen_width//2)-300}+{(screen_height//2)}")
@@ -963,7 +971,9 @@ def ask_frame_window():
 
 
 
+
 time_now = datetime.now()
+
 
 if not isfile(file_name):
     data = {}
