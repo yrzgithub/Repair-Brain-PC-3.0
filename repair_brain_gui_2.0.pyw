@@ -408,7 +408,6 @@ def tp_root_check(checked_vars):
     if checked_vars[0].get()==1:
         for btn_var in checked_vars:
             btn_var.set(1)
-                
 
 
 def add_habit_frame(msg="Enter the new habit"):
@@ -964,9 +963,7 @@ def ask_frame_window():
 
 
 
-
 time_now = datetime.now()
-
 
 if not isfile(file_name):
     data = {}
