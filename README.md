@@ -123,7 +123,7 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
 
 ## Special Thanks To
 
-*  [Python Software Foundation](https://www.python.org/psf-landing/)
+*  [Python Software Foundation](https://www.python.org/)
 
 *  [VideoLAN](https://www.videolan.org/)
 
