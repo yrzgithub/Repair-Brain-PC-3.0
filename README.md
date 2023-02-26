@@ -12,10 +12,12 @@ If you use PC regularly, This app is highly recommended.**
         2. Python app
     * Rewards you if you didn't relapse (Contact developer if you want the way of rewarding).
     
+    
+    
+https://user-images.githubusercontent.com/85425005/221398151-d9ef0e4a-5746-44b5-946b-95f2b485a264.mp4
 
-https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-b726-eee1729c13e9.mp4
-    
-    
+
+
 ## Requirements
      * Vlc
      * Python (optional)
@@ -63,10 +65,9 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
     * This app tracks whether your are replacing your habits or not and shows habit replacing accuracy.
 ![replacing_accuracy](https://user-images.githubusercontent.com/85425005/219947228-65a813f3-e9f1-46fb-8c08-4b093b7d03a6.jpg)
 
-    * You can take notes.
-    * To open notes menu, Right click-> Notes.
-![notes menu](https://user-images.githubusercontent.com/85425005/221396657-2a7a6f1e-6c6b-4600-9226-e8170e46538f.jpg) 
-
+    * You can take notes and edit them.
+![show notes](https://user-images.githubusercontent.com/85425005/221398510-51ff8e14-75e2-49ab-80b5-57007e0e351c.jpg)
+    
     * You can add temporary tasks, Temporary tasks are the tasks which are saved temporarily. 
     * When temporary tasks are given, Replace habits will be replaced by them for specified no. of days.
     * It shows Accuracy Plot and Habit Plot.
@@ -85,14 +86,14 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
     * Again right click -> Settings -> Add songs.
     * Select your favourite songs.
     * You can also add them directly by placing them in "bgm" folder.
-    * To open the required folder, Right click-> open-> folder-> bgm.
-![open_folder_menu](https://user-images.githubusercontent.com/85425005/220936494-873c98a4-f752-45e8-942b-b0ec011adc3f.jpg)
+    * To open the required folder, Right click-> open-> folder-> folder name.
+![open folder](https://user-images.githubusercontent.com/85425005/221398345-ed472f3f-a964-4cea-ba54-3f28ce6e751c.jpg)
 
     * If You had relapsed, click on "handcuffed image" else click on "free image".
     * As said earlier, You can add Positive effects, Side effects and Steps to overcome the compulsion. 
     * Modifications can be done directly via their respective .txt files or through the app.
     * To open the desired text file, Right click-> open-> file-> file name.
-![open_file_menu](https://user-images.githubusercontent.com/85425005/220935985-5e695ccd-1a57-4f9f-a18c-dc4fc1d14f76.jpg)
+![open file](https://user-images.githubusercontent.com/85425005/221398359-38bc1ba7-ff18-42f0-8251-91b4203f8252.jpg)
 
     * The clock will run accordingly. 
     * You will be asked to add replace habits and days to show them.
@@ -103,13 +104,16 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
     * To remove a replace habit, Right click -> Settings -> Remove replace habit.
 ![remove habits](https://user-images.githubusercontent.com/85425005/219949816-61730899-9d24-4d09-8439-554f66834a5f.jpg)
 
+    * To open notes menu, Right click-> Notes.
+![notes menu](https://user-images.githubusercontent.com/85425005/221396657-2a7a6f1e-6c6b-4600-9226-e8170e46538f.jpg) 
+
     * To add a note, open note menu and click "Add".
 ![enter note](https://user-images.githubusercontent.com/85425005/221396725-7da00df2-eb32-498a-990c-e9b809a30a23.jpg)
 
     * To show notes, open note menu and click "Show".
 ![show notes](https://user-images.githubusercontent.com/85425005/221396774-1db30d73-e28c-4e33-bb66-841ae2a66ef7.jpg)
 
-    * To add temporary tasks, Right click->Settings->Add.
+    * To add temporary tasks, Right click->Settings->Temp tasks->Add.
 ![add temp tasks](https://user-images.githubusercontent.com/85425005/221397903-59521b4b-6bfa-472c-93d1-b5c0d424b967.jpg)
 
     * You will be notified when an app update is available. 
@@ -126,7 +130,8 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
 
     * If no box is checked in the accuracy frame, the replacing accuracy will be interpreted as zero.
     * Replacing accuracy data and habit plot data will be overriden when the data is given more than one time in the same day.
-    * Replacing habit range is from 3 to 7.
+    * Replacing habit range is from 3 to 7 and for temp taks it is from 1 to 7.
+    * Plot will be shown when switching between replace habits and temp tasks. 
     * Plot data should be greater than 1 to view the plot.
     
     
