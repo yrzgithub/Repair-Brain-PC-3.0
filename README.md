@@ -41,7 +41,7 @@ https://user-images.githubusercontent.com/85425005/221398151-d9ef0e4a-5746-44b5-
 
 *  [Vairamuthu (lyricist)](https://en.wikipedia.org/wiki/Vairamuthu)
 
-*  [A. R. Rahman](https://en.wikipedia.org/wiki/A._R._Rahman)
+*  [A. R. Rahman (Music composer)](https://en.wikipedia.org/wiki/A._R._Rahman)
 
 ## The Problem
 
