@@ -1,7 +1,7 @@
 **"Repair Brain 2.0" is an advanced version of [Repair Brain](https://github.com/yrzgithub/Repair-Brain), developed to help people with addictions and compulsive behaviours. If you use PC regularly, This app is highly recommended.**
 
 ## App Link
-[Repair Brain 2.0](https://drive.google.com/file/d/1M37UdpQWZnbZ222hzaDUxcgH61Eq4iUU/view?usp=share_link)
+[Repair Brain 2.0](https://drive.google.com/file/d/1_FtOqxKPZpgjJlLJd_U-WSDtBL5kR1bC/view?usp=share_link)
 
 
 ## Usage
