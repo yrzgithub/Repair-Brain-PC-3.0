@@ -48,11 +48,13 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
 ## How does this app help?
 
     * The app regularly tracks whether you are free or addicted.
+![ask](https://user-images.githubusercontent.com/85425005/221396133-d1c0427b-9ade-4696-a8b9-b4391494f0d9.jpg)
+
     * It calculates how long you are free or how long you didn't repeat the behaviour.
-    * Once you relapsed, The time starts from 0.
     * Positive effects, Side effects and Steps to overcome compulsions can be noted.
 ![show_data](https://user-images.githubusercontent.com/85425005/216750748-05434603-5ea4-4cb6-8d6a-acdefd8eb579.jpg)
 
+    * Once you relapsed, The time starts from 0.
     * They can be edited in the same app.
 ![changes_effects_steps](https://user-images.githubusercontent.com/85425005/216750763-54606ec4-8afb-4890-8d68-fa72bcf36358.jpg)
 
@@ -60,6 +62,14 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
     * To use a part of a song, search "<song name> or <favourite line> ringtone" in google.
     * This app tracks whether your are replacing your habits or not and shows habit replacing accuracy.
 ![replacing_accuracy](https://user-images.githubusercontent.com/85425005/219947228-65a813f3-e9f1-46fb-8c08-4b093b7d03a6.jpg)
+
+    * You can take notes.
+    * To open notes menu, Right click-> Notes.
+![notes menu](https://user-images.githubusercontent.com/85425005/221396657-2a7a6f1e-6c6b-4600-9226-e8170e46538f.jpg) 
+
+    * You can add temporary tasks, Temporary tasks are the tasks which are saved temporarily. 
+    * When temporarily tasks are given, Replace habits will be replaced by them.
+    * When the no. of
 
     * It shows Accuracy Plot and Habit Plot.
        1. Accuracy Plot : Plot between week days and accuracies noted in the respective days as percentage.
@@ -94,6 +104,12 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
     * Habit plot and Accuracy plot will be show on every sunday. To view them on any day, Right click -> Show Plot.
     * To remove a replace habit, Right click -> Settings -> Remove replace habit.
 ![remove habits](https://user-images.githubusercontent.com/85425005/219949816-61730899-9d24-4d09-8439-554f66834a5f.jpg)
+
+    * To add a note, open note menu and click "Add".
+![enter note](https://user-images.githubusercontent.com/85425005/221396725-7da00df2-eb32-498a-990c-e9b809a30a23.jpg)
+
+    * To show notes, open note menu and click "Show".
+![show notes](https://user-images.githubusercontent.com/85425005/221396774-1db30d73-e28c-4e33-bb66-841ae2a66ef7.jpg)
 
     * You will be notified when an app update is available. 
 ![new version](https://user-images.githubusercontent.com/85425005/220839993-5c0a2755-0f28-46f0-ba08-d9cb87b73f46.jpg)
