@@ -66,10 +66,12 @@ https://user-images.githubusercontent.com/85425005/221398151-d9ef0e4a-5746-44b5-
 ![replacing_accuracy](https://user-images.githubusercontent.com/85425005/219947228-65a813f3-e9f1-46fb-8c08-4b093b7d03a6.jpg)
 
     * You can take notes and edit them.
-![show notes](https://user-images.githubusercontent.com/85425005/221398510-51ff8e14-75e2-49ab-80b5-57007e0e351c.jpg)
-    
+![enter note](https://user-images.githubusercontent.com/85425005/221398936-f6452dfb-f63f-4d36-929d-a53987830cd3.jpg)
+
     * You can add temporary tasks, Temporary tasks are the tasks which are saved temporarily. 
     * When temporary tasks are given, Replace habits will be replaced by them for specified no. of days.
+![no of days temp tasks](https://user-images.githubusercontent.com/85425005/221399023-2dfa2b0b-d92d-4c1c-a443-804e11dabb6e.jpg)
+    
     * It shows Accuracy Plot and Habit Plot.
        1. Accuracy Plot : Plot between week days and accuracies noted in the respective days as percentage.
        2. Habit Plot : Plot between replace habits and their frequency expressed as percentage.
@@ -108,7 +110,7 @@ https://user-images.githubusercontent.com/85425005/221398151-d9ef0e4a-5746-44b5-
 ![notes menu](https://user-images.githubusercontent.com/85425005/221396657-2a7a6f1e-6c6b-4600-9226-e8170e46538f.jpg) 
 
     * To add a note, open note menu and click "Add".
-![enter note](https://user-images.githubusercontent.com/85425005/221396725-7da00df2-eb32-498a-990c-e9b809a30a23.jpg)
+![notes menu](https://user-images.githubusercontent.com/85425005/221398882-667bf4f9-622d-42bb-8474-cbb0d7193e27.jpg)
 
     * To show notes, open note menu and click "Show".
 ![show notes](https://user-images.githubusercontent.com/85425005/221396774-1db30d73-e28c-4e33-bb66-841ae2a66ef7.jpg)
