@@ -107,8 +107,6 @@ https://user-images.githubusercontent.com/85425005/221398151-d9ef0e4a-5746-44b5-
 ![remove habits](https://user-images.githubusercontent.com/85425005/219949816-61730899-9d24-4d09-8439-554f66834a5f.jpg)
 
     * To open notes menu, Right click-> Notes.
-![notes menu](https://user-images.githubusercontent.com/85425005/221396657-2a7a6f1e-6c6b-4600-9226-e8170e46538f.jpg) 
-
     * To add a note, open note menu and click "Add".
 ![notes menu](https://user-images.githubusercontent.com/85425005/221398882-667bf4f9-622d-42bb-8474-cbb0d7193e27.jpg)
 
