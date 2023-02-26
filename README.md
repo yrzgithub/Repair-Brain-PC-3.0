@@ -68,9 +68,7 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
 ![notes menu](https://user-images.githubusercontent.com/85425005/221396657-2a7a6f1e-6c6b-4600-9226-e8170e46538f.jpg) 
 
     * You can add temporary tasks, Temporary tasks are the tasks which are saved temporarily. 
-    * When temporarily tasks are given, Replace habits will be replaced by them.
-    * When the no. of
-
+    * When temporary tasks are given, Replace habits will be replaced by them for specified no. of days.
     * It shows Accuracy Plot and Habit Plot.
        1. Accuracy Plot : Plot between week days and accuracies noted in the respective days as percentage.
        2. Habit Plot : Plot between replace habits and their frequency expressed as percentage.
@@ -110,6 +108,9 @@ https://user-images.githubusercontent.com/85425005/219953848-b4af120b-f5b3-4589-
 
     * To show notes, open note menu and click "Show".
 ![show notes](https://user-images.githubusercontent.com/85425005/221396774-1db30d73-e28c-4e33-bb66-841ae2a66ef7.jpg)
+
+    * To add temporary tasks, Right click->Settings->Add.
+![add temp tasks](https://user-images.githubusercontent.com/85425005/221397903-59521b4b-6bfa-472c-93d1-b5c0d424b967.jpg)
 
     * You will be notified when an app update is available. 
 ![new version](https://user-images.githubusercontent.com/85425005/220839993-5c0a2755-0f28-46f0-ba08-d9cb87b73f46.jpg)
