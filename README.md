@@ -1,7 +1,9 @@
 **"Repair Brain 2.0" is an advanced version of [Repair Brain](https://github.com/yrzgithub/Repair-Brain), developed to help people with addictions and compulsive behaviours. If you use PC regularly, This app is highly recommended.**
 
 ## App Link
-[Repair Brain 2.0](https://drive.google.com/file/d/1_FtOqxKPZpgjJlLJd_U-WSDtBL5kR1bC/view?usp=share_link)
+
+[Setup file](https://drive.google.com/file/d/1_FtOqxKPZpgjJlLJd_U-WSDtBL5kR1bC/view?usp=share_link)
+[Zip file(Recommended)]()
 
 
 ## Usage
@@ -85,7 +87,7 @@ https://user-images.githubusercontent.com/85425005/221398151-d9ef0e4a-5746-44b5-
 
 ## How to use?
 
-    * Run the app_setup.exe file to install the app. (Ignore this step in case of using python)
+    * Run the app_setup.exe file to install the app. (Ignore this step in case of using python or zip file)
     * Click on "repair_brain_gui_2.0.exe" or "repair_brain_gui_2.0.pyw" file.
     * In the app, right-click -> Settings -> run on start.
     * Create shortcut for .exe or .pyw file.
