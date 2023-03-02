@@ -2,9 +2,9 @@
 
 ## App Link
 
-[Setup file](https://drive.google.com/file/d/1_FtOqxKPZpgjJlLJd_U-WSDtBL5kR1bC/view?usp=share_link)
-[Zip file(Recommended)]()
+[Zip file (Recommended)](https://drive.google.com/file/d/142JJ4Zmf2gizvtJ_St0gBl_6jLtbjSOW/view?usp=share_link)
 
+[Setup file](https://drive.google.com/file/d/1_FtOqxKPZpgjJlLJd_U-WSDtBL5kR1bC/view?usp=share_link)
 
 ## Usage
 
