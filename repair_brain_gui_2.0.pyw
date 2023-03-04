@@ -987,7 +987,7 @@ def add_temp_tasks():
     
 
 def add_temp_ok(days,tp):
-    global min_replace_habit_len
+    global min_replace_habit_len,frame_accuracy
 
     tp.destroy()
     try:
@@ -1003,7 +1003,23 @@ def add_temp_ok(days,tp):
     data[key_habits_cache] = {"cache" : data[key_replace_habits],"days":no_of_days,"start_day":datetime(year,month,date)}
     data[key_replace_habits] = OrderedDict()
     add_habit_frame(temp=True)
+    frame_accuracy.destroy()
+    frame_accuracy = Frame()
     min_replace_habit_len = 1
+
+
+def erase_temp_data(erase_only):
+    print("Rewriting habits data")
+    if not erase_only:
+        show_plot(warn=False,clear=True)
+
+    if data[key_habits_cache] is not None:
+        data[key_replace_habits] = data[key_habits_cache]["cache"]
+        data[key_habits_cache] = None
+        msgbox("Temp habits cleared")
+
+    else:
+        msgbox("Temp habits not found")
 
 
 
@@ -1027,11 +1043,7 @@ else:
 if data[key_habits_cache] is not None:
     min_replace_habit_len = 1
     if (time_now - data[key_habits_cache]["start_day"]).days>=data[key_habits_cache]["days"]:
-        print("Rewriting habits data")
-        show_plot(warn=False,clear=True)
-        msgbox("Temp habits cleared")
-        data[key_replace_habits] = data[key_habits_cache]["cache"]
-        data[key_habits_cache] = None
+        erase_temp_data(erase_only=False)
 
 
 if not isfile(txt_file_path):
@@ -1072,7 +1084,12 @@ open_menu.add_cascade(label="Folder",menu=menu_open_folder)
 settings_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 settings_menu.add_command(label="Add songs",command=add_songs)  
 settings_menu.add_command(label="Run on start",command=run_on_start)
-settings_menu.add_command(label="Add temp tasks",command=add_temp_tasks)
+
+temp_tasks_menu = Menu(settings_menu,tearoff=0,font=("Times New Roman",12))
+temp_tasks_menu.add_command(label="Add",command=add_temp_tasks)
+temp_tasks_menu.add_command(label="Clear",command= lambda : erase_temp_data(erase_only=True))
+
+settings_menu.add_cascade(label="Temp tasks",menu=temp_tasks_menu)
 settings_menu.add_command(label="Remove replace habits",command=change_replace_habits) 
 settings_menu.add_command(label="Reset",command=reset)
 
@@ -1096,8 +1113,8 @@ main_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 main_menu.add_cascade(label="Open",menu=open_menu)
 
 note_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
-note_menu.add_command(label="Add note",command = add_note)
-note_menu.add_command(label="Show note",command = note_menu_cmd)
+note_menu.add_command(label="Add",command = add_note)
+note_menu.add_command(label="Show",command = note_menu_cmd)
 
 main_menu.add_cascade(label="Notes",menu = note_menu)
 main_menu.add_cascade(label="Settings",menu=settings_menu)
