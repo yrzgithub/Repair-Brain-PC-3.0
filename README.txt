@@ -1,4 +1,4 @@
-"Repair Brain 2.0" is an advanced version of Repair Brain, developed to help people with addictions and compulsive behaviours.
+"Repair Brain 2.0" is an advanced version of Repair Brain, developed to help people with addictions and compulsive behaviours. 
 If you use PC regularly, This app is highly recommended.
 
 
@@ -8,7 +8,7 @@ Usage
         1. Windows app (Recommended)
         2. Python app
     * Rewards you if you didn't relapse (Contact developer if you want the way of rewarding).
-    
+
 
 Requirements
 
