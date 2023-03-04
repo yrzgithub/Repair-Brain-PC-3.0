@@ -886,6 +886,8 @@ def note_menu_cmd():
 
     top_level.wm_protocol("WM_DELETE_WINDOW",lambda : on_note_close(top_level))
 
+    MessageBeep()
+
     
 def on_note_close(tpr):
     tpr.destroy()
