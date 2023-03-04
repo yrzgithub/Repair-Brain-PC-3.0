@@ -1,0 +1,6 @@
+Started Date (date,month,year) : 04-03-23
+Started Time (hours,mins,secs) : 12:11:48
+
+Writing Format : Date-Month-Year Hours:Minutes:Seconds :: data
+
+04-03-23 12:11:51 :: {'lastly_opened': datetime.datetime(2023, 3, 4, 12, 11, 51, 704319), 'start_time': datetime.datetime(2023, 3, 4, 12, 11, 48, 232138), 'lastly_relapsed': 'Not Found', 'lastly_noted_change': 'Not Found', 'lastly_noted_side_effect': 'Not Found', 'next_step': 'Not Found', 'replace_habits': OrderedDict(), 'habits_cache': None, 'accuracy_plot': {'date': ['Sat'], 'value': [0]}, 'last_accuracy_percent': 0}
