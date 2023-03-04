@@ -1016,10 +1016,10 @@ def erase_temp_data(erase_only):
     if data[key_habits_cache] is not None:
         data[key_replace_habits] = data[key_habits_cache]["cache"]
         data[key_habits_cache] = None
-        msgbox("Temp habits cleared")
+        msgbox("Temp tasks cleared")
 
     else:
-        msgbox("Temp habits not found")
+        msgbox("Temp tasks not found")
 
 
 
