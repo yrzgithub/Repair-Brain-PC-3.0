@@ -35,6 +35,7 @@ key_next_step = "next_step"
 key_replace_habits = "replace_habits"
 key_plot_accuracy = "accuracy_plot"
 key_last_accuracy_percent = "last_accuracy_percent"
+key_habits_cache = "habits_cache"
 
 file_name = "pkls\\data.pkl"
 icon_name = "icon\\favicon.ico"
@@ -326,8 +327,9 @@ def save_current_effect_change_data():
 
 
 def show_changes_side_effects_click(destroy=True):
-    global text_widget,edit_button,done_button,next_steps,changes,effects
+    global text_widget,edit_button,done_button,next_steps,changes,effects,stop_thread
 
+    stop_thread = True
     player.stop()
     root.unbind(stop_player)
 
@@ -416,11 +418,12 @@ def tp_root_check(checked_vars):
                 
 
 
-def add_habit_frame(msg="Enter the new habit"):
+def add_habit_frame(msg="Enter the new habit",temp=False):
     global days_list,check_btn_vars_tp,days_var_dict,tp_root
 
-    add_button.configure(state=DISABLED,bg="grey",disabledforeground="white")
-    done_button.configure(state=DISABLED,bg="grey",disabledforeground="white")
+    if not temp:
+        add_button.configure(state=DISABLED,bg="grey",disabledforeground="white")
+        done_button.configure(state=DISABLED,bg="grey",disabledforeground="white")
 
     if len(data[key_replace_habits])>=max_replace_habit_len:
         msgbox(title=box_title,msg="Maximum limit reached")
@@ -495,6 +498,8 @@ def add_habit_frame(msg="Enter the new habit"):
 
     MessageBeep()
 
+    return tp_root,done,new_habit_entry
+
 
 def on_window_close_tp(tp_root):
     add_button.configure(state=NORMAL,bg="blue",disabledforeground="white")
@@ -511,7 +516,7 @@ def add_replace_habits(tp,habit_entry):
     tp.destroy()
     print(tp)
 
-    if new_habit is not None and new_habit!="" and new_habit!="Enter the new habit" and new_habit!="Atleast 3 habits required":
+    if new_habit is not None and new_habit!="" and new_habit!="Enter the new habit" and new_habit!=f"Atleast {min_replace_habit_len} habits required":
         check_days = []
         days_var_dict.pop("All")
         for key,val in days_var_dict.items():
@@ -714,7 +719,7 @@ def accuracy_frame(frame,destroy=True):
     frame_accuracy.place(relheight=1,relwidth=1)
 
     if len(data[key_replace_habits])<min_replace_habit_len:    
-        add_habit_frame(msg="Atleast 3 habits required")
+        add_habit_frame(msg=f"Atleast {min_replace_habit_len} habits required")
         
 
 def show_all():
@@ -819,6 +824,8 @@ def add_songs():
 
 
 def edit_notes():
+    note_text_data = note_text.get(2.0,END).strip().strip("\n").replace("\n    ","\n")
+
     if txt_done_btn_var.get()=="Edit":
         note_text.bind("<Button>",lambda e : on_edit_note_click())
         note_text.bind("<Key>",lambda e : on_edit_note_click())
@@ -826,7 +833,12 @@ def edit_notes():
         note_text.configure(state=NORMAL)
     
     else:
-        data_file(to_write=note_text.get(2.0,END).strip().strip("\n").replace("\n    ","\n")+"\n",mode="w",path=txt_notes)
+        if note_text_data=="":
+            print("Writing empty file")
+            data_file(to_write="",mode="w",path=txt_notes)
+
+        else:
+            data_file(to_write=note_text_data+"\n",mode="w",path=txt_notes)
         txt_done_btn_var.set("Saved")
     
 
@@ -855,14 +867,13 @@ def note_menu_cmd():
 
     txt_done_btn_var.set("Edit")
 
-    note_text_data = "\n    " +data_file(mode="r",path=txt_notes).replace("\n","\n    ")
-    print(note_text_data)
+    note_text_data = "    " +data_file(mode="r",path=txt_notes).replace("\n","\n    ")
 
     top_level = Toplevel(master=root)
     top_level.wm_geometry(f"600x450+{(screen_width//2)-300}+{(screen_height//2)}")
 
     note_text = Text(top_level,font=("Times New Roman",20),padx=5,pady=5)
-    note_text.insert(0.0,"Notes : \n")
+    note_text.insert(0.0,"Notes : \n\n")
     note_text.insert(INSERT,note_text_data)
     note_text.configure(state=DISABLED)
     note_text.place(relwidth=1,relheight=.9)
@@ -970,6 +981,30 @@ def ask_frame_window():
     frame_ask.place(relheight=1,relwidth=1)
 
 
+def add_temp_tasks():
+    top_level,ok_button,entry = msgbox("Enter the no. of days",root,entry=True)
+    ok_button.configure(command=lambda : add_temp_ok(entry.get(),top_level))
+    
+
+def add_temp_ok(days,tp):
+    global min_replace_habit_len
+
+    tp.destroy()
+    try:
+        no_of_days = int(days)
+    except:
+        msgbox("Invalid data")
+        return
+    print("No of days : ",no_of_days)
+    date = time_now.day
+    month = time_now.month
+    year = time_now.year
+    show_plot(clear=True,warn=False)
+    data[key_habits_cache] = {"cache" : data[key_replace_habits],"days":no_of_days,"start_day":datetime(year,month,date)}
+    data[key_replace_habits] = OrderedDict()
+    add_habit_frame(temp=True)
+    min_replace_habit_len = 1
+
 
 
 time_now = datetime.now()
@@ -980,12 +1015,23 @@ if not isfile(file_name):
     data[key_lastly_opened] = data[key_start_time] =  time_now
     data[key_lastly_relapsed] = data[key_lastly_noted_change] = data[key_lastly_noted_side_effect] = data[key_next_step] = "Not Found"
     data[key_replace_habits] = OrderedDict() # { habit :{show_at:int,days_data:{}}}
+    data[key_habits_cache] = None
     data[key_plot_accuracy] = {"date":[],"value":[]}
     data[key_last_accuracy_percent] = 0
     data_file(mode="wb",to_write=data)
 
 else:
     data = data_file()
+
+
+if data[key_habits_cache] is not None:
+    min_replace_habit_len = 1
+    if (time_now - data[key_habits_cache]["start_day"]).days>=data[key_habits_cache]["days"]:
+        print("Rewriting habits data")
+        show_plot(warn=False,clear=True)
+        msgbox("Temp habits cleared")
+        data[key_replace_habits] = data[key_habits_cache]["cache"]
+        data[key_habits_cache] = None
 
 
 if not isfile(txt_file_path):
@@ -1026,6 +1072,7 @@ open_menu.add_cascade(label="Folder",menu=menu_open_folder)
 settings_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 settings_menu.add_command(label="Add songs",command=add_songs)  
 settings_menu.add_command(label="Run on start",command=run_on_start)
+settings_menu.add_command(label="Add temp tasks",command=add_temp_tasks)
 settings_menu.add_command(label="Remove replace habits",command=change_replace_habits) 
 settings_menu.add_command(label="Reset",command=reset)
 
