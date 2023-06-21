@@ -17,6 +17,7 @@ from collections import OrderedDict
 from sys import exit
 from requests import get
 from json import loads
+from pyrebase import initialize_app
 import pyperclip
 import vlc
 
@@ -88,6 +89,21 @@ player = vlc_instane.media_player_new()
 media = vlc_instane.media_new(f"bgm\\{bgm}")
 player.set_media(media)
 
+
+
+config = {"apiKey": "AIzaSyAckgNM-WYs0ULGMF7WQ-HhIbfFLF51EBU",
+  "authDomain": "repair-brain-20.firebaseapp.com",
+  "databaseURL": "https://repair-brain-20-default-rtdb.firebaseio.com",
+  "projectId": "repair-brain-20",
+  "storageBucket": "repair-brain-20.appspot.com",
+  "messagingSenderId": "935756194550",
+  "appId": "1:935756194550:web:20b9ded256fa2198d242d7",
+  "measurementId": "G-CSQLLQMDXL"}
+
+url = "https://repair-brain-20-default-rtdb.firebaseio.com"
+
+firebase_app = initialize_app(config=config)
+data_base = firebase_app.database()
 
 
 MessageBeep()
@@ -786,8 +802,19 @@ def on_window_close():
     print(txt_file_write_data)
     data_file(mode="a",path=txt_file_path,to_write=txt_file_write_data)
     data_file("wb",to_write=data)
-    data_str = data_file("rb")
-    print(data_str)
+    data_java = data_file("rb")
+
+    def convert_data(key,strf="%d %m %y"):
+        data_java[key] = data_java[key].strftime(strf)
+    
+    convert_data("lastly_opened")
+    convert_data("start_time")
+    convert_data("lastly_relapsed","%d : %m : %Y")
+
+    print(data_java)
+    
+    data_base.child("data").set(data_java)
+
     root.destroy()
     exit("Window closed")
 
