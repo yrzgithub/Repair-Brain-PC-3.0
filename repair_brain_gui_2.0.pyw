@@ -786,6 +786,8 @@ def on_window_close():
     print(txt_file_write_data)
     data_file(mode="a",path=txt_file_path,to_write=txt_file_write_data)
     data_file("wb",to_write=data)
+    data_str = data_file("rb")
+    print(data_str)
     root.destroy()
     exit("Window closed")
 
