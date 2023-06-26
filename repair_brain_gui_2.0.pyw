@@ -1016,7 +1016,7 @@ def reset():
     convert_data("lastly_opened")
     convert_data("start_time")
     convert_data("lastly_relapsed")
-    data_base.set(data_java)
+    data_base.child("data").set(data_java)
     msgbox(title=box_title,msg="Successfully reseted",destroy_root=True)
 
 
