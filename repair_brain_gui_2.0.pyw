@@ -37,6 +37,12 @@ key_replace_habits = "replace_habits"
 key_plot_accuracy = "accuracy_plot"
 key_last_accuracy_percent = "last_accuracy_percent"
 key_habits_cache = "habits_cache"
+key_pos_list = "Positive Effects list"
+key_neg_list = "Negative Effects list"
+key_step_list = "Next Steps list"
+key_positive_effects  = "Positive Effects"
+key_negative_Effects = "Negative Effects"
+key_side_effects = "Next Steps"
 
 file_name = "pkls\\data.pkl"
 icon_name = "icon\\favicon.ico"
@@ -73,7 +79,6 @@ current_version_name = 2.0
 today = datetime.now().weekday()
 
 
-
 bgms = listdir(bgm_folder)
 bgm = choice(bgms)
 print("Selected BGM : ",bgm)
@@ -104,7 +109,6 @@ url = "https://repair-brain-20-default-rtdb.firebaseio.com"
 
 firebase_app = initialize_app(config=config)
 data_base = firebase_app.database()
-
 
 MessageBeep()
 
@@ -154,7 +158,6 @@ def time_manager():
         hours_float = diff_seconds % 3600
         diff_minutes = int(hours_float//60)
         diff_seconds = int(hours_float%60)
-        print("thread running")
         try:
             root_exists = root.winfo_exists()
             days_gone.set(diff_days)
@@ -164,7 +167,6 @@ def time_manager():
         except:
             break
         sleep(1)
-    print("Thread stopped")
 
 
 def data_file(mode="rb",path=file_name,to_write=None):
@@ -178,7 +180,12 @@ def data_file(mode="rb",path=file_name,to_write=None):
             out = file.read()
         else:
             file.write(to_write)
+            print(file_name)
+
         file.close()
+
+    print("Data file : ",file_name)
+
     return out
 
 
@@ -186,7 +193,6 @@ def check_version():
     try:
         database_data = loads(get(database_link).text)["latest_version"]
         print("Connected to data base")
-        print(database_data)
         latest_version_name = database_data["name"]
         assert current_version_name<latest_version_name
         msg_root,ok_msg_btn,create = msgbox("New Version Available")
@@ -322,24 +328,39 @@ def no_button_click():   # free
     time_manager_thread.start()
 
 
+def add_to_database(effect_type,effect):
+    global data
+    time_now = datetime.now().strftime("%a,%b %d %Y")
+    data[effect_type].append({effect:time_now})
+    key_name = effect_type + " list"
+    data[key_name].append(effect)
+
+
+
 def save_current_effect_change_data():
     side_effect = side_effect_entry.get().strip()
     change = change_entry.get().strip()
     next_step = next_step_entry.get().strip()
     if side_effect != "Enter the side effect" and side_effect!="" and not side_effect.isspace(): 
         data[key_lastly_noted_side_effect] =  side_effect
-        side_effect += time_now.strftime(" (%d : %m : %y)")
-        data_file(mode="a",path=txt_effects,to_write = f"* {side_effect}\n")
+        add_to_database(positive_effects,side_effect)
+        side_effect+= time_now.strftime(" (%a,%b %d %Y)")
+        data_file(mode="a",path=txt_effects,to_write = f"{side_effect}\n")
+        print("Entry changes saved")
 
     if change != "Enter the positive effect" and change!="" and not change.isspace(): 
         data[key_lastly_noted_change] = change
-        change += time_now.strftime(" (%d : %m : %y)")
-        data_file(mode="a",path=txt_changes,to_write = f"* {change}\n")
+        add_to_database(negative_Effects,change)
+        change += time_now.strftime(" (%a,%b %d %Y)")
+        data_file(mode="a",path=txt_changes,to_write = f"{change}\n")
+        print("Entry changes saved")
         
     if next_step != "Enter the next step" and next_step!="" and not next_step.isspace():
         data[key_next_step] = next_step
-        next_step += time_now.strftime(" (%d : %m : %y)")
-        data_file(mode="a",path=txt_next_step,to_write=f"* {next_step}\n")
+        add_to_database(side_effects,next_step)
+        next_step += time_now.strftime(" (%a,%b %d %Y)")
+        data_file(mode="a",path=txt_next_step,to_write=f"{next_step}\n")
+        print("Entry changes saved")
 
 
 def show_changes_side_effects_click(destroy=True):
@@ -366,7 +387,7 @@ def show_changes_side_effects_click(destroy=True):
     effects = data_file(mode="r",path=txt_effects).replace("\n","\n   ")
     changes = data_file(mode="r",path=txt_changes).replace("\n","\n   ")
 
-    txt_format = f" Next Step :\n\n   {next_steps}\n\n\n Positive Effects :\n\n   {changes}\n\n\n Side Effects :\n\n   {effects}"
+    txt_format = f"{next_steps} :\n\n   {next_steps}\n\n\n {positive_effects} :\n\n   {changes}\n\n\n{side_effects} :\n\n   {effects}"
     text_widget = Text(frame_edit,font=("Times New Roman",20),padx=5,pady=5)
     text_widget.insert(END,txt_format)
     text_widget.configure(state=DISABLED)
@@ -382,7 +403,7 @@ def edit_steps():
     text_widget.bind("<Key>",func=lambda e : edit_button_var.set("Save"))
     text_widget.configure(state=NORMAL)
     text_widget.delete(1.0,END)
-    text_widget.insert(END,f" Next Step :\n\n   {next_steps}")
+    text_widget.insert(END,f" {key_next_step} :\n\n   {next_steps}")
     edit_button.configure(command = lambda : save_txt(txt_next_step))
     done_button.configure(command = lambda : edit_changes())
 
@@ -391,7 +412,7 @@ def edit_changes():
     done_button_var.set("Next")
     edit_button_var.set("Save")
     text_widget.delete(1.0,END)
-    text_widget.insert(END,f" Positive Effects :\n\n   {changes}")
+    text_widget.insert(END,f" {key_positive_effects} :\n\n   {changes}")
     edit_button.configure(command = lambda : save_txt(txt_changes))
     done_button.configure(command = lambda : edit_effects())
 
@@ -400,17 +421,15 @@ def edit_effects():
     done_button_var.set("Next")
     edit_button_var.set("Save")
     text_widget.delete(1.0,END)
-    text_widget.insert(END,f" Side Effects :\n\n   {effects}")
+    text_widget.insert(END,f" {key_side_effects} :\n\n   {effects}")
     done_button.configure(command = lambda : accuracy_frame(frame_edit))
     edit_button.configure(command=lambda : save_txt(txt_effects))
 
 
 def save_txt(file_name):
     widget_data = text_widget.get(2.0,END).strip("\n").strip()
-    print("Widget data : ",widget_data)
     if not widget_data.isspace() and widget_data!="":
         txt_data = widget_data + "\n"
-        print("Text data : ",txt_data)
         data_file(mode="w",path=file_name,to_write=txt_data)
     
     else:
@@ -425,6 +444,9 @@ def save_txt(file_name):
         
     else:
         edit_button_var.set("Saved")
+
+    print(file_name)
+
 
 
 def tp_root_check(checked_vars):
@@ -527,10 +549,8 @@ def add_replace_habits(tp,habit_entry):
     replace_habits_dict = data[key_replace_habits]
 
     new_habit = habit_entry.get()
-    print(f"New habit : {new_habit}")
 
     tp.destroy()
-    print(tp)
 
     if new_habit is not None and new_habit!="" and new_habit!="Enter the new habit" and new_habit!=f"Atleast {min_replace_habit_len} habits required":
         check_days = []
@@ -655,7 +675,6 @@ def accuracy_frame(frame,destroy=True):
     global stop_thread,add_button,percentage_difference_widget,percent,replace_habits,check_btn_vars,done_button,top
 
     stop_thread = True
-    print("Stop stopped at accuracy frame")
     player.stop()
 
     if destroy : 
@@ -783,14 +802,11 @@ def on_window_close():
         for habit,intvar in zip(replace_habits,check_btn_vars):
             print(data[key_replace_habits][habit])
             data[key_replace_habits][habit]["days_data"][formated_time_now] = intvar.get()
-
-    print(data[key_replace_habits])
     
     if percent is None:
         percent = 0
 
     percent_difference = percent - data[key_last_accuracy_percent]
-    print("Percent diff",percent_difference)
     plot_data(key_plot_accuracy,week_days[today],percent)
     data[key_last_accuracy_percent] = percent
 
@@ -799,20 +815,24 @@ def on_window_close():
         
     formated_time_now = time_now.strftime("%d-%m-%y %H:%M:%S")
     txt_file_write_data = f"{formated_time_now} :: {data}\n"
-    print(txt_file_write_data)
     data_file(mode="a",path=txt_file_path,to_write=txt_file_write_data)
     data_file("wb",to_write=data)
     data_java = data_file("rb")
 
-    def convert_data(key,strf="%d %m %y"):
-        data_java[key] = data_java[key].strftime(strf)
+    def convert_data(key):
+        dict_time = data_java[key]
+        if(type(dict_time)!=str):
+            time = {"year":dict_time.year,"month":dict_time.month,"day":dict_time.day,"hour":dict_time.hour,"minute":dict_time.minute,"second":dict_time.second}
+            data_java[key] = time
+            return
     
     convert_data("lastly_opened")
     convert_data("start_time")
-    convert_data("lastly_relapsed","%d : %m : %Y")
+    convert_data("lastly_relapsed")
 
+    data_java["replace_habits_list"] = list(data_java[key_replace_habits].keys())
     print(data_java)
-    
+
     data_base.child("data").set(data_java)
 
     root.destroy()
@@ -941,8 +961,6 @@ def show_plot(clear=False,warn=True):
     date = data[key_plot_accuracy]["date"]
     value = data[key_plot_accuracy]["value"]
 
-    print(date)
-
     if len(date)<2:
         if warn:
             return msgbox("Plot data is insufficient")
@@ -951,7 +969,6 @@ def show_plot(clear=False,warn=True):
 
     relplace_habits_dict = data[key_replace_habits]
     x_names = relplace_habits_dict.keys()
-    print(replace_habits)
     y_values = [(sum(relplace_habits_dict[key]["days_data"].values())*100)//len(relplace_habits_dict[key]["show_on"]) for key in x_names]
 
     if len(x_names)==0:
@@ -979,7 +996,6 @@ def show_plot(clear=False,warn=True):
     if clear:
         date.clear()
         value.clear()
-        print(replace_habits)
         
         for key in relplace_habits_dict.keys():
             if "days_data" in relplace_habits_dict[key]:
@@ -1026,7 +1042,6 @@ def add_temp_ok(days,tp):
     except:
         msgbox("Invalid data")
         return
-    print("No of days : ",no_of_days)
     date = time_now.day
     month = time_now.month
     year = time_now.year
@@ -1065,6 +1080,12 @@ if not isfile(file_name):
     data[key_habits_cache] = None
     data[key_plot_accuracy] = {"date":[],"value":[]}
     data[key_last_accuracy_percent] = 0
+    data[key_pos_list] = []
+    data[key_neg_list] = []
+    data[key_step_list] = []
+    data[key_positive_effects] = []
+    data[key_negative_Effects] = []
+    data[key_next_step] = []
     data_file(mode="wb",to_write=data)
 
 else:
@@ -1090,7 +1111,7 @@ else:
         print("Data file deleted")
 
 
-create_file_names = (txt_effects,txt_changes,txt_next_step,txt_notes)
+create_file_names = (txt_next_step,txt_changes,txt_effects,txt_file_path,file_name,txt_notes)
 for name in create_file_names:
     if not isfile(name):
         data_file(mode="a",path=name,to_write="")
