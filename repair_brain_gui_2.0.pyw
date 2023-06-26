@@ -42,7 +42,7 @@ key_neg_list = "Negative Effects list"
 key_step_list = "Next Steps list"
 key_positive_effects  = "Positive Effects"
 key_negative_Effects = "Negative Effects"
-key_side_effects = "Next Steps"
+key_next_steps = "Next Steps"
 
 file_name = "pkls\\data.pkl"
 icon_name = "icon\\favicon.ico"
@@ -331,9 +331,9 @@ def no_button_click():   # free
 def add_to_database(effect_type,effect):
     global data
     time_now = datetime.now().strftime("%a,%b %d %Y")
-    data[effect_type].append({effect:time_now})
+    data[effect_type][effect]  = time_now
     key_name = effect_type + " list"
-    data[key_name].append(effect)
+    print(data[key_name].append(effect))
 
 
 
@@ -343,21 +343,21 @@ def save_current_effect_change_data():
     next_step = next_step_entry.get().strip()
     if side_effect != "Enter the side effect" and side_effect!="" and not side_effect.isspace(): 
         data[key_lastly_noted_side_effect] =  side_effect
-        add_to_database(positive_effects,side_effect)
+        add_to_database(key_positive_effects,side_effect)
         side_effect+= time_now.strftime(" (%a,%b %d %Y)")
         data_file(mode="a",path=txt_effects,to_write = f"{side_effect}\n")
         print("Entry changes saved")
 
     if change != "Enter the positive effect" and change!="" and not change.isspace(): 
         data[key_lastly_noted_change] = change
-        add_to_database(negative_Effects,change)
+        add_to_database(key_negative_Effects,change)
         change += time_now.strftime(" (%a,%b %d %Y)")
         data_file(mode="a",path=txt_changes,to_write = f"{change}\n")
         print("Entry changes saved")
         
     if next_step != "Enter the next step" and next_step!="" and not next_step.isspace():
         data[key_next_step] = next_step
-        add_to_database(side_effects,next_step)
+        add_to_database(key_next_steps,next_step)
         next_step += time_now.strftime(" (%a,%b %d %Y)")
         data_file(mode="a",path=txt_next_step,to_write=f"{next_step}\n")
         print("Entry changes saved")
@@ -387,7 +387,7 @@ def show_changes_side_effects_click(destroy=True):
     effects = data_file(mode="r",path=txt_effects).replace("\n","\n   ")
     changes = data_file(mode="r",path=txt_changes).replace("\n","\n   ")
 
-    txt_format = f"{next_steps} :\n\n   {next_steps}\n\n\n {positive_effects} :\n\n   {changes}\n\n\n{side_effects} :\n\n   {effects}"
+    txt_format = f"{next_steps} :\n\n   {next_steps}\n\n\n {key_positive_effects} :\n\n   {changes}\n\n\n{key_next_steps} :\n\n   {effects}"
     text_widget = Text(frame_edit,font=("Times New Roman",20),padx=5,pady=5)
     text_widget.insert(END,txt_format)
     text_widget.configure(state=DISABLED)
@@ -421,7 +421,7 @@ def edit_effects():
     done_button_var.set("Next")
     edit_button_var.set("Save")
     text_widget.delete(1.0,END)
-    text_widget.insert(END,f" {key_side_effects} :\n\n   {effects}")
+    text_widget.insert(END,f" {key_next_steps} :\n\n   {effects}")
     done_button.configure(command = lambda : accuracy_frame(frame_edit))
     edit_button.configure(command=lambda : save_txt(txt_effects))
 
@@ -766,6 +766,16 @@ def ok_button_click():
     accuracy_frame(frame_show_data)
 
 
+def convert_data(key):
+    global data_java
+    dict_time = data_java[key]
+    if(type(dict_time)!=str):
+        time = {"year":dict_time.year,"month":dict_time.month,"day":dict_time.day,"hour":dict_time.hour,"minute":dict_time.minute,"second":dict_time.second}
+        data_java[key] = time
+        data_java["replace_habits_list"] = list(data_java[key_replace_habits].keys())
+        return data_java
+
+
 def plot_data(key_plot_name,day_name,perc):
     list_date = data[key_plot_name]["date"]
     list_value = data[key_plot_name]["value"]
@@ -783,7 +793,7 @@ def plot_data(key_plot_name,day_name,perc):
 
 
 def on_window_close():
-    global percent,stop_thread
+    global percent,stop_thread,data_java
 
     stop_thread = True
 
@@ -817,21 +827,12 @@ def on_window_close():
     txt_file_write_data = f"{formated_time_now} :: {data}\n"
     data_file(mode="a",path=txt_file_path,to_write=txt_file_write_data)
     data_file("wb",to_write=data)
-    data_java = data_file("rb")
 
-    def convert_data(key):
-        dict_time = data_java[key]
-        if(type(dict_time)!=str):
-            time = {"year":dict_time.year,"month":dict_time.month,"day":dict_time.day,"hour":dict_time.hour,"minute":dict_time.minute,"second":dict_time.second}
-            data_java[key] = time
-            return
+    data_java = data_file("rb")
     
     convert_data("lastly_opened")
     convert_data("start_time")
     convert_data("lastly_relapsed")
-
-    data_java["replace_habits_list"] = list(data_java[key_replace_habits].keys())
-    print(data_java)
 
     data_base.child("data").set(data_java)
 
@@ -1003,6 +1004,7 @@ def show_plot(clear=False,warn=True):
 
 
 def reset():
+    global data,data_base,data_java
     player.stop()
     delete_files = [txt_next_step,txt_changes,txt_effects,txt_file_path,file_name,txt_notes]
     for file_d in delete_files:
@@ -1010,6 +1012,11 @@ def reset():
         remove(file_d)
     
     root.withdraw()
+    data_java = start()
+    convert_data("lastly_opened")
+    convert_data("start_time")
+    convert_data("lastly_relapsed")
+    data_base.set(data_java)
     msgbox(title=box_title,msg="Successfully reseted",destroy_root=True)
 
 
@@ -1069,10 +1076,7 @@ def erase_temp_data(erase_only):
 
 
 
-time_now = datetime.now()
-
-
-if not isfile(file_name):
+def start():
     data = {}
     data[key_lastly_opened] = data[key_start_time] =  time_now
     data[key_lastly_relapsed] = data[key_lastly_noted_change] = data[key_lastly_noted_side_effect] = data[key_next_step] = "Not Found"
@@ -1083,10 +1087,19 @@ if not isfile(file_name):
     data[key_pos_list] = []
     data[key_neg_list] = []
     data[key_step_list] = []
-    data[key_positive_effects] = []
-    data[key_negative_Effects] = []
-    data[key_next_step] = []
+    data[key_positive_effects] = {}
+    data[key_negative_Effects] = {}
+    data[key_next_steps] = {}
     data_file(mode="wb",to_write=data)
+    return data
+
+
+
+time_now = datetime.now()
+
+
+if not isfile(file_name):
+    data = start()
 
 else:
     data = data_file()
