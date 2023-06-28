@@ -1120,6 +1120,13 @@ def start():
 time_now = datetime.now()
 
 
+#try:
+#    data = data_base.child("data")
+#   print(data)
+
+#except Exception:
+
+
 if not isfile(file_name):
     data = start()
 
