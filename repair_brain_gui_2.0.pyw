@@ -18,6 +18,8 @@ from sys import exit
 from requests import get
 from json import loads
 from pyrebase import initialize_app
+from tkinter.ttk import Scrollbar
+from multipledispatch import dispatch
 import pyperclip
 import vlc
 
@@ -167,6 +169,7 @@ def time_manager():
         except:
             break
         sleep(1)
+    
 
 
 def data_file(mode="rb",path=file_name,to_write=None):
@@ -211,6 +214,7 @@ def update_app(msg_root,link):
     msg_root.destroy()
     open_new_tab(link)
     msgbox(r"Follow the instructions in this github page")
+    
 
         
 def msgbox(msg,master=root,title=box_title,destroy_root=False,entry=False,width=650,height=200):
@@ -285,7 +289,7 @@ def next():
     lastly_noted_change_label = Label(frame_show_data,text=f"Lastly noted + ve effect : {last_change}",font=("Times New Roman",18),anchor=CENTER)
     lastly_noted_change_label.place(relx=.5,rely=.37,anchor=CENTER)
 
-    lastly_noted_side_effect_label = Label(frame_show_data,text=f"Lastly noted side effect : {last_side_effect}",font=("Times New Roman",18),anchor=CENTER)
+    lastly_noted_side_effect_label = Label(frame_show_data,text=f"Lastly noted -ve effect : {last_side_effect}",font=("Times New Roman",18),anchor=CENTER)
     lastly_noted_side_effect_label.place(relx=.5,rely=.47,anchor=CENTER)
 
     ok_button = Button(frame_show_data,text="Next",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command=ok_button_click)
@@ -299,7 +303,7 @@ def next():
     change_entry.place(relx=.28,rely=.6,anchor=CENTER,relwidth=.4,relheight=.08)
 
     side_effect_entry = Entry(frame_show_data,font=("Times New Roman",15),fg="grey",justify=CENTER)
-    side_effect_entry.insert(0,"Enter the side effect")
+    side_effect_entry.insert(0,"Enter the negative effect")
     side_effect_entry.place(relx=.72,rely=.6,anchor=CENTER,relwidth=.4,relheight=.08)
 
     next_step_entry = Entry(frame_show_data,font=("Times New Roman",15),fg="grey",justify=CENTER)
@@ -336,21 +340,30 @@ def add_to_database(effect_type,effect):
     print(data[key_name].append(effect))
 
 
+def edit_database(effect_type,file_name):
+    lines = data_file(mode="r",path=file_name).split("\n")
+    lines_list = [line for line in lines if not line.isspace() and line!=""]
+    print("Lines : ",lines_list)
+    key_name = effect_type + " list"
+    data[key_name] = lines_list
+    print(data)
+
+
 
 def save_current_effect_change_data():
     side_effect = side_effect_entry.get().strip()
     change = change_entry.get().strip()
     next_step = next_step_entry.get().strip()
-    if side_effect != "Enter the side effect" and side_effect!="" and not side_effect.isspace(): 
+    if side_effect != "Enter the negative effect" and side_effect!="" and not side_effect.isspace(): 
         data[key_lastly_noted_side_effect] =  side_effect
-        add_to_database(key_positive_effects,side_effect)
+        add_to_database(key_negative_Effects,side_effect)
         side_effect+= time_now.strftime(" (%a,%b %d %Y)")
         data_file(mode="a",path=txt_effects,to_write = f"{side_effect}\n")
         print("Entry changes saved")
 
     if change != "Enter the positive effect" and change!="" and not change.isspace(): 
         data[key_lastly_noted_change] = change
-        add_to_database(key_negative_Effects,change)
+        add_to_database(key_positive_effects,change)
         change += time_now.strftime(" (%a,%b %d %Y)")
         data_file(mode="a",path=txt_changes,to_write = f"{change}\n")
         print("Entry changes saved")
@@ -387,12 +400,12 @@ def show_changes_side_effects_click(destroy=True):
     effects = data_file(mode="r",path=txt_effects).replace("\n","\n   ")
     changes = data_file(mode="r",path=txt_changes).replace("\n","\n   ")
 
-    txt_format = f"{next_steps} :\n\n   {next_steps}\n\n\n {key_positive_effects} :\n\n   {changes}\n\n\n{key_next_steps} :\n\n   {effects}"
+    # txt_format = f"{key_next_steps} :\n\n   {next_steps}\n\n\n {key_positive_effects} :\n\n   {changes}\n\n\n{key_negative_Effects} :\n\n   {effects}"
+    txt_format = f"{key_positive_effects} :\n\n   {changes}\n\n\n{key_negative_Effects} :\n\n   {effects}\n\n\n{key_next_steps} :\n\n   {next_steps}"
     text_widget = Text(frame_edit,font=("Times New Roman",20),padx=5,pady=5)
     text_widget.insert(END,txt_format)
     text_widget.configure(state=DISABLED)
     text_widget.place(relheight=.9,relwidth=1)
-
     frame_edit.place(relheight=1,relwidth=1)
 
 
@@ -403,7 +416,7 @@ def edit_steps():
     text_widget.bind("<Key>",func=lambda e : edit_button_var.set("Save"))
     text_widget.configure(state=NORMAL)
     text_widget.delete(1.0,END)
-    text_widget.insert(END,f" {key_next_step} :\n\n   {next_steps}")
+    text_widget.insert(END,f" Next Step :\n\n   {next_steps}")
     edit_button.configure(command = lambda : save_txt(txt_next_step))
     done_button.configure(command = lambda : edit_changes())
 
@@ -412,7 +425,7 @@ def edit_changes():
     done_button_var.set("Next")
     edit_button_var.set("Save")
     text_widget.delete(1.0,END)
-    text_widget.insert(END,f" {key_positive_effects} :\n\n   {changes}")
+    text_widget.insert(END,f" Positive Effects :\n\n   {changes}")
     edit_button.configure(command = lambda : save_txt(txt_changes))
     done_button.configure(command = lambda : edit_effects())
 
@@ -421,11 +434,18 @@ def edit_effects():
     done_button_var.set("Next")
     edit_button_var.set("Save")
     text_widget.delete(1.0,END)
-    text_widget.insert(END,f" {key_next_steps} :\n\n   {effects}")
+    text_widget.insert(END,f" Side Effects :\n\n   {effects}")
     done_button.configure(command = lambda : accuracy_frame(frame_edit))
     edit_button.configure(command=lambda : save_txt(txt_effects))
 
 
+@dispatch(str,str)
+def save_txt(file_name,effect_type):
+    save_txt(file_name)
+    edit_database(effect_type,file_name)
+
+
+@dispatch(str)
 def save_txt(file_name):
     widget_data = text_widget.get(2.0,END).strip("\n").strip()
     if not widget_data.isspace() and widget_data!="":
@@ -446,7 +466,6 @@ def save_txt(file_name):
         edit_button_var.set("Saved")
 
     print(file_name)
-
 
 
 def tp_root_check(checked_vars):
@@ -611,7 +630,7 @@ def change_replace_habits():
     change_replace_habits_frame = Frame(root)
     replace_habits_list_frame = Frame(change_replace_habits_frame,bg="white")
 
-    top = Label(change_replace_habits_frame,text="Selects the habits to remove",font=("Times New Roman",25,"bold"),anchor=CENTER)
+    top = Label(change_replace_habits_frame,text="Select the habits to remove",font=("Times New Roman",25,"bold"),anchor=CENTER)
 
     cols = 2
     for col in range(cols):
@@ -649,18 +668,17 @@ def calc_accuracy(check_vars,enabled_len,top_string,percentage_diff_var):
     percent = int((checked_length*100)/enabled_len)
     percent_difference = percent - data[key_last_accuracy_percent]
 
+    top_string.set(f"Replacing accuracy : {percent}%")
+
     if percent_difference==0 : 
-        top_string.set(f"Replacing accuracy : {percent}%")
         percentage_diff_var.set("( 0 )")
         percentage_difference_widget.configure(fg="green")
 
     elif percent_difference>0 : 
-        top_string.set(f"Replacing accuracy : {percent}%")
         percentage_diff_var.set(f"({percent_difference}↑)")
         percentage_difference_widget.configure(fg="green")
 
     else : 
-        top_string.set(f"Replacing accuracy : {percent}%")
         percentage_diff_var.set(f"({-percent_difference}↓)")
         percentage_difference_widget.configure(fg="red")
 
@@ -792,6 +810,10 @@ def plot_data(key_plot_name,day_name,perc):
     return len(list_date)
 
 
+def write_to_firebase(to_write):
+    data_base.child("data").set(to_write)
+
+
 def on_window_close():
     global percent,stop_thread,data_java
 
@@ -834,7 +856,7 @@ def on_window_close():
     convert_data("start_time")
     convert_data("lastly_relapsed")
 
-    data_base.child("data").set(data_java)
+    write_to_firebase(data_java)
 
     root.destroy()
     exit("Window closed")
@@ -1016,7 +1038,7 @@ def reset():
     convert_data("lastly_opened")
     convert_data("start_time")
     convert_data("lastly_relapsed")
-    data_base.child("data").set(data_java)
+    write_to_firebase(data_java)
     msgbox(title=box_title,msg="Successfully reseted",destroy_root=True)
 
 

@@ -1,0 +1,35 @@
+pos (Tue,Jun 27 2023)
+   1 (Wed,Jun 28 2023)
+   2 (Wed,Jun 28 2023)
+   4 (Wed,Jun 28 2023)
+   555555555 (Wed,Jun 28 2023)
+   
+
+
+Negative Effects :
+
+   neg (Tue,Jun 27 2023)
+   55 (Wed,Jun 28 2023)
+   
+
+
+Next Steps :
+
+   pos (Tue,Jun 27 2023)
+      1 (Wed,Jun 28 2023)
+      2 (Wed,Jun 28 2023)
+      4 (Wed,Jun 28 2023)
+      555555555 (Wed,Jun 28 2023)
+      
+   
+   
+   Negative Effects :
+   
+      neg (Tue,Jun 27 2023)
+      55 (Wed,Jun 28 2023)
+      
+   
+   
+   Next Steps :
+   
+      next (Tue,Jun 27 2023)
