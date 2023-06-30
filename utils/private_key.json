@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "repair-brain-20",
+  "private_key_id": "44c585f1642ae4186a210018d602979abdc7285d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDgg15VzoFpjw/i\nk1TXHu8CQRJViAJYsislCeY0GItykkI+URgGzUZRm1FMjrr64ZLVCqsb1lTa4H7u\nGqKpFm9WkKqEJpW5FWLpAn5xZh6WUSOne69V9Jqu2s/lDPcLjeSc2LfCf4XsGAkX\nFzjyRSt+kzyy0fcNKgBsekEceXb1HeMlUGj231+oZmninJsavOW5L/h7Rki6K/2y\nW6KlX5Ca1RmIVRLbeC/uGkTNyaRGvGOOeNer3R0ZV8ZMptMGoR5MB9CvlptIiRlV\n82lhxg6BvtHqjU/kgOnGBqjXV4Re5iuYDcaqJaBOeayHLK/YcjpLpmsDDb8yYjLX\nVIUQNgL9AgMBAAECggEACEekzD6e97AvinBBpf0nHK4FLNNxnYJ7asGF2tOxgUKj\nGXslcXGTGRHeRCSuASNRP+gFkPOzclU3esHPnQBHXJaRVbY6YDz8n/7E5oFsLQ6y\nshIyttV1rSKqBAOMvdr+ou+VviE0iwhrSpp2fqE6t8LBPFzX3JJF7NPVmf6U+qum\nkBpOkuCtoKiHvenETZG344kTAX01SbZiepzGLxfR4AfIlcNz6PP56SF4BNeOQu3q\nA9kt7r/6YpBWE+PaDb3V5OkrgfYTU31N0cawRw8JjF8lEJhLGhpB7zbNUi2PTXmh\nePGdvoRha4DWVCQqzRmKRW4h8iEOSgHCWyBpnZP2UQKBgQD146tZ+AIWCuxudelY\nKo+s0x101i9jN02vGE4XOU50YtM8yGELKxr3bbBCQm6RkD1Ce+Zb4Ho9jhWyPXbL\nr46c6tvrU+qXctIAH1Pvj7l/vZHVp463wCyr4v0Atopd9kt9vZAWg3WzblJBOmpI\nJ60UFmW+4t7AjYENa3Wg3cTkkQKBgQDpvq9UcrJhHrJFxl654uML7joHMcOGbmGe\n3KYe6tMVFctt2RmAZgFkox1+jtqPydhgdqkcHBsNKJ/cDq/J0sPjiOUOO+yzaMOf\nVxjEpvx72SoK05wQWBXPNHVzoxFB/HJ6W8l6u5stXalXQHEF9SWUpFQ+TYGHpKWK\nA4c9QSE9rQKBgQCMMqaFosHVvZ63EKXebk4DNVArSOA2CtdRSWNlHHieJabZlkq2\nqnoyr6j67pPKjVpQaQKcSi6IoFXAjgkI8+01jTedQviUJ5STG0mpYuJackUPc/0M\nyhbuXnrxCCN2lbLPW+Em5QecKf/eTydAQtcNiAO1RffKBCSb+TRVZ30W8QKBgHQw\nfjTrIrJWMOWwOqwKFTR8AcpLuVacjdgK9GSP88caY1nCPgPuMKkWz/V2CzzIZ89j\njKJVcjjzRat8fXNEWm1DQiD2Nq3j2MHe6IfwPbdOdrCVCZGyR30NJYkKuOxlEX6z\nG47vrK47TY76kHQWrMybdujVXBrSBBt7r4EKW/ytAoGBAJZ4Jlf52kHqtMbBfLoX\n8a6dHPnIlnZadvzW5SbD57ks/GqMr80GpBzr2Iqm/pDEy7HL7ru3ldzwULeUMVdk\nceBrUFv5gsQNQzJESNpsYSV4P/8yzyTsScsMTEqX3/bjeFMZCW36+qgx/B3LCS6j\npHtrvjPgjTsU4EpzHzpbS3Ql\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fujxo@repair-brain-20.iam.gserviceaccount.com",
+  "client_id": "104861179525739181663",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fujxo%40repair-brain-20.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

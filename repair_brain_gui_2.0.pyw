@@ -17,10 +17,9 @@ from collections import OrderedDict
 from sys import exit
 from requests import get
 from json import loads
-from firebase_admin import credentials,initialize_app,db,auth
-from tkinter.ttk import Scrollbar
 from multipledispatch import dispatch
 from webbrowser import open_new_tab
+from user import *
 import pyperclip
 import vlc
 
@@ -55,6 +54,8 @@ txt_changes = "text\\positive effects.txt"
 txt_effects = "text\\negative effects.txt"
 txt_next_step = "text\\steps.txt"
 txt_notes = "text\\notes.txt"
+
+private_key_path = "utils\\private_key.json"
 
 bgm_folder = "bgm"
 
@@ -99,12 +100,7 @@ media = vlc_instane.media_new(f"bgm\\{bgm}")
 player.set_media(media)
 
 
-
-cred = credentials.Certificate(cert="private_key.json")
-initialize_app(credential=cred,options={"databaseURL":database_url})
-
-data_base = db.reference()
-
+data_base = get_database()
 
 
 
@@ -125,12 +121,7 @@ free_img = PhotoImage(image=free_img)
 hand_cuffed_img = Image.open(fp="images\\hand_cuffed.jpg").resize(size=(230,230))
 hand_cuffed_img = PhotoImage(image=hand_cuffed_img)
 
-background = Image.open(fp="images\\creative_brain4.jpg")
-background = PhotoImage(image=background)
-
-background_canvas = Canvas(root)
-background_canvas.pack(fill=BOTH,expand=True)
-Canvas.create_image(image=background)
+root.config(bg="pink")
 
 top_string = StringVar()
 top_string.set("Are you Free or Addicted?")
@@ -148,6 +139,10 @@ frame_ask = Frame()
 frame_show_data = Frame()
 frame_edit = Frame()
 frame_accuracy = Frame()
+frame_login = Frame()
+frame_signin = Frame()
+
+
 
 
 
@@ -356,21 +351,21 @@ def save_current_effect_change_data():
     side_effect = side_effect_entry.get().strip()
     change = change_entry.get().strip()
     next_step = next_step_entry.get().strip()
-    if side_effect != "Enter the negative effect" and side_effect!="" and not side_effect.isspace(): 
+    if is_valid_entry(side_effect_entry,"Enter the negative effect"):
         data[key_lastly_noted_side_effect] =  side_effect
         add_to_database(key_negative_Effects,side_effect)
         side_effect+= time_now.strftime(" (%a,%b %d %Y)")
         data_file(mode="a",path=txt_effects,to_write = f"{side_effect}\n")
         print("Entry changes saved")
 
-    if change != "Enter the positive effect" and change!="" and not change.isspace(): 
+    if is_valid_entry(change_entry,"Enter the positive effect"):
         data[key_lastly_noted_change] = change
         add_to_database(key_positive_effects,change)
         change += time_now.strftime(" (%a,%b %d %Y)")
         data_file(mode="a",path=txt_changes,to_write = f"{change}\n")
         print("Entry changes saved")
         
-    if next_step != "Enter the next step" and next_step!="" and not next_step.isspace():
+    if is_valid_entry(next_step_entry,"Enter the next step"):
         data[key_next_step] = next_step
         add_to_database(key_next_steps,next_step)
         next_step += time_now.strftime(" (%a,%b %d %Y)")
@@ -872,6 +867,11 @@ def entry_button_click(entry):
     entry.configure(fg="black")
 
 
+def is_valid_entry(entry,text):
+    entry_data = entry.get().strip()
+    return entry_data!=text and entry_data!="" and not entry_data.isspace()
+
+
 def stop_player(event):
     player.pause()
 
@@ -1047,47 +1047,166 @@ def reset():
 
 
 def login_window():
+    frame_login.config(bg="pink")
+
+    title = Label(frame_login,text="Login In To Repair Brain",font=("Times New Roman",22,"bold"),fg="black",bg="pink")
+
+    email_or_username = Entry(frame_login,font=("Times New Roman",15),fg="grey",justify=CENTER) 
+    password = Entry(frame_login,font=("Times New Roman",15),fg="grey",justify=CENTER) 
+
+    forget_password = Button(frame_login,font=("Times New Roman",10,"bold"),text="Forget password",border=0,cursor="hand2",bg="pink",fg="blue",activebackground="pink")
+
+    sign_up = Button(frame_login,text="Sign Up",font=("Times New Roman",18,"bold"),command = sign_in_window ,cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+    login_button = Button(frame_login,text="Login",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+
+    email_or_username.bind("<Button>",lambda event : entry_button_click(email_or_username))
+    password.bind("<Button>",lambda event : [entry_button_click(password),password.config(show="*")])
+
+    title.place(relx=.5,rely=.17,anchor=CENTER)
+
+    email_or_username.place(relx=.5,rely=.37,anchor=CENTER,relheight=.07,relwidth=.7)
+
+    password.place(relx=.5,rely=.52,anchor=CENTER,relheight=.07,relwidth=.7)
+
+    forget_password.place(relx=.15,rely=.62,anchor=W)
+
+    sign_up.place(relx=.37,rely=.77,anchor=CENTER,relheight=.09,relwidth=.17)
+    login_button.place(relx=.63,rely=.77,anchor=CENTER,relheight=.09,relwidth=.17)
+
+    frame_login.pack(fill=BOTH,expand=1)
+
+    email_or_username.insert(INSERT,"Enter the Username or Email")
+    password.insert(INSERT,"Enter your Password")
+
+
+
+def sign_in_window():
     global root
 
     # first_name, last_name. email, password
 
-    login_label = Label(root,text="Sign In To Repair Brain",font=("Times New Roman",22),fg="black")
+    frame_login.destroy()
 
-    first_name_entry = Entry(root,font=("Times New Roman",18),fg="grey",justify=CENTER) 
-    last_name_entry = Entry(root,font=("Times New Roman",18),fg="grey",justify=CENTER) 
+    first_name_var = StringVar()
+    last_name_var = StringVar()
 
-    user_name_entry = Entry(root,font=("Times New Roman",18),fg="grey",width=root.winfo_width(),justify=CENTER) 
+    user_name_var = StringVar()
 
-    email_id_entry = Entry(root,font=("Times New Roman",18),fg="grey",justify=CENTER) 
+    email_id_var = StringVar()
 
-    password_entry = Entry(root,font=("Times New Roman",18),fg="grey",justify=CENTER) 
-    show_password_check = Checkbutton(root,onvalue=1,offvalue=0)
-    show_password_label = Label(root,text="Show Password",font=("Times New Roman",8),fg="black")
+    password_var = StringVar()
+    password_check_var = StringVar()
 
-    check_password_entry = Entry(root,font=("Times New Roman",18),fg="grey",justify=CENTER) 
+    show_password_var = IntVar()
 
-    login_button = Button(root,text="Login",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
-    sign_in = Button(root,text="Sign In",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+    first_name_var.set("First Name")
+    last_name_var.set("Last Name")
+
+    user_name_var.set("Username")
+
+    email_id_var.set("E-mail Id")
+
+    password_var.set("Password")
+    password_check_var.set("Verify Password")
+
+
+    frame_signin.configure(bg="pink")
+
+
+
+    def on_click_show_password(password_entry):
+        if show_password_var.get()==0:
+            password_entry.config(show="*")
+
+        else:
+            password_entry.config(show="")
+
+
+    show_password_var.set(0)
+
+
+    login_label = Label(frame_signin,text="Sign In To Repair Brain",font=("Times New Roman",22,"bold"),fg="black",bg="pink")
+
+    first_name_entry = Entry(frame_signin,textvariable=first_name_var,font=("Times New Roman",15),fg="grey",justify=CENTER) 
+    last_name_entry = Entry(frame_signin,textvariable=last_name_var,font=("Times New Roman",15),fg="grey",justify=CENTER) 
+
+    user_name_entry = Entry(frame_signin,textvariable=user_name_var,font=("Times New Roman",15),fg="grey",width=root.winfo_width(),justify=CENTER) 
+
+    email_id_entry = Entry(frame_signin,textvariable=email_id_var,font=("Times New Roman",15),fg="grey",justify=CENTER) 
+
+    password_entry = Entry(frame_signin,textvariable=password_var,font=("Times New Roman",15),fg="grey",justify=CENTER) 
+    show_password_check = Checkbutton(frame_signin,state=0,onvalue=1,offvalue=0,command=lambda : on_click_show_password(password_entry),variable=show_password_var,anchor=CENTER,bg="pink")
+    show_password_label = Label(frame_signin,text="Show Password",font=("Times New Roman",8),fg="black",bg="pink",anchor=CENTER)
+
+    check_password_entry = Entry(frame_signin,textvariable=password_check_var,font=("Times New Roman",15),fg="grey",justify=CENTER) 
+
+    entries = [first_name_entry,last_name_entry,user_name_entry,email_id_entry,password_entry,check_password_entry]
+
+    cancel_button = Button(frame_signin,text="Cancel",font=("Times New Roman",18,"bold"),command= lambda : on_window_close(),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+    sign_in = Button(frame_signin,command = lambda : sign_in_fn(entries),text="Sign In",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+
+    first_name_entry.bind("<Button>",lambda event : entry_button_click(first_name_entry))
+    last_name_entry.bind("<Button>",lambda event : entry_button_click(last_name_entry))
+    user_name_entry.bind("<Button>",lambda event : entry_button_click(user_name_entry))
+    email_id_entry.bind("<Button>",lambda event : entry_button_click(email_id_entry))
+
+    check_password_entry.bind("<Button>",lambda event : [entry_button_click(check_password_entry),check_password_entry.configure(show="*")])
+    password_entry.bind("<Button>",lambda event : [entry_button_click(password_entry),password_entry.configure(show="*")])
+
 
     rows = 8.2
 
     login_label.place(relx=.5,rely=0.09,relwidth=.7,anchor=CENTER)
 
-    first_name_entry.place(relx=.25,rely=2/rows,relwidth=.4,anchor=CENTER)
-    last_name_entry.place(relx=.75,rely=2/rows,relwidth=.4,anchor=CENTER)
+    first_name_entry.place(relx=.25,rely=2/rows,relwidth=.4,relheight=.07,anchor=CENTER)
+    last_name_entry.place(relx=.75,rely=2/rows,relwidth=.4,relheight=.07,anchor=CENTER)
 
-    user_name_entry.place(relx=.5,rely=3/rows,relwidth=.7,anchor=CENTER)
+    user_name_entry.place(relx=.5,rely=3/rows,relwidth=.7,relheight=.07,anchor=CENTER)
 
-    email_id_entry.place(relx=.5,rely=4/rows,relwidth=.7,anchor=CENTER)
+    email_id_entry.place(relx=.5,rely=4/rows,relwidth=.7,relheight=.07,anchor=CENTER)
 
-    password_entry.place(relx=.5,rely=5/rows,relwidth=.7,anchor=CENTER)
-    show_password_check.place(relx=.92,rely=5/rows-0.025,anchor=CENTER)
-    show_password_label.place(relx=.92,rely=5/rows+0.025,anchor=CENTER)
+    password_entry.place(relx=.5,rely=5/rows,relwidth=.7,relheight=.07,anchor=CENTER)
+    show_password_check.place(relx=.92,rely=5/rows-0.020,anchor=CENTER)
+    show_password_label.place(relx=.92,rely=5/rows+0.025,relheight=.07,anchor=CENTER)
 
-    check_password_entry.place(relx=.5,rely=6/rows,relwidth=.7,anchor=CENTER)
+    check_password_entry.place(relx=.5,rely=6/rows,relwidth=.7,relheight=.07,anchor=CENTER)
 
-    sign_in.place(relx=.39,rely=7/rows+.03,relwidth=.15,relheight=.09,anchor=CENTER)
-    login_button.place(relx=.61,rely=7/rows+.03,relwidth=.15,relheight=.09,anchor=CENTER)
+    sign_in.place(relx=.625,rely=7/rows+.03,relwidth=.15,relheight=.09,anchor=CENTER)
+    cancel_button.place(relx=.375,rely=7/rows+.03,relwidth=.15,relheight=.09,anchor=CENTER)
+
+    frame_signin.pack(fill=BOTH,expand=1)
+
+
+def sign_in_fn(entries):
+    first_name_entry,last_name_entry,user_name_entry,email_id_entry,password_entry,check_password_entry = entries
+
+    firstname = first_name_entry.get()
+    lastname = last_name_entry.get()
+    username = user_name_entry.get()
+    email = email_id_entry.get()
+    password = password_entry.get()
+    check_password = check_password_entry.get()
+
+
+    if not is_valid_entry(first_name_entry,"First Name"):
+        return msgbox("Invalid First Name")
+
+    if not is_valid_entry(last_name_entry,"Last Name"):
+        return msgbox("Invalid Last Name")
+
+    if not is_valid_entry(user_name_entry,"Username"):
+        return msgbox("Invalid Username")
+
+    if not is_valid_entry(email_id_entry,"E-mail Id"):
+        return msgbox("Invalid Email Id")
+
+    if not is_valid_entry(password_entry,"Password"):
+        return msgbox("Invalid password")
+
+    if not is_valid_entry(check_password_entry,"Verify Password") or password!=check_password:
+        return msgbox("Invalid or Passwords didn't match")
+
+    new_user = User
 
 
 def ask_frame_window():
