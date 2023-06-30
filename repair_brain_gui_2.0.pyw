@@ -17,9 +17,10 @@ from collections import OrderedDict
 from sys import exit
 from requests import get
 from json import loads
-from pyrebase import initialize_app
+from firebase_admin import credentials,initialize_app,db,auth
 from tkinter.ttk import Scrollbar
 from multipledispatch import dispatch
+from webbrowser import open_new_tab
 import pyperclip
 import vlc
 
@@ -64,6 +65,7 @@ yt_personal_channel = "https://www.youtube.com/channel/UC6wZDLRN5RPimxqIdoR6g_g"
 developer_mail = "seenusanjay20102002@gmail.com"
 
 database_link = "https://repair-brain-20-default-rtdb.firebaseio.com/versions.json"
+database_url = "https://repair-brain-20-default-rtdb.firebaseio.com"
 
 week_days = ("Mon","Tue","Wed","Thur","Fri","Sat","Sun")
 
@@ -98,19 +100,13 @@ player.set_media(media)
 
 
 
-config = {"apiKey": "AIzaSyAckgNM-WYs0ULGMF7WQ-HhIbfFLF51EBU",
-  "authDomain": "repair-brain-20.firebaseapp.com",
-  "databaseURL": "https://repair-brain-20-default-rtdb.firebaseio.com",
-  "projectId": "repair-brain-20",
-  "storageBucket": "repair-brain-20.appspot.com",
-  "messagingSenderId": "935756194550",
-  "appId": "1:935756194550:web:20b9ded256fa2198d242d7",
-  "measurementId": "G-CSQLLQMDXL"}
+cred = credentials.Certificate(cert="private_key.json")
+initialize_app(credential=cred,options={"databaseURL":database_url})
 
-url = "https://repair-brain-20-default-rtdb.firebaseio.com"
+data_base = db.reference()
 
-firebase_app = initialize_app(config=config)
-data_base = firebase_app.database()
+
+
 
 MessageBeep()
 
@@ -349,7 +345,6 @@ def edit_database(effect_type,file_name):
     print(data)
 
 
-
 def save_current_effect_change_data():
     side_effect = side_effect_entry.get().strip()
     change = change_entry.get().strip()
@@ -389,8 +384,10 @@ def show_changes_side_effects_click(destroy=True):
 
     edit_button_var.set("Edit")
     done_button_var.set("Next")
+
+    # put cpmmand = "edit_steps() to modify the txt file"
     
-    edit_button = Button(frame_edit,textvariable=edit_button_var,command = lambda : edit_steps(),font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+    edit_button = Button(frame_edit,textvariable=edit_button_var,command = lambda : open_new_tab("https://www.google.com"),font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
     edit_button.place(relx=.4,anchor=CENTER,rely=.95,relheight=.08)
 
     done_button = Button(frame_edit,textvariable=done_button_var,command = lambda : accuracy_frame(frame_edit),font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
@@ -1042,6 +1039,50 @@ def reset():
     msgbox(title=box_title,msg="Successfully reseted",destroy_root=True)
 
 
+def login_window():
+    global root
+
+    # first_name, last_name. email, password
+
+    login_label = Label(root,text="Sign In To Repair Brain",font=("Times New Roman",22),fg="black")
+
+    first_name_entry = Entry(root,font=("Times New Roman",18),fg="grey",justify=CENTER) 
+    last_name_entry = Entry(root,font=("Times New Roman",18),fg="grey",justify=CENTER) 
+
+    user_name_entry = Entry(root,font=("Times New Roman",18),fg="grey",width=root.winfo_width(),justify=CENTER) 
+
+    email_id_entry = Entry(root,font=("Times New Roman",18),fg="grey",justify=CENTER) 
+
+    password_entry = Entry(root,font=("Times New Roman",18),fg="grey",justify=CENTER) 
+    show_password_check = Checkbutton(root,onvalue=1,offvalue=0)
+    show_password_label = Label(root,text="Show Password",font=("Times New Roman",8),fg="black")
+
+    check_password_entry = Entry(root,font=("Times New Roman",18),fg="grey",justify=CENTER) 
+
+    login_button = Button(root,text="Login",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+    sign_in = Button(root,text="Sign In",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+
+    rows = 8.2
+
+    login_label.place(relx=.5,rely=0.09,relwidth=.7,anchor=CENTER)
+
+    first_name_entry.place(relx=.25,rely=2/rows,relwidth=.4,anchor=CENTER)
+    last_name_entry.place(relx=.75,rely=2/rows,relwidth=.4,anchor=CENTER)
+
+    user_name_entry.place(relx=.5,rely=3/rows,relwidth=.7,anchor=CENTER)
+
+    email_id_entry.place(relx=.5,rely=4/rows,relwidth=.7,anchor=CENTER)
+
+    password_entry.place(relx=.5,rely=5/rows,relwidth=.7,anchor=CENTER)
+    show_password_check.place(relx=.92,rely=5/rows-0.025,anchor=CENTER)
+    show_password_label.place(relx=.92,rely=5/rows+0.025,anchor=CENTER)
+
+    check_password_entry.place(relx=.5,rely=6/rows,relwidth=.7,anchor=CENTER)
+
+    sign_in.place(relx=.39,rely=7/rows+.03,relwidth=.15,relheight=.09,anchor=CENTER)
+    login_button.place(relx=.61,rely=7/rows+.03,relwidth=.15,relheight=.09,anchor=CENTER)
+
+
 def ask_frame_window():
     Thread(target=check_version).start()
 
@@ -1103,7 +1144,7 @@ def start():
     data[key_lastly_opened] = data[key_start_time] =  time_now
     data[key_lastly_relapsed] = data[key_lastly_noted_change] = data[key_lastly_noted_side_effect] = data[key_next_step] = "Not Found"
     data[key_replace_habits] = OrderedDict() # { habit :{show_at:int,days_data:{}}}
-    data[key_habits_cache] = None
+    data[key_habits_cache] = []
     data[key_plot_accuracy] = {"date":[],"value":[]}
     data[key_last_accuracy_percent] = 0
     data[key_pos_list] = []
@@ -1120,18 +1161,34 @@ def start():
 time_now = datetime.now()
 
 
-#try:
-#    data = data_base.child("data")
-#   print(data)
-
-#except Exception:
-
-
 if not isfile(file_name):
     data = start()
 
 else:
     data = data_file()
+
+
+def dict_to_datatime(dict):
+    day = dict["day"]
+    hour = dict["hour"]
+    minute = dict["minute"]
+    month = dict["month"]
+    year = dict["year"]
+    second = dict["second"]
+
+    return datetime(day=day,hour=hour,minute=minute,month=month,year=year,second=second)
+
+
+try:
+    data_net = data_base.child("data").get().val()
+    data_net[key_habits_cache] = data[key_habits_cache]
+    data_net[key_lastly_opened] = dict_to_datatime(data[key_lastly_opened])
+    data_net[key_lastly_relapsed] = dict_to_datatime(data[key_lastly_relapsed])
+    data_net[key_start_time] = dict_to_datatime(data[key_start_time])
+    data = data_net
+
+except:
+    print("Loding local data base")
 
 
 if data[key_habits_cache] is not None:
@@ -1162,18 +1219,18 @@ for name in create_file_names:
         
 open_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 
-menu_open_file = Menu(open_menu,tearoff=0,font=("Times New Roman",12))
-menu_open_file.add_command(label="Notes",command = lambda : system(f"explorer.exe {txt_notes}"))
-menu_open_file.add_command(label="Next Steps",command = lambda : system(f"explorer.exe {txt_next_step}"))
-menu_open_file.add_command(label="Positive effects",command = lambda : system(f"explorer.exe {txt_changes}"))
-menu_open_file.add_command(label="Negative effects",command = lambda : system(f"explorer.exe {txt_effects}"))
+# menu_open_file = Menu(open_menu,tearoff=0,font=("Times New Roman",12))
+# menu_open_file.add_command(label="Notes",command = lambda : system(f"explorer.exe {txt_notes}"))
+# menu_open_file.add_command(label="Next Steps",command = lambda : system(f"explorer.exe {txt_next_step}"))
+# menu_open_file.add_command(label="Positive effects",command = lambda : system(f"explorer.exe {txt_changes}"))
+# menu_open_file.add_command(label="Negative effects",command = lambda : system(f"explorer.exe {txt_effects}"))
 
-menu_open_folder = Menu(open_menu,tearoff=0,font=("Times New Roman",12))
-menu_open_folder.add_command(label="bgm",command = lambda : system(f"explorer.exe {bgm_folder}"))
-menu_open_folder.add_command(label="text",command = lambda : system(f"explorer.exe text"))
+# menu_open_folder = Menu(open_menu,tearoff=0,font=("Times New Roman",12))
+# menu_open_folder.add_command(label="bgm",command = lambda : system(f"explorer.exe {bgm_folder}"))
+# menu_open_folder.add_command(label="text",command = lambda : system(f"explorer.exe text"))
 
-open_menu.add_cascade(label="File",menu=menu_open_file)
-open_menu.add_cascade(label="Folder",menu=menu_open_folder) 
+# open_menu.add_cascade(label="File",menu=menu_open_file)
+# open_menu.add_cascade(label="Folder",menu=menu_open_folder) 
 
 settings_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 settings_menu.add_command(label="Add songs",command=add_songs)  
@@ -1204,11 +1261,11 @@ email_menu.add_command(label="copy Mail ID",command=lambda : contact_developer("
 contact_developer_menu.add_cascade(label="Email",menu=email_menu)
 
 main_menu = Menu(root,tearoff=0,font=("Times New Roman",12))  
-main_menu.add_cascade(label="Open",menu=open_menu)
+# main_menu.add_cascade(label="Open",menu=open_menu)
 
 note_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 note_menu.add_command(label="Add",command = add_note)
-note_menu.add_command(label="Show",command = note_menu_cmd)
+#cnote_menu.add_command(label="Show",command = note_menu_cmd)
 
 main_menu.add_cascade(label="Notes",menu = note_menu)
 main_menu.add_cascade(label="Settings",menu=settings_menu)
@@ -1216,7 +1273,7 @@ main_menu.add_command(label="Show plot",command=show_plot)
 main_menu.add_command(label="Open in Github",command=lambda : open_new_tab(git_link))
 main_menu.add_cascade(label="Developer Contact",menu=contact_developer_menu)  
 
-ask_frame_window()
+login_window()
 
 root.bind("<Button-3>",show_main_menu)
 root.protocol("WM_DELETE_WINDOW",on_window_close)
