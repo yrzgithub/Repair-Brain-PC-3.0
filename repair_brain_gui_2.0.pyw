@@ -125,6 +125,13 @@ free_img = PhotoImage(image=free_img)
 hand_cuffed_img = Image.open(fp="images\\hand_cuffed.jpg").resize(size=(230,230))
 hand_cuffed_img = PhotoImage(image=hand_cuffed_img)
 
+background = Image.open(fp="images\\creative_brain4.jpg")
+background = PhotoImage(image=background)
+
+background_canvas = Canvas(root)
+background_canvas.pack(fill=BOTH,expand=True)
+Canvas.create_image(image=background)
+
 top_string = StringVar()
 top_string.set("Are you Free or Addicted?")
 
