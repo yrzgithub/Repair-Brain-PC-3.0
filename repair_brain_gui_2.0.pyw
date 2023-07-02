@@ -890,7 +890,7 @@ def on_window_close():
         write_to_firebase(data_java)
 
 
-    exit(0)
+    exit("Process finished")
 
 
 def entry_button_click(entry):
@@ -1439,7 +1439,7 @@ def start():
     data[key_lastly_opened] = data[key_start_time] =  time_now
     data[key_lastly_relapsed] = data[key_lastly_noted_change] = data[key_lastly_noted_side_effect] = data[key_next_step] = "Not Found"
     data[key_replace_habits] = OrderedDict() # { habit :{show_at:int,days_data:{}}}
-    data[key_habits_cache] = []
+    data[key_habits_cache] = None
     data[key_plot_accuracy] = {"date":[],"value":[]}
     data[key_last_accuracy_percent] = 0
     data[key_pos_list] = []
@@ -1595,5 +1595,5 @@ main_menu.add_command(label="Open in Github",command=lambda : open_new_tab(git_l
 main_menu.add_cascade(label="Developer Contact",menu=contact_developer_menu)  
 
 root.bind("<Button-3>",show_main_menu)
-root.protocol("WM_DELETE_WINDOW",Thread(target=on_window_close).start)
+root.protocol("WM_DELETE_WINDOW",on_window_close)
 root.mainloop()
