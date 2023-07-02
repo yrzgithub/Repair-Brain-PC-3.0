@@ -17,6 +17,10 @@ from collections import OrderedDict
 from sys import exit
 from requests import get
 from json import loads
+from multipledispatch import dispatch
+from webbrowser import open_new_tab
+from user import *
+from os.path import isfile
 import pyperclip
 import vlc
 
@@ -36,15 +40,26 @@ key_replace_habits = "replace_habits"
 key_plot_accuracy = "accuracy_plot"
 key_last_accuracy_percent = "last_accuracy_percent"
 key_habits_cache = "habits_cache"
+key_pos_list = "Positive Effects list"
+key_neg_list = "Negative Effects list"
+key_step_list = "Next Steps list"
+key_positive_effects  = "Positive Effects"
+key_negative_Effects = "Negative Effects"
+key_next_steps = "Next Steps"
 
 file_name = "pkls\\data.pkl"
+app_data = "pkls\\app_data.pkl"
+
 icon_name = "icon\\favicon.ico"
+gif_path = "images\\loading.gif"
 
 txt_file_path = "text\\data file.txt"
 txt_changes = "text\\positive effects.txt"
 txt_effects = "text\\negative effects.txt"
 txt_next_step = "text\\steps.txt"
 txt_notes = "text\\notes.txt"
+
+private_key_path = "utils\\private_key.json"
 
 bgm_folder = "bgm"
 
@@ -55,6 +70,7 @@ yt_personal_channel = "https://www.youtube.com/channel/UC6wZDLRN5RPimxqIdoR6g_g"
 developer_mail = "seenusanjay20102002@gmail.com"
 
 database_link = "https://repair-brain-20-default-rtdb.firebaseio.com/versions.json"
+database_url = "https://repair-brain-20-default-rtdb.firebaseio.com"
 
 week_days = ("Mon","Tue","Wed","Thur","Fri","Sat","Sun")
 
@@ -64,13 +80,13 @@ replace_habits = None
 check_btn_vars = None
 tp_root = None
 stop_thread = False
+data_base = None
 
 max_replace_habit_len = 7
 min_replace_habit_len = 3
 show_plot_after = 7 # days
 current_version_name = 2.0
 today = datetime.now().weekday()
-
 
 
 bgms = listdir(bgm_folder)
@@ -87,6 +103,8 @@ vlc_instane = vlc.Instance()
 player = vlc_instane.media_player_new()
 media = vlc_instane.media_new(f"bgm\\{bgm}")
 player.set_media(media)
+
+
 
 
 
@@ -107,6 +125,8 @@ free_img = PhotoImage(image=free_img)
 hand_cuffed_img = Image.open(fp="images\\hand_cuffed.jpg").resize(size=(230,230))
 hand_cuffed_img = PhotoImage(image=hand_cuffed_img)
 
+root.config(bg="pink")
+
 top_string = StringVar()
 top_string.set("Are you Free or Addicted?")
 
@@ -123,6 +143,24 @@ frame_ask = Frame()
 frame_show_data = Frame()
 frame_edit = Frame()
 frame_accuracy = Frame()
+frame_login = Frame()
+frame_signin = Frame()
+
+
+# gif frames
+gif = Image.open(gif_path)
+
+frames = []
+while True:
+    frames.append(PhotoImage(gif))
+    try:
+        gif.seek(len(frames))
+    except EOFError:
+        break
+
+
+print("No of frames : ",len(frames))
+
 
 
 
@@ -138,7 +176,6 @@ def time_manager():
         hours_float = diff_seconds % 3600
         diff_minutes = int(hours_float//60)
         diff_seconds = int(hours_float%60)
-        print("thread running")
         try:
             root_exists = root.winfo_exists()
             days_gone.set(diff_days)
@@ -148,29 +185,38 @@ def time_manager():
         except:
             break
         sleep(1)
-    print("Thread stopped")
+    
 
 
 def data_file(mode="rb",path=file_name,to_write=None):
     out = None
+
     with open(path,mode) as file:
         if mode=="rb":
             out = load(file)
+
         elif mode == "wb":
             dump(to_write,file)
+
         elif mode=="r":
             out = file.read()
+
         else:
             file.write(to_write)
+            print(file_name)
+
         file.close()
+
+    print("Data file : ",file_name)
+
     return out
 
 
 def check_version():
     try:
-        database_data = loads(get(database_link).text)["latest_version"]
-        print("Connected to data base")
+        database_data = User.get_database_reference().child("versions").get()["latest_version"]
         print(database_data)
+        print("Connected to data base")
         latest_version_name = database_data["name"]
         assert current_version_name<latest_version_name
         msg_root,ok_msg_btn,create = msgbox("New Version Available")
@@ -178,17 +224,23 @@ def check_version():
         ok_msg_btn.configure(text="update",command=lambda : update_app(msg_root,latest_version_link))
         ok_msg_btn.place(relx=0.5,rely=0.73,anchor=CENTER,width=90,height=40)
 
-    except AssertionError:
+    except AssertionError as e:
+        print(e)
         print("Already in the latest version")
 
-    except:
+    except Exception as e:
         print("Can't connect to database")
+        print(e)
+
+    else:
+        print("Connected to database")
 
 
 def update_app(msg_root,link):
     msg_root.destroy()
     open_new_tab(link)
     msgbox(r"Follow the instructions in this github page")
+    
 
         
 def msgbox(msg,master=root,title=box_title,destroy_root=False,entry=False,width=650,height=200):
@@ -263,7 +315,7 @@ def next():
     lastly_noted_change_label = Label(frame_show_data,text=f"Lastly noted + ve effect : {last_change}",font=("Times New Roman",18),anchor=CENTER)
     lastly_noted_change_label.place(relx=.5,rely=.37,anchor=CENTER)
 
-    lastly_noted_side_effect_label = Label(frame_show_data,text=f"Lastly noted side effect : {last_side_effect}",font=("Times New Roman",18),anchor=CENTER)
+    lastly_noted_side_effect_label = Label(frame_show_data,text=f"Lastly noted -ve effect : {last_side_effect}",font=("Times New Roman",18),anchor=CENTER)
     lastly_noted_side_effect_label.place(relx=.5,rely=.47,anchor=CENTER)
 
     ok_button = Button(frame_show_data,text="Next",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command=ok_button_click)
@@ -277,7 +329,7 @@ def next():
     change_entry.place(relx=.28,rely=.6,anchor=CENTER,relwidth=.4,relheight=.08)
 
     side_effect_entry = Entry(frame_show_data,font=("Times New Roman",15),fg="grey",justify=CENTER)
-    side_effect_entry.insert(0,"Enter the side effect")
+    side_effect_entry.insert(0,"Enter the negative effect")
     side_effect_entry.place(relx=.72,rely=.6,anchor=CENTER,relwidth=.4,relheight=.08)
 
     next_step_entry = Entry(frame_show_data,font=("Times New Roman",15),fg="grey",justify=CENTER)
@@ -306,24 +358,47 @@ def no_button_click():   # free
     time_manager_thread.start()
 
 
+def add_to_database(effect_type,effect):
+    global data
+    time_now = datetime.now().strftime("%a,%b %d %Y")
+    data[effect_type][effect]  = time_now
+    key_name = effect_type + " list"
+    print(data[key_name].append(effect))
+
+
+def edit_database(effect_type,file_name):
+    lines = data_file(mode="r",path=file_name).split("\n")
+    lines_list = [line for line in lines if not line.isspace() and line!=""]
+    print("Lines : ",lines_list)
+    key_name = effect_type + " list"
+    data[key_name] = lines_list
+    print(data)
+
+
 def save_current_effect_change_data():
     side_effect = side_effect_entry.get().strip()
     change = change_entry.get().strip()
     next_step = next_step_entry.get().strip()
-    if side_effect != "Enter the side effect" and side_effect!="" and not side_effect.isspace(): 
+    if is_valid_entry(side_effect_entry,"Enter the negative effect"):
         data[key_lastly_noted_side_effect] =  side_effect
-        side_effect += time_now.strftime(" (%d : %m : %y)")
-        data_file(mode="a",path=txt_effects,to_write = f"* {side_effect}\n")
+        add_to_database(key_negative_Effects,side_effect)
+        side_effect+= time_now.strftime(" (%a,%b %d %Y)")
+        data_file(mode="a",path=txt_effects,to_write = f"{side_effect}\n")
+        print("Entry changes saved")
 
-    if change != "Enter the positive effect" and change!="" and not change.isspace(): 
+    if is_valid_entry(change_entry,"Enter the positive effect"):
         data[key_lastly_noted_change] = change
-        change += time_now.strftime(" (%d : %m : %y)")
-        data_file(mode="a",path=txt_changes,to_write = f"* {change}\n")
+        add_to_database(key_positive_effects,change)
+        change += time_now.strftime(" (%a,%b %d %Y)")
+        data_file(mode="a",path=txt_changes,to_write = f"{change}\n")
+        print("Entry changes saved")
         
-    if next_step != "Enter the next step" and next_step!="" and not next_step.isspace():
+    if is_valid_entry(next_step_entry,"Enter the next step"):
         data[key_next_step] = next_step
-        next_step += time_now.strftime(" (%d : %m : %y)")
-        data_file(mode="a",path=txt_next_step,to_write=f"* {next_step}\n")
+        add_to_database(key_next_steps,next_step)
+        next_step += time_now.strftime(" (%a,%b %d %Y)")
+        data_file(mode="a",path=txt_next_step,to_write=f"{next_step}\n")
+        print("Entry changes saved")
 
 
 def show_changes_side_effects_click(destroy=True):
@@ -339,8 +414,10 @@ def show_changes_side_effects_click(destroy=True):
 
     edit_button_var.set("Edit")
     done_button_var.set("Next")
+
+    # put cpmmand = "edit_steps() to modify the txt file"
     
-    edit_button = Button(frame_edit,textvariable=edit_button_var,command = lambda : edit_steps(),font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+    edit_button = Button(frame_edit,textvariable=edit_button_var,command = lambda : open_new_tab("https://www.google.com"),font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
     edit_button.place(relx=.4,anchor=CENTER,rely=.95,relheight=.08)
 
     done_button = Button(frame_edit,textvariable=done_button_var,command = lambda : accuracy_frame(frame_edit),font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
@@ -350,12 +427,12 @@ def show_changes_side_effects_click(destroy=True):
     effects = data_file(mode="r",path=txt_effects).replace("\n","\n   ")
     changes = data_file(mode="r",path=txt_changes).replace("\n","\n   ")
 
-    txt_format = f" Next Step :\n\n   {next_steps}\n\n\n Positive Effects :\n\n   {changes}\n\n\n Side Effects :\n\n   {effects}"
+    # txt_format = f"{key_next_steps} :\n\n   {next_steps}\n\n\n {key_positive_effects} :\n\n   {changes}\n\n\n{key_negative_Effects} :\n\n   {effects}"
+    txt_format = f"{key_positive_effects} :\n\n   {changes}\n\n\n{key_negative_Effects} :\n\n   {effects}\n\n\n{key_next_steps} :\n\n   {next_steps}"
     text_widget = Text(frame_edit,font=("Times New Roman",20),padx=5,pady=5)
     text_widget.insert(END,txt_format)
     text_widget.configure(state=DISABLED)
     text_widget.place(relheight=.9,relwidth=1)
-
     frame_edit.place(relheight=1,relwidth=1)
 
 
@@ -389,12 +466,17 @@ def edit_effects():
     edit_button.configure(command=lambda : save_txt(txt_effects))
 
 
+@dispatch(str,str)
+def save_txt(file_name,effect_type):
+    save_txt(file_name)
+    edit_database(effect_type,file_name)
+
+
+@dispatch(str)
 def save_txt(file_name):
     widget_data = text_widget.get(2.0,END).strip("\n").strip()
-    print("Widget data : ",widget_data)
     if not widget_data.isspace() and widget_data!="":
         txt_data = widget_data + "\n"
-        print("Text data : ",txt_data)
         data_file(mode="w",path=file_name,to_write=txt_data)
     
     else:
@@ -409,6 +491,8 @@ def save_txt(file_name):
         
     else:
         edit_button_var.set("Saved")
+
+    print(file_name)
 
 
 def tp_root_check(checked_vars):
@@ -511,10 +595,8 @@ def add_replace_habits(tp,habit_entry):
     replace_habits_dict = data[key_replace_habits]
 
     new_habit = habit_entry.get()
-    print(f"New habit : {new_habit}")
 
     tp.destroy()
-    print(tp)
 
     if new_habit is not None and new_habit!="" and new_habit!="Enter the new habit" and new_habit!=f"Atleast {min_replace_habit_len} habits required":
         check_days = []
@@ -575,7 +657,7 @@ def change_replace_habits():
     change_replace_habits_frame = Frame(root)
     replace_habits_list_frame = Frame(change_replace_habits_frame,bg="white")
 
-    top = Label(change_replace_habits_frame,text="Selects the habits to remove",font=("Times New Roman",25,"bold"),anchor=CENTER)
+    top = Label(change_replace_habits_frame,text="Select the habits to remove",font=("Times New Roman",25,"bold"),anchor=CENTER)
 
     cols = 2
     for col in range(cols):
@@ -613,18 +695,17 @@ def calc_accuracy(check_vars,enabled_len,top_string,percentage_diff_var):
     percent = int((checked_length*100)/enabled_len)
     percent_difference = percent - data[key_last_accuracy_percent]
 
+    top_string.set(f"Replacing accuracy : {percent}%")
+
     if percent_difference==0 : 
-        top_string.set(f"Replacing accuracy : {percent}%")
         percentage_diff_var.set("( 0 )")
         percentage_difference_widget.configure(fg="green")
 
     elif percent_difference>0 : 
-        top_string.set(f"Replacing accuracy : {percent}%")
         percentage_diff_var.set(f"({percent_difference}↑)")
         percentage_difference_widget.configure(fg="green")
 
     else : 
-        top_string.set(f"Replacing accuracy : {percent}%")
         percentage_diff_var.set(f"({-percent_difference}↓)")
         percentage_difference_widget.configure(fg="red")
 
@@ -639,7 +720,6 @@ def accuracy_frame(frame,destroy=True):
     global stop_thread,add_button,percentage_difference_widget,percent,replace_habits,check_btn_vars,done_button,top
 
     stop_thread = True
-    print("Stop stopped at accuracy frame")
     player.stop()
 
     if destroy : 
@@ -731,6 +811,16 @@ def ok_button_click():
     accuracy_frame(frame_show_data)
 
 
+def convert_data(key):
+    global data_java
+    dict_time = data_java[key]
+    if(type(dict_time)!=str):
+        time = {"year":dict_time.year,"month":dict_time.month,"day":dict_time.day,"hour":dict_time.hour,"minute":dict_time.minute,"second":dict_time.second}
+        data_java[key] = time
+        data_java["replace_habits_list"] = list(data_java[key_replace_habits].keys())
+        return data_java
+
+
 def plot_data(key_plot_name,day_name,perc):
     list_date = data[key_plot_name]["date"]
     list_value = data[key_plot_name]["value"]
@@ -747,10 +837,17 @@ def plot_data(key_plot_name,day_name,perc):
     return len(list_date)
 
 
+def write_to_firebase(to_write):
+    data_base.child("data").set(to_write)
+
+
 def on_window_close():
-    global percent,stop_thread
+    global percent,stop_thread,data_java
 
     stop_thread = True
+
+    root.destroy()
+    print("Window closed")
 
     player.stop()
     time_now = datetime.now()
@@ -767,14 +864,11 @@ def on_window_close():
         for habit,intvar in zip(replace_habits,check_btn_vars):
             print(data[key_replace_habits][habit])
             data[key_replace_habits][habit]["days_data"][formated_time_now] = intvar.get()
-
-    print(data[key_replace_habits])
     
     if percent is None:
         percent = 0
 
     percent_difference = percent - data[key_last_accuracy_percent]
-    print("Percent diff",percent_difference)
     plot_data(key_plot_accuracy,week_days[today],percent)
     data[key_last_accuracy_percent] = percent
 
@@ -783,17 +877,31 @@ def on_window_close():
         
     formated_time_now = time_now.strftime("%d-%m-%y %H:%M:%S")
     txt_file_write_data = f"{formated_time_now} :: {data}\n"
-    print(txt_file_write_data)
     data_file(mode="a",path=txt_file_path,to_write=txt_file_write_data)
     data_file("wb",to_write=data)
-    root.destroy()
-    exit("Window closed")
+
+    data_java = data_file("rb")
+    
+    convert_data("lastly_opened")
+    convert_data("start_time")
+    convert_data("lastly_relapsed")
+
+    if data_base!=None:
+        write_to_firebase(data_java)
+
+
+    exit(0)
 
 
 def entry_button_click(entry):
     player.stop()
     entry.delete(0,END)
     entry.configure(fg="black")
+
+
+def is_valid_entry(entry,text):
+    entry_data = entry.get().strip()
+    return entry_data!=text and entry_data!="" and not entry_data.isspace()
 
 
 def stop_player(event):
@@ -912,8 +1020,6 @@ def show_plot(clear=False,warn=True):
     date = data[key_plot_accuracy]["date"]
     value = data[key_plot_accuracy]["value"]
 
-    print(date)
-
     if len(date)<2:
         if warn:
             return msgbox("Plot data is insufficient")
@@ -922,7 +1028,6 @@ def show_plot(clear=False,warn=True):
 
     relplace_habits_dict = data[key_replace_habits]
     x_names = relplace_habits_dict.keys()
-    print(replace_habits)
     y_values = [(sum(relplace_habits_dict[key]["days_data"].values())*100)//len(relplace_habits_dict[key]["show_on"]) for key in x_names]
 
     if len(x_names)==0:
@@ -950,7 +1055,6 @@ def show_plot(clear=False,warn=True):
     if clear:
         date.clear()
         value.clear()
-        print(replace_habits)
         
         for key in relplace_habits_dict.keys():
             if "days_data" in relplace_habits_dict[key]:
@@ -958,6 +1062,7 @@ def show_plot(clear=False,warn=True):
 
 
 def reset():
+    global data,data_base,data_java
     player.stop()
     delete_files = [txt_next_step,txt_changes,txt_effects,txt_file_path,file_name,txt_notes]
     for file_d in delete_files:
@@ -965,11 +1070,316 @@ def reset():
         remove(file_d)
     
     root.withdraw()
+    data_java = start()
+    convert_data("lastly_opened")
+    convert_data("start_time")
+    convert_data("lastly_relapsed")
+    write_to_firebase(data_java)
     msgbox(title=box_title,msg="Successfully reseted",destroy_root=True)
 
 
+def login(username_or_email,password):
+
+    user_name_txt = username_or_email.get().strip()
+    password_str = password.get().strip()
+
+    if not is_valid_entry(username_or_email,"Enter the Username or Email"):
+        return msgbox("Invalid Username")
+
+    if not is_valid_entry(password,"Enter your Password"):
+        return msgbox("Invalid password")
+    
+
+
+    def run_on_thread():
+        global data_base
+
+        canvas = show_gif(frame_login)
+
+
+        if "@gmail.com" in user_name_txt:
+            user = User(uid=None,email=user_name_txt,password=None,name=None,last_name=None)
+            success,msg = user.login_with_email(password_str)
+            email = True
+
+        else:
+                email = False
+                user = User(uid=user_name_txt,email=None,password=None,name=None,last_name=None)
+                success,msg = user.login_with_uid(password_str)
+
+
+        if success:
+            if user.is_user_verified():
+                if email:
+                    user = user.get_user_data(user_name_txt,uid=False)
+                else:
+                    user = user.get_user_data(user_name_txt,uid=True)
+
+
+                save_data = {}
+                save_data["username"] = user.full_name
+                save_data["email"] = user.email 
+                save_data["password"] = password_str 
+                save_data["verified"] = user.verified
+
+                print(data_file(mode="wb",path=app_data,to_write=save_data))
+                print("Login details saved")
+
+                data_base = user.get_data_base()
+
+                ask_frame_window()
+
+            else:
+                canvas.destroy()
+                return msgbox("Email Not Verified")
+            
+        else:
+            canvas.destroy()
+            return msgbox(msg)
+
+
+
+    Thread(target=run_on_thread).start()  
+    
+    
+def show_gif(frame):
+   
+    canvas = Canvas(frame,width=root.winfo_width(),height=root.winfo_height(),bg="white")
+    canvas.pack(fill=BOTH,expand=1,anchor=CENTER)
+
+    def run(index):
+        canvas.delete("all")
+        index = (index+1) % len(frames)
+        frame = frames[index]
+
+        canvas_width = canvas.winfo_width()
+        canvas_height = canvas.winfo_height()
+
+        image_width = frame.width()
+        image_height = frame.height()
+
+        x = (canvas_width - image_width)//2
+        y = (canvas_height - image_height)//2
+
+        print("Running")
+
+        canvas.create_image(x,y,anchor=NW,image=frame)
+        canvas.after(500,lambda : run(index))
+
+    run(0)
+
+    return canvas
+
+
+def login_window():
+    frame_login.update_idletasks()
+
+    title = Label(frame_login,text="Login In To Repair Brain",font=("Times New Roman",22,"bold"),fg="black",bg="pink")
+
+    email_or_username = Entry(frame_login,font=("Times New Roman",15),fg="grey",justify=CENTER) 
+    password = Entry(frame_login,font=("Times New Roman",15),fg="grey",justify=CENTER) 
+
+    forget_password = Button(frame_login,font=("Times New Roman",10,"bold"),text="Forget password",border=0,cursor="hand2",bg="pink",fg="blue",activebackground="pink")
+
+    sign_up = Button(frame_login,text="Sign Up",font=("Times New Roman",18,"bold"),command = sign_in_window ,cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+    login_button = Button(frame_login,text="Login",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = lambda : login(email_or_username,password))
+
+    email_or_username.bind("<Button>",lambda event : entry_button_click(email_or_username))
+    password.bind("<Button>",lambda event : [entry_button_click(password),password.config(show="*")])
+
+    title.place(relx=.5,rely=.17,anchor=CENTER)
+
+    email_or_username.place(relx=.5,rely=.37,anchor=CENTER,relheight=.07,relwidth=.7)
+
+    password.place(relx=.5,rely=.52,anchor=CENTER,relheight=.07,relwidth=.7)
+
+    forget_password.place(relx=.15,rely=.62,anchor=W)
+
+    sign_up.place(relx=.37,rely=.77,anchor=CENTER,relheight=.09,relwidth=.17)
+    login_button.place(relx=.63,rely=.77,anchor=CENTER,relheight=.09,relwidth=.17)
+
+    frame_login.pack(fill=BOTH,expand=1)
+
+    frame_login.configure(bg="pink")
+
+    email_or_username.insert(INSERT,"Enter the Username or Email")
+    password.insert(INSERT,"Enter your Password")
+
+
+def logout():
+    global frame_login
+
+    if isfile(app_data):
+        remove(app_data)
+        frame_login = Frame()
+        login_window()
+
+
+def sign_in_window():
+    global root
+
+    # first_name, last_name. email, password
+
+    frame_login.pack_forget()
+
+    first_name_var = StringVar()
+    last_name_var = StringVar()
+
+    user_name_var = StringVar()
+
+    email_id_var = StringVar()
+
+    password_var = StringVar()
+    password_check_var = StringVar()
+
+    show_password_var = IntVar()
+
+    first_name_var.set("First Name")
+    last_name_var.set("Last Name")
+
+    user_name_var.set("Username")
+
+    email_id_var.set("E-mail Id")
+
+    password_var.set("Password")
+    password_check_var.set("Verify Password")
+
+
+    frame_signin.configure(bg="pink")
+
+
+
+    def on_click_show_password(password_entry):
+        if show_password_var.get()==0:
+            password_entry.config(show="*")
+
+        else:
+            password_entry.config(show="")
+
+
+    show_password_var.set(0)
+
+
+    login_label = Label(frame_signin,text="Sign In To Repair Brain",font=("Times New Roman",22,"bold"),fg="black",bg="pink")
+
+    first_name_entry = Entry(frame_signin,textvariable=first_name_var,font=("Times New Roman",15),fg="grey",justify=CENTER) 
+    last_name_entry = Entry(frame_signin,textvariable=last_name_var,font=("Times New Roman",15),fg="grey",justify=CENTER) 
+
+    user_name_entry = Entry(frame_signin,textvariable=user_name_var,font=("Times New Roman",15),fg="grey",width=root.winfo_width(),justify=CENTER) 
+
+    email_id_entry = Entry(frame_signin,textvariable=email_id_var,font=("Times New Roman",15),fg="grey",justify=CENTER) 
+
+    password_entry = Entry(frame_signin,textvariable=password_var,font=("Times New Roman",15),fg="grey",justify=CENTER) 
+    show_password_check = Checkbutton(frame_signin,onvalue=1,offvalue=0,command=lambda : on_click_show_password(password_entry),variable=show_password_var,anchor=CENTER,bg="pink")
+    show_password_label = Label(frame_signin,text="Show Password",font=("Times New Roman",8),fg="black",bg="pink",anchor=CENTER)
+
+    check_password_entry = Entry(frame_signin,textvariable=password_check_var,font=("Times New Roman",15),fg="grey",justify=CENTER) 
+
+    entries = [first_name_entry,last_name_entry,user_name_entry,email_id_entry,password_entry,check_password_entry]
+
+    cancel_button = Button(frame_signin,text="Cancel",font=("Times New Roman",18,"bold"),command= lambda : on_window_close(),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+    sign_in = Button(frame_signin,command = lambda : sign_in_fn(entries),text="Sign In",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+
+    first_name_entry.bind("<Button>",lambda event : entry_button_click(first_name_entry))
+    last_name_entry.bind("<Button>",lambda event : entry_button_click(last_name_entry))
+    user_name_entry.bind("<Button>",lambda event : entry_button_click(user_name_entry))
+    email_id_entry.bind("<Button>",lambda event : entry_button_click(email_id_entry))
+
+    check_password_entry.bind("<Button>",lambda event : [entry_button_click(check_password_entry),check_password_entry.configure(show="*")])
+    password_entry.bind("<Button>",lambda event : [entry_button_click(password_entry),password_entry.configure(show="*")])
+
+
+    rows = 8.2
+
+    login_label.place(relx=.5,rely=0.09,relwidth=.7,anchor=CENTER)
+
+    first_name_entry.place(relx=.25,rely=2/rows,relwidth=.4,relheight=.07,anchor=CENTER)
+    last_name_entry.place(relx=.75,rely=2/rows,relwidth=.4,relheight=.07,anchor=CENTER)
+
+    user_name_entry.place(relx=.5,rely=3/rows,relwidth=.7,relheight=.07,anchor=CENTER)
+
+    email_id_entry.place(relx=.5,rely=4/rows,relwidth=.7,relheight=.07,anchor=CENTER)
+
+    password_entry.place(relx=.5,rely=5/rows,relwidth=.7,relheight=.07,anchor=CENTER)
+    show_password_check.place(relx=.92,rely=5/rows-0.020,anchor=CENTER)
+    show_password_label.place(relx=.92,rely=5/rows+0.025,relheight=.07,anchor=CENTER)
+
+    check_password_entry.place(relx=.5,rely=6/rows,relwidth=.7,relheight=.07,anchor=CENTER)
+
+    sign_in.place(relx=.625,rely=7/rows+.03,relwidth=.15,relheight=.09,anchor=CENTER)
+    cancel_button.place(relx=.375,rely=7/rows+.03,relwidth=.15,relheight=.09,anchor=CENTER)
+
+    frame_signin.pack(fill=BOTH,expand=1)
+
+
+def sign_in_fn(entries):
+    first_name_entry,last_name_entry,user_name_entry,email_id_entry,password_entry,check_password_entry = entries
+
+    firstname = first_name_entry.get().title()
+    lastname = last_name_entry.get().upper()
+    username = user_name_entry.get()
+    email = email_id_entry.get()
+    password = password_entry.get()
+    check_password = check_password_entry.get()
+
+
+    if not is_valid_entry(first_name_entry,"First Name"):
+        return msgbox("Invalid First Name")
+
+    if not is_valid_entry(last_name_entry,"Last Name"):
+        return msgbox("Invalid Last Name")
+
+    if not is_valid_entry(user_name_entry,"Username"):
+        return msgbox("Invalid Username")
+
+    if not is_valid_entry(email_id_entry,"E-mail Id"):
+        return msgbox("Invalid Email Id")
+
+    if not is_valid_entry(password_entry,"Password"):
+        return msgbox("Invalid password")
+
+    if not is_valid_entry(check_password_entry,"Verify Password") or password!=check_password:
+        return msgbox("Invalid or Passwords didn't match")
+    
+    if len(password)<6:
+        return msgbox("Altleast 6 characters required for password")
+    
+
+    def on_window_delete(box):
+        try:
+            open_new_tab("https://www.gmail.com")
+            box.destroy()
+
+        except Exception as e:
+            print(e)
+
+
+    def run_on_thread():
+        canvas = show_gif(frame_signin)
+
+        new_user = User(uid=username,name=firstname,last_name=lastname,email=email,password=password)
+        user_created,msg = new_user.create_user_account()
+
+
+        if not user_created:
+            canvas.destroy()
+            msgbox(msg)
+        
+        else:
+            new_user.send_verification_link()
+            box,button,entry =  msgbox("Verification link has been sent")
+            button.configure(command = lambda : on_window_delete(box))
+            canvas.destroy()
+            frame_signin.destroy()
+            login_window()
+
+
+    Thread(target=run_on_thread).start()
+
+
+
 def ask_frame_window():
-    Thread(target=check_version).start()
+    frame_login.destroy()
 
     top = Label(frame_ask,textvariable=top_string,font=("Times New Roman",38),anchor=CENTER)
 
@@ -997,7 +1407,6 @@ def add_temp_ok(days,tp):
     except:
         msgbox("Invalid data")
         return
-    print("No of days : ",no_of_days)
     date = time_now.day
     month = time_now.month
     year = time_now.year
@@ -1025,21 +1434,81 @@ def erase_temp_data(erase_only):
 
 
 
-time_now = datetime.now()
-
-
-if not isfile(file_name):
+def start():
     data = {}
     data[key_lastly_opened] = data[key_start_time] =  time_now
     data[key_lastly_relapsed] = data[key_lastly_noted_change] = data[key_lastly_noted_side_effect] = data[key_next_step] = "Not Found"
     data[key_replace_habits] = OrderedDict() # { habit :{show_at:int,days_data:{}}}
-    data[key_habits_cache] = None
+    data[key_habits_cache] = []
     data[key_plot_accuracy] = {"date":[],"value":[]}
     data[key_last_accuracy_percent] = 0
+    data[key_pos_list] = []
+    data[key_neg_list] = []
+    data[key_step_list] = []
+    data[key_positive_effects] = {}
+    data[key_negative_Effects] = {}
+    data[key_next_steps] = {}
     data_file(mode="wb",to_write=data)
+    return data
+
+
+
+
+
+time_now = datetime.now()
+
+
+if not isfile(file_name):
+    data = start()
 
 else:
     data = data_file()
+
+
+def dict_to_datatime(dict):
+    day = dict["day"]
+    hour = dict["hour"]
+    minute = dict["minute"]
+    month = dict["month"]
+    year = dict["year"]
+    second = dict["second"]
+
+    return datetime(day=day,hour=hour,minute=minute,month=month,year=year,second=second)
+
+
+
+data_base = None
+
+if isfile(app_data):
+    login_data = data_file(path=app_data)
+    email = login_data["email"]
+    password = login_data["password"]
+    user_name = login_data["username"]
+
+    user = User(uid=None,email=email,password=password,name=None,last_name=None)
+    user.login_with_email(password)
+    data_base = user.get_data_base()
+    Thread(target=check_version).start()
+    
+    ask_frame_window()
+
+else:
+    login_window()
+
+
+try:
+    assert data_base is not None
+
+    data_net = data_base.child("data").get().val()
+    data_net[key_habits_cache] = data[key_habits_cache]
+    data_net[key_lastly_opened] = dict_to_datatime(data[key_lastly_opened])
+    data_net[key_lastly_relapsed] = dict_to_datatime(data[key_lastly_relapsed])
+    data_net[key_start_time] = dict_to_datatime(data[key_start_time])
+    data = data_net
+
+except:
+    print("Loding local data base")
+    data = data_file(path=file_name)
 
 
 if data[key_habits_cache] is not None:
@@ -1061,7 +1530,7 @@ else:
         print("Data file deleted")
 
 
-create_file_names = (txt_effects,txt_changes,txt_next_step,txt_notes)
+create_file_names = (txt_next_step,txt_changes,txt_effects,txt_file_path,file_name,txt_notes)
 for name in create_file_names:
     if not isfile(name):
         data_file(mode="a",path=name,to_write="")
@@ -1070,18 +1539,18 @@ for name in create_file_names:
         
 open_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 
-menu_open_file = Menu(open_menu,tearoff=0,font=("Times New Roman",12))
-menu_open_file.add_command(label="Notes",command = lambda : system(f"explorer.exe {txt_notes}"))
-menu_open_file.add_command(label="Next Steps",command = lambda : system(f"explorer.exe {txt_next_step}"))
-menu_open_file.add_command(label="Positive effects",command = lambda : system(f"explorer.exe {txt_changes}"))
-menu_open_file.add_command(label="Negative effects",command = lambda : system(f"explorer.exe {txt_effects}"))
+# menu_open_file = Menu(open_menu,tearoff=0,font=("Times New Roman",12))
+# menu_open_file.add_command(label="Notes",command = lambda : system(f"explorer.exe {txt_notes}"))
+# menu_open_file.add_command(label="Next Steps",command = lambda : system(f"explorer.exe {txt_next_step}"))
+# menu_open_file.add_command(label="Positive effects",command = lambda : system(f"explorer.exe {txt_changes}"))
+# menu_open_file.add_command(label="Negative effects",command = lambda : system(f"explorer.exe {txt_effects}"))
 
-menu_open_folder = Menu(open_menu,tearoff=0,font=("Times New Roman",12))
-menu_open_folder.add_command(label="bgm",command = lambda : system(f"explorer.exe {bgm_folder}"))
-menu_open_folder.add_command(label="text",command = lambda : system(f"explorer.exe text"))
+# menu_open_folder = Menu(open_menu,tearoff=0,font=("Times New Roman",12))
+# menu_open_folder.add_command(label="bgm",command = lambda : system(f"explorer.exe {bgm_folder}"))
+# menu_open_folder.add_command(label="text",command = lambda : system(f"explorer.exe text"))
 
-open_menu.add_cascade(label="File",menu=menu_open_file)
-open_menu.add_cascade(label="Folder",menu=menu_open_folder) 
+# open_menu.add_cascade(label="File",menu=menu_open_file)
+# open_menu.add_cascade(label="Folder",menu=menu_open_folder) 
 
 settings_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 settings_menu.add_command(label="Add songs",command=add_songs)  
@@ -1094,6 +1563,7 @@ temp_tasks_menu.add_command(label="Clear",command= lambda : erase_temp_data(eras
 settings_menu.add_cascade(label="Temp tasks",menu=temp_tasks_menu)
 settings_menu.add_command(label="Remove replace habits",command=change_replace_habits) 
 settings_menu.add_command(label="Reset",command=reset)
+settings_menu.add_command(label="Logout",command=logout)
 
 contact_developer_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 
@@ -1112,11 +1582,11 @@ email_menu.add_command(label="copy Mail ID",command=lambda : contact_developer("
 contact_developer_menu.add_cascade(label="Email",menu=email_menu)
 
 main_menu = Menu(root,tearoff=0,font=("Times New Roman",12))  
-main_menu.add_cascade(label="Open",menu=open_menu)
+# main_menu.add_cascade(label="Open",menu=open_menu)
 
 note_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 note_menu.add_command(label="Add",command = add_note)
-note_menu.add_command(label="Show",command = note_menu_cmd)
+#cnote_menu.add_command(label="Show",command = note_menu_cmd)
 
 main_menu.add_cascade(label="Notes",menu = note_menu)
 main_menu.add_cascade(label="Settings",menu=settings_menu)
@@ -1124,8 +1594,6 @@ main_menu.add_command(label="Show plot",command=show_plot)
 main_menu.add_command(label="Open in Github",command=lambda : open_new_tab(git_link))
 main_menu.add_cascade(label="Developer Contact",menu=contact_developer_menu)  
 
-ask_frame_window()
-
 root.bind("<Button-3>",show_main_menu)
-root.protocol("WM_DELETE_WINDOW",on_window_close)
+root.protocol("WM_DELETE_WINDOW",Thread(target=on_window_close).start)
 root.mainloop()
