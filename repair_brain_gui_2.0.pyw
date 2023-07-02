@@ -20,6 +20,7 @@ from json import loads
 from multipledispatch import dispatch
 from webbrowser import open_new_tab
 from user import *
+from os.path import isfile
 import pyperclip
 import vlc
 
@@ -47,7 +48,10 @@ key_negative_Effects = "Negative Effects"
 key_next_steps = "Next Steps"
 
 file_name = "pkls\\data.pkl"
+app_data = "pkls\\app_data.pkl"
+
 icon_name = "icon\\favicon.ico"
+gif_path = "images\\loading.gif"
 
 txt_file_path = "text\\data file.txt"
 txt_changes = "text\\positive effects.txt"
@@ -76,6 +80,7 @@ replace_habits = None
 check_btn_vars = None
 tp_root = None
 stop_thread = False
+data_base = None
 
 max_replace_habit_len = 7
 min_replace_habit_len = 3
@@ -100,7 +105,6 @@ media = vlc_instane.media_new(f"bgm\\{bgm}")
 player.set_media(media)
 
 
-data_base = get_database()
 
 
 
@@ -143,6 +147,20 @@ frame_login = Frame()
 frame_signin = Frame()
 
 
+# gif frames
+gif = Image.open(gif_path)
+
+frames = []
+while True:
+    frames.append(PhotoImage(gif))
+    try:
+        gif.seek(len(frames))
+    except EOFError:
+        break
+
+
+print("No of frames : ",len(frames))
+
 
 
 
@@ -172,13 +190,17 @@ def time_manager():
 
 def data_file(mode="rb",path=file_name,to_write=None):
     out = None
+
     with open(path,mode) as file:
         if mode=="rb":
             out = load(file)
+
         elif mode == "wb":
             dump(to_write,file)
+
         elif mode=="r":
             out = file.read()
+
         else:
             file.write(to_write)
             print(file_name)
@@ -192,7 +214,8 @@ def data_file(mode="rb",path=file_name,to_write=None):
 
 def check_version():
     try:
-        database_data = loads(get(database_link).text)["latest_version"]
+        database_data = User.get_database_reference().child("versions").get()["latest_version"]
+        print(database_data)
         print("Connected to data base")
         latest_version_name = database_data["name"]
         assert current_version_name<latest_version_name
@@ -201,11 +224,16 @@ def check_version():
         ok_msg_btn.configure(text="update",command=lambda : update_app(msg_root,latest_version_link))
         ok_msg_btn.place(relx=0.5,rely=0.73,anchor=CENTER,width=90,height=40)
 
-    except AssertionError:
+    except AssertionError as e:
+        print(e)
         print("Already in the latest version")
 
-    except:
+    except Exception as e:
         print("Can't connect to database")
+        print(e)
+
+    else:
+        print("Connected to database")
 
 
 def update_app(msg_root,link):
@@ -818,6 +846,9 @@ def on_window_close():
 
     stop_thread = True
 
+    root.destroy()
+    print("Window closed")
+
     player.stop()
     time_now = datetime.now()
     data[key_lastly_opened] = time_now
@@ -855,10 +886,11 @@ def on_window_close():
     convert_data("start_time")
     convert_data("lastly_relapsed")
 
-    write_to_firebase(data_java)
+    if data_base!=None:
+        write_to_firebase(data_java)
 
-    root.destroy()
-    exit("Window closed")
+
+    exit(0)
 
 
 def entry_button_click(entry):
@@ -1046,8 +1078,101 @@ def reset():
     msgbox(title=box_title,msg="Successfully reseted",destroy_root=True)
 
 
+def login(username_or_email,password):
+
+    user_name_txt = username_or_email.get().strip()
+    password_str = password.get().strip()
+
+    if not is_valid_entry(username_or_email,"Enter the Username or Email"):
+        return msgbox("Invalid Username")
+
+    if not is_valid_entry(password,"Enter your Password"):
+        return msgbox("Invalid password")
+    
+
+
+    def run_on_thread():
+        global data_base
+
+        canvas = show_gif(frame_login)
+
+
+        if "@gmail.com" in user_name_txt:
+            user = User(uid=None,email=user_name_txt,password=None,name=None,last_name=None)
+            success,msg = user.login_with_email(password_str)
+            email = True
+
+        else:
+                email = False
+                user = User(uid=user_name_txt,email=None,password=None,name=None,last_name=None)
+                success,msg = user.login_with_uid(password_str)
+
+
+        if success:
+            if user.is_user_verified():
+                if email:
+                    user = user.get_user_data(user_name_txt,uid=False)
+                else:
+                    user = user.get_user_data(user_name_txt,uid=True)
+
+
+                save_data = {}
+                save_data["username"] = user.full_name
+                save_data["email"] = user.email 
+                save_data["password"] = password_str 
+                save_data["verified"] = user.verified
+
+                print(data_file(mode="wb",path=app_data,to_write=save_data))
+                print("Login details saved")
+
+                data_base = user.get_data_base()
+
+                ask_frame_window()
+
+            else:
+                canvas.destroy()
+                return msgbox("Email Not Verified")
+            
+        else:
+            canvas.destroy()
+            return msgbox(msg)
+
+
+
+    Thread(target=run_on_thread).start()  
+    
+    
+def show_gif(frame):
+   
+    canvas = Canvas(frame,width=root.winfo_width(),height=root.winfo_height(),bg="white")
+    canvas.pack(fill=BOTH,expand=1,anchor=CENTER)
+
+    def run(index):
+        canvas.delete("all")
+        index = (index+1) % len(frames)
+        frame = frames[index]
+
+        canvas_width = canvas.winfo_width()
+        canvas_height = canvas.winfo_height()
+
+        image_width = frame.width()
+        image_height = frame.height()
+
+        x = (canvas_width - image_width)//2
+        y = (canvas_height - image_height)//2
+
+        print("Running")
+
+        canvas.create_image(x,y,anchor=NW,image=frame)
+        canvas.after(500,lambda : run(index))
+
+    run(0)
+
+    return canvas
+
+
 def login_window():
-    frame_login.config(bg="pink")
+    frame_login.update_idletasks()
 
     title = Label(frame_login,text="Login In To Repair Brain",font=("Times New Roman",22,"bold"),fg="black",bg="pink")
 
@@ -1057,7 +1182,7 @@ def login_window():
     forget_password = Button(frame_login,font=("Times New Roman",10,"bold"),text="Forget password",border=0,cursor="hand2",bg="pink",fg="blue",activebackground="pink")
 
     sign_up = Button(frame_login,text="Sign Up",font=("Times New Roman",18,"bold"),command = sign_in_window ,cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
-    login_button = Button(frame_login,text="Login",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
+    login_button = Button(frame_login,text="Login",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = lambda : login(email_or_username,password))
 
     email_or_username.bind("<Button>",lambda event : entry_button_click(email_or_username))
     password.bind("<Button>",lambda event : [entry_button_click(password),password.config(show="*")])
@@ -1075,9 +1200,19 @@ def login_window():
 
     frame_login.pack(fill=BOTH,expand=1)
 
+    frame_login.configure(bg="pink")
+
     email_or_username.insert(INSERT,"Enter the Username or Email")
     password.insert(INSERT,"Enter your Password")
 
+
+def logout():
+    global frame_login
+
+    if isfile(app_data):
+        remove(app_data)
+        frame_login = Frame()
+        login_window()
 
 
 def sign_in_window():
@@ -1085,7 +1220,7 @@ def sign_in_window():
 
     # first_name, last_name. email, password
 
-    frame_login.destroy()
+    frame_login.pack_forget()
 
     first_name_var = StringVar()
     last_name_var = StringVar()
@@ -1135,7 +1270,7 @@ def sign_in_window():
     email_id_entry = Entry(frame_signin,textvariable=email_id_var,font=("Times New Roman",15),fg="grey",justify=CENTER) 
 
     password_entry = Entry(frame_signin,textvariable=password_var,font=("Times New Roman",15),fg="grey",justify=CENTER) 
-    show_password_check = Checkbutton(frame_signin,state=0,onvalue=1,offvalue=0,command=lambda : on_click_show_password(password_entry),variable=show_password_var,anchor=CENTER,bg="pink")
+    show_password_check = Checkbutton(frame_signin,onvalue=1,offvalue=0,command=lambda : on_click_show_password(password_entry),variable=show_password_var,anchor=CENTER,bg="pink")
     show_password_label = Label(frame_signin,text="Show Password",font=("Times New Roman",8),fg="black",bg="pink",anchor=CENTER)
 
     check_password_entry = Entry(frame_signin,textvariable=password_check_var,font=("Times New Roman",15),fg="grey",justify=CENTER) 
@@ -1180,8 +1315,8 @@ def sign_in_window():
 def sign_in_fn(entries):
     first_name_entry,last_name_entry,user_name_entry,email_id_entry,password_entry,check_password_entry = entries
 
-    firstname = first_name_entry.get()
-    lastname = last_name_entry.get()
+    firstname = first_name_entry.get().title()
+    lastname = last_name_entry.get().upper()
     username = user_name_entry.get()
     email = email_id_entry.get()
     password = password_entry.get()
@@ -1205,12 +1340,46 @@ def sign_in_fn(entries):
 
     if not is_valid_entry(check_password_entry,"Verify Password") or password!=check_password:
         return msgbox("Invalid or Passwords didn't match")
+    
+    if len(password)<6:
+        return msgbox("Altleast 6 characters required for password")
+    
 
-    new_user = User
+    def on_window_delete(box):
+        try:
+            open_new_tab("https://www.gmail.com")
+            box.destroy()
+
+        except Exception as e:
+            print(e)
+
+
+    def run_on_thread():
+        canvas = show_gif(frame_signin)
+
+        new_user = User(uid=username,name=firstname,last_name=lastname,email=email,password=password)
+        user_created,msg = new_user.create_user_account()
+
+
+        if not user_created:
+            canvas.destroy()
+            msgbox(msg)
+        
+        else:
+            new_user.send_verification_link()
+            box,button,entry =  msgbox("Verification link has been sent")
+            button.configure(command = lambda : on_window_delete(box))
+            canvas.destroy()
+            frame_signin.destroy()
+            login_window()
+
+
+    Thread(target=run_on_thread).start()
+
 
 
 def ask_frame_window():
-    Thread(target=check_version).start()
+    frame_login.destroy()
 
     top = Label(frame_ask,textvariable=top_string,font=("Times New Roman",38),anchor=CENTER)
 
@@ -1284,6 +1453,8 @@ def start():
 
 
 
+
+
 time_now = datetime.now()
 
 
@@ -1305,7 +1476,29 @@ def dict_to_datatime(dict):
     return datetime(day=day,hour=hour,minute=minute,month=month,year=year,second=second)
 
 
+
+data_base = None
+
+if isfile(app_data):
+    login_data = data_file(path=app_data)
+    email = login_data["email"]
+    password = login_data["password"]
+    user_name = login_data["username"]
+
+    user = User(uid=None,email=email,password=password,name=None,last_name=None)
+    user.login_with_email(password)
+    data_base = user.get_data_base()
+    Thread(target=check_version).start()
+    
+    ask_frame_window()
+
+else:
+    login_window()
+
+
 try:
+    assert data_base is not None
+
     data_net = data_base.child("data").get().val()
     data_net[key_habits_cache] = data[key_habits_cache]
     data_net[key_lastly_opened] = dict_to_datatime(data[key_lastly_opened])
@@ -1315,6 +1508,7 @@ try:
 
 except:
     print("Loding local data base")
+    data = data_file(path=file_name)
 
 
 if data[key_habits_cache] is not None:
@@ -1369,6 +1563,7 @@ temp_tasks_menu.add_command(label="Clear",command= lambda : erase_temp_data(eras
 settings_menu.add_cascade(label="Temp tasks",menu=temp_tasks_menu)
 settings_menu.add_command(label="Remove replace habits",command=change_replace_habits) 
 settings_menu.add_command(label="Reset",command=reset)
+settings_menu.add_command(label="Logout",command=logout)
 
 contact_developer_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 
@@ -1399,8 +1594,6 @@ main_menu.add_command(label="Show plot",command=show_plot)
 main_menu.add_command(label="Open in Github",command=lambda : open_new_tab(git_link))
 main_menu.add_cascade(label="Developer Contact",menu=contact_developer_menu)  
 
-login_window()
-
 root.bind("<Button-3>",show_main_menu)
-root.protocol("WM_DELETE_WINDOW",on_window_close)
+root.protocol("WM_DELETE_WINDOW",Thread(target=on_window_close).start)
 root.mainloop()
