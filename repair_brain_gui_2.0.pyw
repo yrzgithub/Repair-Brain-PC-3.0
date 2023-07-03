@@ -1181,10 +1181,8 @@ def forget_password_fun():
     def run_on_thread():
         email = email_box.get()
         if not is_valid_entry(email_box,"Enter your E-mail"):
-            email_box.place_forget()
-            
-            ok_msg_btn.place(relx=0.5,rely=0.8,width=50,height=30,anchor=CENTER)
-            return
+            box_root.destroy()
+            return msgbox(msg="Invalid E-mail",entry=False)
         
 
         user = User(email=email,name=None,password=None,uid=None,last_name=None)
