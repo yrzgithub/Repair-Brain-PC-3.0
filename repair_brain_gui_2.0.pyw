@@ -1072,6 +1072,7 @@ def reset():
     convert_data("start_time")
     convert_data("lastly_relapsed")
     write_to_firebase(data_java)
+    logout()
     msgbox(title=box_title,msg="Successfully reseted",destroy_root=True)
 
 
@@ -1192,13 +1193,14 @@ def forget_password_fun():
 
         try:
             user.get_user_data(data=email,uid=False)
-            user.send_password_reset_link(email)
+            user.send_password_reset_link()
             msg = "Reset link sent"
 
         except UserNotFoundError:
             msg = "User Not Found"
         
-        except:
+        except Exception as e:
+            print(e)
             msg = "Something Went Wrong"
 
 
@@ -1208,7 +1210,7 @@ def forget_password_fun():
         MessageBeep()
 
         label = Label(box_root,text=msg,font=("Times New Roman",18))
-        ok_msg_btn = Button(box_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = box_root.destroy)
+        ok_msg_btn = Button(box_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = lambda : [box_root.destroy(),Thread(target=open_new_tab,args=("https://www.gmail.com",)).start()])
         
         label.place(relx=.5,rely=.3,anchor=CENTER,relwidth=.9)
         ok_msg_btn.place(relx=0.5,rely=0.8,width=50,height=30,anchor=CENTER)
