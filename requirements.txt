@@ -5,3 +5,4 @@ pyperclip
 python-vlc
 pypi-json
 requests
+firebase-admin

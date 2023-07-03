@@ -15,8 +15,6 @@ from matplotlib import pyplot
 from webbrowser import open_new_tab
 from collections import OrderedDict
 from sys import exit
-from requests import get
-from json import loads
 from multipledispatch import dispatch
 from webbrowser import open_new_tab
 from user import *
