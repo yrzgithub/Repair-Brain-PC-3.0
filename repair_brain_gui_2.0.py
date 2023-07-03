@@ -1150,23 +1150,27 @@ def show_gif(frame):
     canvas.pack(fill=BOTH,expand=1,anchor=CENTER)
 
     def run(index):
-        canvas.delete("all")
-        index = (index+1) % len(frames)
-        frame = frames[index]
+        try:
+            canvas.delete("all")
+            index = (index+1) % len(frames)
+            frame = frames[index]
 
-        canvas_width = canvas.winfo_width()
-        canvas_height = canvas.winfo_height()
+            canvas_width = canvas.winfo_width()
+            canvas_height = canvas.winfo_height()
 
-        image_width = frame.width()
-        image_height = frame.height()
+            image_width = frame.width()
+            image_height = frame.height()
 
-        x = (canvas_width - image_width)//2
-        y = (canvas_height - image_height)//2
+            x = (canvas_width - image_width)//2
+            y = (canvas_height - image_height)//2
 
-        print("Running")
+            print("Running")
 
-        canvas.create_image(x,y,anchor=NW,image=frame)
-        canvas.after(500,lambda : run(index))
+            canvas.create_image(x,y,anchor=NW,image=frame)
+            canvas.after(500,lambda : run(index))
+        
+        except:
+            pass
 
     run(0)
 
@@ -1181,7 +1185,7 @@ def login_window():
     email_or_username = Entry(frame_login,font=("Times New Roman",15),fg="grey",justify=CENTER) 
     password = Entry(frame_login,font=("Times New Roman",15),fg="grey",justify=CENTER) 
 
-    forget_password = Button(frame_login,font=("Times New Roman",10,"bold"),text="Forget password",border=0,cursor="hand2",bg="pink",fg="blue",activebackground="pink")
+    forget_password = Button(frame_login,font=("Times New Roman",13,"bold"),text="Forget password",border=0,cursor="hand2",bg="pink",fg="blue",activebackground="pink",activeforeground="red")
 
     sign_up = Button(frame_login,text="Sign Up",font=("Times New Roman",18,"bold"),command = sign_in_window ,cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
     login_button = Button(frame_login,text="Login",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = lambda : login(email_or_username,password))
@@ -1210,6 +1214,8 @@ def login_window():
 
 def logout():
     global frame_login
+
+    print("Loging out")
 
     if isfile(app_data):
         remove(app_data)
@@ -1370,7 +1376,7 @@ def sign_in_fn(entries):
         else:
             new_user.send_verification_link()
             box,button,entry =  msgbox("Verification link has been sent")
-            button.configure(command = lambda : on_window_delete(box))
+            button.configure(command = Thread(target = lambda : on_window_delete(box)).start)
             canvas.destroy()
             frame_signin.destroy()
             login_window()
@@ -1514,13 +1520,18 @@ if isfile(app_data):
     user_name = login_data["username"]
     uid = login_data["username"]
     user = User(uid=uid,email=email,password=password,name=None,last_name=None)
-    user.login_with_email(password)
-    data_base = user.get_data_base()
-    Thread(target=check_version).start()
-    
-    ask_frame_window()
+    (success,msg) = user.login_with_email(password)
+    if success:
+        data_base = user.get_data_base()
+        ask_frame_window()
+
+    else:
+        logout()
+        login_window()
+
 
 else:
+    print("user data not found")
     login_window()
 
 
@@ -1546,7 +1557,9 @@ for name in create_file_names:
         data_file(mode="a",path=name,to_write="")
 
 
-        
+
+Thread(target=check_version).start()
+       
 open_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 
 # menu_open_file = Menu(open_menu,tearoff=0,font=("Times New Roman",12))
