@@ -836,7 +836,8 @@ def plot_data(key_plot_name,day_name,perc):
 
 
 def write_to_firebase(to_write):
-    data_base.child("data").set(to_write)
+    if data_base!=None:
+        data_base.child("data").set(to_write)
 
 
 def on_window_close():
