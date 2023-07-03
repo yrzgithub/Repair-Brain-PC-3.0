@@ -57,6 +57,8 @@ txt_effects = "text\\negative effects.txt"
 txt_next_step = "text\\steps.txt"
 txt_notes = "text\\notes.txt"
 
+private_key_path = "utils\\private_key.json"
+
 bgm_folder = "bgm"
 
 contact_data = {"Instagram":"https://www.instagram.com/alpha_yr/","Linked In":"https://www.linkedin.com/in/sanjay-kumar-y-r-6a88b6207","Github":"https://github.com/yrzgithub","FaceBook":"https://www.facebook.com/y.r.kumar.1232"}
@@ -1174,46 +1176,32 @@ def show_gif(frame):
     return canvas
 
 
-def forget_password_fun():
-    box_root,button,email_box = msgbox(msg="Enter your E-mail",entry=True)
+def forget_password_fn():
+    top_root,button,entry = msgbox(msg="Enter your E-mail",entry=True)
 
+    canvas = Canvas(tp_root)
 
     def run_on_thread():
-        email = email_box.get()
-        if not is_valid_entry(email_box,"Enter your E-mail"):
-            box_root.destroy()
-            return msgbox(msg="Invalid E-mail",entry=False)
-        
+        show_gif(canvas)
+        canvas.pack(fill=BOTH,expand=1)
 
-        user = User(email=email,name=None,password=None,uid=None,last_name=None)
-        msg = ""
+        email = entry.get()
 
-        canvas = show_gif(box_root)
+        user = User(uid=None,email=email,password=None,name=None,last_name=None)
 
         try:
-            user.get_user_data(data=email,uid=False)
-            user.send_password_reset_link(email)
-            msg = "Reset link sent"
+            user.send_password_reset_link()
+            msgbox(top_root,"Password Reset Link has been Sent")
 
-        except UserNotFoundError:
-            msg = "User Not Found"
+        except Exception as e:
+            msgbox(top_root,"Something went wrong")
+            print(e)
         
-        except:
-            msg = "Something Went Wrong"
-
-
-        print(msg)
+        button.configure(command=tp_root.destroy)
         canvas.destroy()
 
-        label = Label(box_root,text=msg,font=("Times New Roman",18))
-        ok_msg_btn = Button(box_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = box_root.destroy)
-        
-        label.place(relx=.5,rely=.3,anchor=CENTER,relwidth=.9)
-        ok_msg_btn.place(relx=0.5,rely=0.8,width=50,height=30,anchor=CENTER)
-
-
-    button.configure(command=Thread(target=run_on_thread).start)
     
+    button.configure(command=run_on_thread)
 
 
 def login_window():
@@ -1224,7 +1212,7 @@ def login_window():
     email_or_username = Entry(frame_login,font=("Times New Roman",15),fg="grey",justify=CENTER) 
     password = Entry(frame_login,font=("Times New Roman",15),fg="grey",justify=CENTER) 
 
-    forget_password = Button(frame_login,font=("Times New Roman",13,"bold"),text="Forget password",border=0,cursor="hand2",bg="pink",fg="blue",activebackground="pink",activeforeground="red",command=forget_password_fun)
+    forget_password = Button(frame_login,font=("Times New Roman",13,"bold"),text="Forget password",border=0,cursor="hand2",bg="pink",fg="blue",activebackground="pink",activeforeground="red",command = forget_password_fn)
 
     sign_up = Button(frame_login,text="Sign Up",font=("Times New Roman",18,"bold"),command = sign_in_window ,cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
     login_button = Button(frame_login,text="Login",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = lambda : login(email_or_username,password))
@@ -1327,34 +1315,13 @@ def sign_in_window():
     cancel_button = Button(frame_signin,text="Cancel",font=("Times New Roman",18,"bold"),command= lambda : on_window_close(),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
     sign_in = Button(frame_signin,command = lambda : sign_in_fn(entries),text="Sign In",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
 
-
-    def decorate_text():
-        if not is_valid_entry(first_name_entry,"First Name"):
-            return
-
-        if not is_valid_entry(last_name_entry,"Last Name"):
-            return
-    
-
-        first_name = first_name_entry.get()
-        last_name = last_name_entry.get()
-
-        if not first_name.istitle():
-             first_name = first_name.title()
-             first_name_var.set(first_name)
-            
-        if not last_name.isupper():
-            last_name = last_name.upper()
-            last_name_var.set(last_name)
-
-
     first_name_entry.bind("<Button>",lambda event : entry_button_click(first_name_entry))
     last_name_entry.bind("<Button>",lambda event : entry_button_click(last_name_entry))
-    user_name_entry.bind("<Button>",lambda event : [entry_button_click(user_name_entry),decorate_text()])
-    email_id_entry.bind("<Button>",lambda event : [entry_button_click(email_id_entry),decorate_text()])
+    user_name_entry.bind("<Button>",lambda event : entry_button_click(user_name_entry))
+    email_id_entry.bind("<Button>",lambda event : entry_button_click(email_id_entry))
 
-    check_password_entry.bind("<Button>",lambda event : [entry_button_click(check_password_entry),check_password_entry.configure(show="*"),decorate_text()])
-    password_entry.bind("<Button>",lambda event : [entry_button_click(password_entry),password_entry.configure(show="*"),decorate_text()])
+    check_password_entry.bind("<Button>",lambda event : [entry_button_click(check_password_entry),check_password_entry.configure(show="*")])
+    password_entry.bind("<Button>",lambda event : [entry_button_click(password_entry),password_entry.configure(show="*")])
 
 
     rows = 8.2
@@ -1413,12 +1380,13 @@ def sign_in_fn(entries):
         return msgbox("Altleast 6 characters required for password")
     
 
-
-    def on_window_delete(box,button):
-        button.configure(state=DISABLED)
-        open_new_tab("https://www.gmail.com")
+    def on_window_delete(box):
         box.destroy()
+        try:
+            open_new_tab("https://www.gmail.com")
 
+        except Exception as e:
+            print(e)
 
 
     def run_on_thread():
@@ -1435,7 +1403,7 @@ def sign_in_fn(entries):
         else:
             new_user.send_verification_link()
             box,button,entry =  msgbox("Verification link has been sent")
-            button.configure(command = lambda : [Thread(target=on_window_delete,args=(box,button))])
+            button.configure(command = Thread(target = lambda : on_window_delete(box)).start)
             canvas.destroy()
             frame_signin.destroy()
             login_window()
