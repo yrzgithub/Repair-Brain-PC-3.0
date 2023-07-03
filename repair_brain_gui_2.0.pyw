@@ -57,8 +57,6 @@ txt_effects = "text\\negative effects.txt"
 txt_next_step = "text\\steps.txt"
 txt_notes = "text\\notes.txt"
 
-private_key_path = "utils\\private_key.json"
-
 bgm_folder = "bgm"
 
 contact_data = {"Instagram":"https://www.instagram.com/alpha_yr/","Linked In":"https://www.linkedin.com/in/sanjay-kumar-y-r-6a88b6207","Github":"https://github.com/yrzgithub","FaceBook":"https://www.facebook.com/y.r.kumar.1232"}

@@ -7,7 +7,7 @@ from time import sleep
 from requests import post
 
 
-private_key_path = "utils\\private_key.json"
+private_key_path = "utils\\service.json"
 admin_mail = "seenusanjay20102002@gmail.com"
 admin_password = "vdmzrapnlewbjrgm"
 
