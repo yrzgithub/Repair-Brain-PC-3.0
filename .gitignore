@@ -11,3 +11,6 @@ utils/private_key.json
 utils/google-services.json
 utils/service.json
 text/notes.txt
+pytoexe.json
+temp/temp.py
+temp/user.py
