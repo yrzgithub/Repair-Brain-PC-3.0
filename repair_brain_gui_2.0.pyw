@@ -1205,6 +1205,8 @@ def forget_password_fun():
         print(msg)
         canvas.destroy()
 
+        MessageBeep()
+
         label = Label(box_root,text=msg,font=("Times New Roman",18))
         ok_msg_btn = Button(box_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = box_root.destroy)
         
@@ -1414,11 +1416,9 @@ def sign_in_fn(entries):
     
 
 
-    def on_window_delete(box,button):
-        button.configure(state=DISABLED)
-        open_new_tab("https://www.gmail.com")
+    def on_window_delete(box):
         box.destroy()
-
+        open_new_tab("https://www.gmail.com")
 
 
     def run_on_thread():
@@ -1435,7 +1435,7 @@ def sign_in_fn(entries):
         else:
             new_user.send_verification_link()
             box,button,entry =  msgbox("Verification link has been sent")
-            button.configure(command = lambda : [Thread(target=on_window_delete,args=(box,button))])
+            button.configure(command = lambda : Thread(target=on_window_delete,args=(box,)).start())
             canvas.destroy()
             frame_signin.destroy()
             login_window()
