@@ -890,7 +890,7 @@ def on_window_close():
         write_to_firebase(data_java)
 
 
-    exit("Process finished")
+    exit("Process Completed")
 
 
 def entry_button_click(entry):
@@ -1126,6 +1126,8 @@ def login(username_or_email,password):
                 print("Login details saved")
 
                 data_base = user.get_data_base()
+
+                get_database_data(data_base)
 
                 ask_frame_window()
 
@@ -1453,9 +1455,35 @@ def start():
 
 
 
-
-
 time_now = datetime.now()
+
+
+def get_database_data(data_base):
+    print(data_base)
+    try:
+        assert data_base is not None
+
+        data_net = data_base.child("data").get().val()
+        data_net[key_habits_cache] = data[key_habits_cache]
+        data_net[key_lastly_opened] = dict_to_datatime(data[key_lastly_opened])
+        data_net[key_lastly_relapsed] = dict_to_datatime(data[key_lastly_relapsed])
+        data_net[key_start_time] = dict_to_datatime(data[key_start_time])
+        data = data_net
+
+        print("Loading data from database")
+
+    except:
+        print("Loding local data base")
+        data = data_file(path=file_name)
+
+
+    if data[key_habits_cache] is not None:
+        min_replace_habit_len = 1
+        if (time_now - data[key_habits_cache]["start_day"]).days>=data[key_habits_cache]["days"]:
+            erase_temp_data(erase_only=False)
+
+
+
 
 
 if not isfile(file_name):
@@ -1484,8 +1512,8 @@ if isfile(app_data):
     email = login_data["email"]
     password = login_data["password"]
     user_name = login_data["username"]
-
-    user = User(uid=None,email=email,password=password,name=None,last_name=None)
+    uid = login_data["username"]
+    user = User(uid=uid,email=email,password=password,name=None,last_name=None)
     user.login_with_email(password)
     data_base = user.get_data_base()
     Thread(target=check_version).start()
@@ -1496,25 +1524,7 @@ else:
     login_window()
 
 
-try:
-    assert data_base is not None
 
-    data_net = data_base.child("data").get().val()
-    data_net[key_habits_cache] = data[key_habits_cache]
-    data_net[key_lastly_opened] = dict_to_datatime(data[key_lastly_opened])
-    data_net[key_lastly_relapsed] = dict_to_datatime(data[key_lastly_relapsed])
-    data_net[key_start_time] = dict_to_datatime(data[key_start_time])
-    data = data_net
-
-except:
-    print("Loding local data base")
-    data = data_file(path=file_name)
-
-
-if data[key_habits_cache] is not None:
-    min_replace_habit_len = 1
-    if (time_now - data[key_habits_cache]["start_day"]).days>=data[key_habits_cache]["days"]:
-        erase_temp_data(erase_only=False)
 
 
 if not isfile(txt_file_path):
