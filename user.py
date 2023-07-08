@@ -94,14 +94,10 @@ class User:
         else:
             append = {self.user_name:self.email}
             db.child("ids").update(append)
-            success,msg = self.login_with_email(self.password)
 
-            if success:
-                idToken = self.idToken
-                auth.update_profile(id_token=idToken,display_name=self.full_name)
-            
-            else:
-                return False,msg
+            self.idToken = results["idToken"]
+            idToken = self.idToken
+            auth.update_profile(id_token=idToken,display_name=self.full_name)
             
             return True,"Account Created"
         
@@ -118,7 +114,8 @@ class User:
         try:
             error_json = auth.send_password_reset_email(email)
         
-        except HTTPError:
+        except HTTPError as e:
+            error_json = loads(e.strerror)
             message = error_json["error"]["message"].lower().replace("_"," ").title()
             return False,message
 
@@ -156,3 +153,4 @@ class User:
 # a.login_with_username("#Jaihind") #login_with_email("#Jaihind")
  #print(a.get_user_data())
 
+# print(User.send_password_reset_link("123"))

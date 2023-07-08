@@ -17,7 +17,7 @@ from collections import OrderedDict
 from sys import exit
 from multipledispatch import dispatch
 from webbrowser import open_new_tab
-from temp import *
+from user import *
 from os.path import isfile
 import pyperclip
 import vlc
@@ -1178,31 +1178,27 @@ def forget_password_fun():
 
 
     def run_on_thread():
-        email = email_box.get()
+        email = email_box.get().strip()
         if not is_valid_entry(email_box,"Enter your E-mail"):
             box_root.destroy()
             return msgbox(msg="Invalid E-mail",entry=False)
         
-        msg = ""
-
         canvas = show_gif(box_root)
 
-        try:
-            User.send_password_reset_link(email)
-            msg = "Reset link sent"
-        
-        except Exception as e:
-            print(e)
-            msg = "Something Went Wrong"
+        success,msg = User.send_password_reset_link(email)
 
 
-        print(msg)
+        def open_gmail():
+            if success:
+                Thread(target=open_new_tab,args=("https://www.gmail.com",)).start()
+
+
         canvas.destroy()
 
         MessageBeep()
 
         label = Label(box_root,text=msg,font=("Times New Roman",18))
-        ok_msg_btn = Button(box_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = lambda : [box_root.destroy(),Thread(target=open_new_tab,args=("https://www.gmail.com",)).start()])
+        ok_msg_btn = Button(box_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = lambda : [box_root.destroy(),open_gmail()])
         
         label.place(relx=.5,rely=.3,anchor=CENTER,relwidth=.9)
         ok_msg_btn.place(relx=0.5,rely=0.8,width=50,height=30,anchor=CENTER)
@@ -1262,6 +1258,9 @@ def sign_in_window():
     global root
 
     # first_name, last_name. email, password
+
+    if not frame_signin.winfo_exists():
+        frame_signin = Frame()
 
     frame_login.pack_forget()
 
@@ -1412,7 +1411,7 @@ def sign_in_fn(entries):
 
     def on_window_delete(box):
         box.destroy()
-        open_new_tab("https://www.gmail.com")
+        Thread(target=open_new_tab,args=("https://www.gmail.com",)).start()
 
 
     def run_on_thread():
