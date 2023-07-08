@@ -60,23 +60,24 @@ class User:
         else:
             print("Login is successful")
             self.idToken = results["idToken"]
+            self.uid = results["localId"]
             self.get_user_data()
             return True,"Login Successful"
         
 
     def login_with_username(self,entered_password):                                                   # done
-        email_data = db.child("ids").get().val()
+        email = db.child("ids").child(self.user_name).get().val()
 
-        if email_data is None:
+        if email is None:
             return False,"Username Not Found"
-        
-        email = email_data[self.user_name]
+    
         self.email = email
         return self.login_with_email(entered_password)
     
 
     def create_user_account(self):                                                                       # done
         try:
+            assert db.child("ids").child(self.user_name).get().val() is None
             results = auth.create_user_with_email_and_password(email=self.email,password=self.password)
             print(results)
 
@@ -87,30 +88,27 @@ class User:
             message = error_json["error"]["message"].lower().replace("_"," ").title()
 
             return False,message
+
+        except AssertionError:
+            return False,"Username Already Exists"
             
-        except:
+        except Exception as e:
+            print(e)
             return False,"Something Went Wrong"
         
         else:
             append = {self.user_name:self.email}
             db.child("ids").update(append)
-            success,msg = self.login_with_email(self.password)
 
-            if success:
-                idToken = self.idToken
-                auth.update_profile(id_token=idToken,display_name=self.full_name)
-            
-            else:
-                return False,msg
+            self.idToken = results["idToken"]
+            idToken = self.idToken
+            auth.update_profile(id_token=idToken,display_name=self.full_name)
             
             return True,"Account Created"
         
 
     def send_verification_link(self):
-        (success,msg) = self.login_with_email(self.password)
-        if success:
-            auth.send_email_verification(self.idToken)
-        return (success,msg)
+        auth.send_email_verification(self.idToken)
 
 
     @staticmethod
@@ -118,7 +116,8 @@ class User:
         try:
             error_json = auth.send_password_reset_email(email)
         
-        except HTTPError:
+        except HTTPError as e:
+            error_json = loads(e.strerror)
             message = error_json["error"]["message"].lower().replace("_"," ").title()
             return False,message
 
@@ -138,12 +137,14 @@ class User:
         data = user["users"][0]
         self.email = data["email"] 
         self.verified = data["emailVerified"]
+        self.uid = data["localId"]
+        print(user)
 
         return self
     
 
     def get_data_base(self):
-        return db.reference(self.user_name)
+        return db.child(self.uid)
     
 
     @staticmethod
@@ -156,3 +157,6 @@ class User:
 # a.login_with_username("#Jaihind") #login_with_email("#Jaihind")
  #print(a.get_user_data())
 
+# print(User.send_password_reset_link("123"))
+
+# User(None,"seenusanjay20102002@gmail.com","123456",None,None).login_with_email("123456")

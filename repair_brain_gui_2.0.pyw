@@ -17,7 +17,7 @@ from collections import OrderedDict
 from sys import exit
 from multipledispatch import dispatch
 from webbrowser import open_new_tab
-from temp import *
+from user import *
 from os.path import isfile
 import pyperclip
 import vlc
@@ -77,6 +77,7 @@ check_btn_vars = None
 tp_root = None
 stop_thread = False
 data_base = None
+user = None
 
 max_replace_habit_len = 7
 min_replace_habit_len = 3
@@ -212,8 +213,8 @@ def check_version():
     try:
         database_data = User.get_database_reference().child("versions").child("latest_version").get().val()
         print(database_data)
-        print("Connected to data base")
         latest_version_name = database_data["name"]
+        print("Connected to data base")
         assert current_version_name<latest_version_name
         msg_root,ok_msg_btn,create = msgbox("New Version Available")
         latest_version_link = database_data["link"]
@@ -835,7 +836,10 @@ def plot_data(key_plot_name,day_name,perc):
 
 def write_to_firebase(to_write):
     if data_base!=None:
-        data_base.child("data").set(to_write)
+        data_base.child(user.uid).set(to_write)
+    
+    else:
+        print("Cannot write to database")
 
 
 def on_window_close():
@@ -883,7 +887,7 @@ def on_window_close():
     convert_data("start_time")
     convert_data("lastly_relapsed")
 
-    if data_base!=None:
+    if data_base!=None and user!=None:
         write_to_firebase(data_java)
 
 
@@ -1060,6 +1064,10 @@ def show_plot(clear=False,warn=True):
 
 def reset():
     global data,data_base,data_java
+
+    if user==None:
+        return msgbox("Login before reset")
+    
     player.stop()
     delete_files = [txt_next_step,txt_changes,txt_effects,txt_file_path,file_name,txt_notes]
     for file_d in delete_files:
@@ -1071,6 +1079,7 @@ def reset():
     convert_data("lastly_opened")
     convert_data("start_time")
     convert_data("lastly_relapsed")
+    
     write_to_firebase(data_java)
     logout()
     msgbox(title=box_title,msg="Successfully reseted",destroy_root=True)
@@ -1090,7 +1099,7 @@ def login(username_or_email,password):
 
 
     def run_on_thread():
-        global data_base
+        global data_base,user
 
         canvas = show_gif(frame_login)
 
@@ -1109,14 +1118,9 @@ def login(username_or_email,password):
         if success:
             if user.is_user_verified():     
                 save_data = {}
+
                 save_data["password"] = password_str 
-
-                if email:
-                    save_data["email"] = user_name_txt
-                
-                else:
-                    save_data["username"] = user_name_txt
-
+                save_data["email"] = user.email
 
                 print(data_file(mode="wb",path=app_data,to_write=save_data))
                 print("Login details saved")
@@ -1178,31 +1182,27 @@ def forget_password_fun():
 
 
     def run_on_thread():
-        email = email_box.get()
+        email = email_box.get().strip()
         if not is_valid_entry(email_box,"Enter your E-mail"):
             box_root.destroy()
             return msgbox(msg="Invalid E-mail",entry=False)
         
-        msg = ""
-
         canvas = show_gif(box_root)
 
-        try:
-            User.send_password_reset_link(email)
-            msg = "Reset link sent"
-        
-        except Exception as e:
-            print(e)
-            msg = "Something Went Wrong"
+        success,msg = User.send_password_reset_link(email)
 
 
-        print(msg)
+        def open_gmail():
+            if success:
+                Thread(target=open_new_tab,args=("https://www.gmail.com",)).start()
+
+
         canvas.destroy()
 
         MessageBeep()
 
         label = Label(box_root,text=msg,font=("Times New Roman",18))
-        ok_msg_btn = Button(box_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = lambda : [box_root.destroy(),Thread(target=open_new_tab,args=("https://www.gmail.com",)).start()])
+        ok_msg_btn = Button(box_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = lambda : [box_root.destroy(),open_gmail()])
         
         label.place(relx=.5,rely=.3,anchor=CENTER,relwidth=.9)
         ok_msg_btn.place(relx=0.5,rely=0.8,width=50,height=30,anchor=CENTER)
@@ -1253,15 +1253,19 @@ def logout():
     print("Loging out")
 
     if isfile(app_data):
+        player.stop()
         remove(app_data)
         frame_login = Frame()
         login_window()
 
 
 def sign_in_window():
-    global root
+    global root,frame_signin
 
     # first_name, last_name. email, password
+
+    if not frame_signin.winfo_exists():
+        frame_signin = Frame()
 
     frame_login.pack_forget()
 
@@ -1412,11 +1416,15 @@ def sign_in_fn(entries):
 
     def on_window_delete(box):
         box.destroy()
-        open_new_tab("https://www.gmail.com")
+        Thread(target=open_new_tab,args=("https://www.gmail.com",)).start()
 
 
     def run_on_thread():
+        global data ,data_base
+
         canvas = show_gif(frame_signin)
+
+        logout()
 
         new_user = User(username=username,name=firstname,last_name=lastname,email=email,password=password)
         user_created,msg = new_user.create_user_account()
@@ -1427,16 +1435,14 @@ def sign_in_fn(entries):
             msgbox(msg)
         
         else:
-            (success,msg) =  new_user.send_verification_link()
-            if success:
-                box,button,entry =  msgbox("Verification link has been sent")
-                button.configure(command = lambda : Thread(target=on_window_delete,args=(box,)).start())
-                canvas.destroy()
-                frame_signin.destroy()
-                login_window()
-            
-            else:
-                msgbox(msg)
+            data_base = user.get_data_base()
+            write_to_firebase(to_write=start())
+            new_user.send_verification_link()
+            box,button,entry =  msgbox("Verification link has been sent")
+            button.configure(command = lambda : Thread(target=on_window_delete,args=(box,)).start())
+            canvas.destroy()
+            frame_signin.destroy()
+            login_window()
 
 
     Thread(target=run_on_thread).start()
@@ -1444,7 +1450,12 @@ def sign_in_fn(entries):
 
 
 def ask_frame_window():
+    global frame_ask
+    
     frame_login.destroy()
+
+    if not frame_ask.winfo_exists():
+        frame_ask = Frame()
 
     top = Label(frame_ask,textvariable=top_string,font=("Times New Roman",38),anchor=CENTER)
 
@@ -1526,7 +1537,7 @@ def get_database_data(data_base):
     try:
         assert data_base is not None
 
-        data_net = data_base.child("data").get().val()
+        data_net = data_base.child(user.uid).get().val()
         data_net[key_habits_cache] = data[key_habits_cache]
         data_net[key_lastly_opened] = dict_to_datatime(data[key_lastly_opened])
         data_net[key_lastly_relapsed] = dict_to_datatime(data[key_lastly_relapsed])
