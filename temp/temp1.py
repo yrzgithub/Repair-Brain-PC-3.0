@@ -17,7 +17,7 @@ from collections import OrderedDict
 from sys import exit
 from multipledispatch import dispatch
 from webbrowser import open_new_tab
-from temp import *
+from user import *
 from os.path import isfile
 import pyperclip
 import vlc
@@ -107,6 +107,15 @@ player.set_media(media)
 MessageBeep()
 
 root = Tk()
+
+
+def start_loading():
+    canvas = Canvas(root)
+    show_gif(canvas)
+
+
+Thread(target=start_loading).start()
+
 
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenmmheight()
@@ -210,7 +219,7 @@ def data_file(mode="rb",path=file_name,to_write=None):
 
 def check_version():
     try:
-        database_data = User.get_database_reference().child("versions").child("latest_version").get().val()
+        database_data = User.get_database_reference().child("versions").get()["latest_version"]
         print(database_data)
         print("Connected to data base")
         latest_version_name = database_data["name"]
@@ -1096,27 +1105,29 @@ def login(username_or_email,password):
 
 
         if "@gmail.com" in user_name_txt:
-            user = User(username=None,email=user_name_txt,password=None,name=None,last_name=None)
+            user = User(uid=None,email=user_name_txt,password=None,name=None,last_name=None)
             success,msg = user.login_with_email(password_str)
             email = True
 
         else:
-            email = False
-            user = User(username=user_name_txt,email=None,password=None,name=None,last_name=None)
-            success,msg = user.login_with_username(password_str)
+                email = False
+                user = User(uid=user_name_txt,email=None,password=None,name=None,last_name=None)
+                success,msg = user.login_with_uid(password_str)
 
 
         if success:
-            if user.is_user_verified():     
-                save_data = {}
-                save_data["password"] = password_str 
-
+            if user.is_user_verified():
                 if email:
-                    save_data["email"] = user_name_txt
-                
+                    user = user.get_user_data(user_name_txt,uid=False)
                 else:
-                    save_data["username"] = user_name_txt
+                    user = user.get_user_data(user_name_txt,uid=True)
 
+
+                save_data = {}
+                save_data["username"] = user.full_name
+                save_data["email"] = user.email 
+                save_data["password"] = password_str 
+                save_data["verified"] = user.verified
 
                 print(data_file(mode="wb",path=app_data,to_write=save_data))
                 print("Login details saved")
@@ -1183,13 +1194,19 @@ def forget_password_fun():
             box_root.destroy()
             return msgbox(msg="Invalid E-mail",entry=False)
         
+
+        user = User(email=email,name=None,password=None,uid=None,last_name=None)
         msg = ""
 
         canvas = show_gif(box_root)
 
         try:
-            User.send_password_reset_link(email)
+            user.get_user_data(data=email,uid=False)
+            user.send_password_reset_link()
             msg = "Reset link sent"
+
+        except UserNotFoundError:
+            msg = "User Not Found"
         
         except Exception as e:
             print(e)
@@ -1418,7 +1435,7 @@ def sign_in_fn(entries):
     def run_on_thread():
         canvas = show_gif(frame_signin)
 
-        new_user = User(username=username,name=firstname,last_name=lastname,email=email,password=password)
+        new_user = User(uid=username,name=firstname,last_name=lastname,email=email,password=password)
         user_created,msg = new_user.create_user_account()
 
 
@@ -1427,16 +1444,12 @@ def sign_in_fn(entries):
             msgbox(msg)
         
         else:
-            (success,msg) =  new_user.send_verification_link()
-            if success:
-                box,button,entry =  msgbox("Verification link has been sent")
-                button.configure(command = lambda : Thread(target=on_window_delete,args=(box,)).start())
-                canvas.destroy()
-                frame_signin.destroy()
-                login_window()
-            
-            else:
-                msgbox(msg)
+            new_user.send_verification_link()
+            box,button,entry =  msgbox("Verification link has been sent")
+            button.configure(command = lambda : Thread(target=on_window_delete,args=(box,)).start())
+            canvas.destroy()
+            frame_signin.destroy()
+            login_window()
 
 
     Thread(target=run_on_thread).start()
@@ -1574,7 +1587,9 @@ if isfile(app_data):
     login_data = data_file(path=app_data)
     email = login_data["email"]
     password = login_data["password"]
-    user = User(username=None,email=email,password=password,name=None,last_name=None)
+    user_name = login_data["username"]
+    uid = login_data["username"]
+    user = User(uid=uid,email=email,password=password,name=None,last_name=None)
     (success,msg) = user.login_with_email(password)
     if success:
         data_base = user.get_data_base()
