@@ -157,6 +157,3 @@ class User:
 # a.login_with_username("#Jaihind") #login_with_email("#Jaihind")
  #print(a.get_user_data())
 
-# print(User.send_password_reset_link("123"))
-
-# User(None,"seenusanjay20102002@gmail.com","123456",None,None).login_with_email("123456")
