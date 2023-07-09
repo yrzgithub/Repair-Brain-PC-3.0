@@ -46,7 +46,7 @@ class User:
     def login_with_email(self,entered_password):                                                  # done
         try:
             results = auth.sign_in_with_email_and_password(self.email,password=entered_password)
-            print(results)
+            # print(results)
             
         except HTTPError as e:
             json_error = loads(e.strerror)
@@ -79,11 +79,11 @@ class User:
         try:
             assert db.child("ids").child(self.user_name).get().val() is None
             results = auth.create_user_with_email_and_password(email=self.email,password=self.password)
-            print(results)
+            # print(results)
 
         except HTTPError as e:
             error_json = loads(e.strerror)
-            print(error_json)
+            # print(error_json)
 
             message = error_json["error"]["message"].lower().replace("_"," ").title()
 
@@ -93,7 +93,7 @@ class User:
             return False,"Username Already Exists"
             
         except Exception as e:
-            print(e)
+            # print(e)
             return False,"Something Went Wrong"
         
         else:
@@ -101,6 +101,7 @@ class User:
             db.child("ids").update(append)
 
             self.idToken = results["idToken"]
+            self.uid = results["localId"]
             idToken = self.idToken
             auth.update_profile(id_token=idToken,display_name=self.full_name)
             
@@ -138,13 +139,15 @@ class User:
         self.email = data["email"] 
         self.verified = data["emailVerified"]
         self.uid = data["localId"]
-        print(user)
+        #print(user)
 
         return self
     
 
-    def get_data_base(self):
-        return db.child(self.uid)
+    def write_to_data_base(self,to_write):
+        #("Database write",to_write)
+
+        db.child(self.uid).set(to_write)
     
 
     @staticmethod
@@ -157,3 +160,4 @@ class User:
 # a.login_with_username("#Jaihind") #login_with_email("#Jaihind")
  #print(a.get_user_data())
 
+# User(None,None,None,None,None).get_data_base()

@@ -3,7 +3,7 @@ from PIL import Image
 from PIL.ImageTk import PhotoImage
 from pickle import load,dump 
 from datetime import datetime
-from os.path import isfile,expanduser,getsize,isdir
+from os.path import isfile,expanduser,isdir
 from os import listdir,system,remove,mkdir
 from threading import Thread
 from time import sleep
@@ -15,7 +15,6 @@ from matplotlib import pyplot
 from webbrowser import open_new_tab
 from collections import OrderedDict
 from sys import exit
-from multipledispatch import dispatch
 from webbrowser import open_new_tab
 from user import *
 from os.path import isfile
@@ -37,25 +36,14 @@ key_next_step = "next_step"
 key_replace_habits = "replace_habits"
 key_plot_accuracy = "accuracy_plot"
 key_last_accuracy_percent = "last_accuracy_percent"
-key_habits_cache = "habits_cache"
-key_pos_list = "Positive Effects list"
-key_neg_list = "Negative Effects list"
-key_step_list = "Next Steps list"
 key_positive_effects  = "Positive Effects"
 key_negative_Effects = "Negative Effects"
 key_next_steps = "Next Steps"
 
-file_name = "pkls\\data.pkl"
 app_data = "pkls\\app_data.pkl"
 
 icon_name = "icon\\favicon.ico"
 gif_path = "images\\loading.gif"
-
-txt_file_path = "text\\data file.txt"
-txt_changes = "text\\positive effects.txt"
-txt_effects = "text\\negative effects.txt"
-txt_next_step = "text\\steps.txt"
-txt_notes = "text\\notes.txt"
 
 bgm_folder = "bgm"
 
@@ -185,7 +173,7 @@ def time_manager():
     
 
 
-def data_file(mode="rb",path=file_name,to_write=None):
+def data_file(mode="rb",path=None,to_write=None):
     out = None
 
     with open(path,mode) as file:
@@ -200,11 +188,8 @@ def data_file(mode="rb",path=file_name,to_write=None):
 
         else:
             file.write(to_write)
-            print(file_name)
 
         file.close()
-
-    print("Data file : ",file_name)
 
     return out
 
@@ -363,15 +348,6 @@ def add_to_database(effect_type,effect):
     print(data[key_name].append(effect))
 
 
-def edit_database(effect_type,file_name):
-    lines = data_file(mode="r",path=file_name).split("\n")
-    lines_list = [line for line in lines if not line.isspace() and line!=""]
-    print("Lines : ",lines_list)
-    key_name = effect_type + " list"
-    data[key_name] = lines_list
-    print(data)
-
-
 def save_current_effect_change_data():
     side_effect = side_effect_entry.get().strip()
     change = change_entry.get().strip()
@@ -379,22 +355,16 @@ def save_current_effect_change_data():
     if is_valid_entry(side_effect_entry,"Enter the negative effect"):
         data[key_lastly_noted_side_effect] =  side_effect
         add_to_database(key_negative_Effects,side_effect)
-        side_effect+= time_now.strftime(" (%a,%b %d %Y)")
-        data_file(mode="a",path=txt_effects,to_write = f"{side_effect}\n")
         print("Entry changes saved")
 
     if is_valid_entry(change_entry,"Enter the positive effect"):
         data[key_lastly_noted_change] = change
         add_to_database(key_positive_effects,change)
-        change += time_now.strftime(" (%a,%b %d %Y)")
-        data_file(mode="a",path=txt_changes,to_write = f"{change}\n")
         print("Entry changes saved")
         
     if is_valid_entry(next_step_entry,"Enter the next step"):
         data[key_next_step] = next_step
         add_to_database(key_next_steps,next_step)
-        next_step += time_now.strftime(" (%a,%b %d %Y)")
-        data_file(mode="a",path=txt_next_step,to_write=f"{next_step}\n")
         print("Entry changes saved")
 
 
@@ -420,10 +390,6 @@ def show_changes_side_effects_click(destroy=True):
     done_button = Button(frame_edit,textvariable=done_button_var,command = lambda : accuracy_frame(frame_edit),font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
     done_button.place(relx=.6,anchor=CENTER,rely=.95,relheight=.08)
 
-    next_steps = data_file(mode="r",path=txt_next_step).replace("\n","\n   ")
-    effects = data_file(mode="r",path=txt_effects).replace("\n","\n   ")
-    changes = data_file(mode="r",path=txt_changes).replace("\n","\n   ")
-
     # txt_format = f"{key_next_steps} :\n\n   {next_steps}\n\n\n {key_positive_effects} :\n\n   {changes}\n\n\n{key_negative_Effects} :\n\n   {effects}"
     txt_format = f"{key_positive_effects} :\n\n   {changes}\n\n\n{key_negative_Effects} :\n\n   {effects}\n\n\n{key_next_steps} :\n\n   {next_steps}"
     text_widget = Text(frame_edit,font=("Times New Roman",20),padx=5,pady=5)
@@ -441,7 +407,7 @@ def edit_steps():
     text_widget.configure(state=NORMAL)
     text_widget.delete(1.0,END)
     text_widget.insert(END,f" Next Step :\n\n   {next_steps}")
-    edit_button.configure(command = lambda : save_txt(txt_next_step))
+    # edit_button.configure(command = lambda : save_txt(txt_next_step))
     done_button.configure(command = lambda : edit_changes())
 
 
@@ -450,7 +416,7 @@ def edit_changes():
     edit_button_var.set("Save")
     text_widget.delete(1.0,END)
     text_widget.insert(END,f" Positive Effects :\n\n   {changes}")
-    edit_button.configure(command = lambda : save_txt(txt_changes))
+    # edit_button.configure(command = lambda : save_txt(txt_changes))
     done_button.configure(command = lambda : edit_effects())
 
 
@@ -460,36 +426,7 @@ def edit_effects():
     text_widget.delete(1.0,END)
     text_widget.insert(END,f" Side Effects :\n\n   {effects}")
     done_button.configure(command = lambda : accuracy_frame(frame_edit))
-    edit_button.configure(command=lambda : save_txt(txt_effects))
-
-
-@dispatch(str,str)
-def save_txt(file_name,effect_type):
-    save_txt(file_name)
-    edit_database(effect_type,file_name)
-
-
-@dispatch(str)
-def save_txt(file_name):
-    widget_data = text_widget.get(2.0,END).strip("\n").strip()
-    if not widget_data.isspace() and widget_data!="":
-        txt_data = widget_data + "\n"
-        data_file(mode="w",path=file_name,to_write=txt_data)
-    
-    else:
-        print("Empty text file saved")
-        data_file(mode="w",path=file_name,to_write="")
-
-    if file_name==txt_effects:
-        if edit_button_var.get()=="Show":
-            show_all()
-        else:
-            edit_button_var.set("Show")
-        
-    else:
-        edit_button_var.set("Saved")
-
-    print(file_name)
+    # edit_button.configure(command=lambda : save_txt(txt_effects))
 
 
 def tp_root_check(checked_vars):
@@ -834,14 +771,6 @@ def plot_data(key_plot_name,day_name,perc):
     return len(list_date)
 
 
-def write_to_firebase(to_write):
-    if data_base!=None:
-        data_base.child(user.uid).set(to_write)
-    
-    else:
-        print("Cannot write to database")
-
-
 def on_window_close():
     global percent,stop_thread,data_java
 
@@ -869,16 +798,12 @@ def on_window_close():
     if percent is None:
         percent = 0
 
-    percent_difference = percent - data[key_last_accuracy_percent]
     plot_data(key_plot_accuracy,week_days[today],percent)
     data[key_last_accuracy_percent] = percent
 
     if len_plot>show_plot_after or today==6:
         show_plot(clear=True,warn=False)
-        
-    formated_time_now = time_now.strftime("%d-%m-%y %H:%M:%S")
-    txt_file_write_data = f"{formated_time_now} :: {data}\n"
-    data_file(mode="a",path=txt_file_path,to_write=txt_file_write_data)
+
     data_file("wb",to_write=data)
 
     data_java = data_file("rb")
@@ -887,8 +812,8 @@ def on_window_close():
     convert_data("start_time")
     convert_data("lastly_relapsed")
 
-    if data_base!=None and user!=None:
-        write_to_firebase(data_java)
+    if user!=None:
+        user.write_to_data_base(data_java)
 
 
     exit("Process Completed")
@@ -930,74 +855,12 @@ def add_songs():
             print(f"{file_name} - File already found")
         
     msgbox(title=box_title,msg="Songs Added")
-
-
-def edit_notes():
-    note_text_data = note_text.get(2.0,END).strip().strip("\n").replace("\n    ","\n")
-
-    if txt_done_btn_var.get()=="Edit":
-        note_text.bind("<Button>",lambda e : on_edit_note_click())
-        note_text.bind("<Key>",lambda e : on_edit_note_click())
-        txt_done_btn_var.set("Save")
-        note_text.configure(state=NORMAL)
     
-    else:
-        if note_text_data=="":
-            print("Writing empty file")
-            data_file(to_write="",mode="w",path=txt_notes)
-
-        else:
-            data_file(to_write=note_text_data+"\n",mode="w",path=txt_notes)
-        txt_done_btn_var.set("Saved")
-    
-
-def add_note():
-    msg_root,ok_button,create = msgbox("Enter the note",master=root,entry=True,width=500,height=150)
-    ok_button.configure(command= lambda : save_notes_from_wid(mode="a",widget=msg_root,create=create))
-
-
-def save_notes_from_wid(mode,widget=None,create=None):
-    note = create.get().strip()
-    if note!="Enter the note" and note!="":
-        time_now_f = datetime.now().strftime(" (%d : %m : %y)")
-        note = f"* {note}{time_now_f}\n"
-        data_file(mode=mode,path=txt_notes,to_write=note)
-    widget.destroy()
-
 
 def on_edit_note_click():
     txt_done_btn_var.set("Save")
 
 
-def note_menu_cmd():
-    global note_text
-
-    root.withdraw()
-
-    txt_done_btn_var.set("Edit")
-
-    note_text_data = "    " +data_file(mode="r",path=txt_notes).replace("\n","\n    ")
-
-    top_level = Toplevel(master=root)
-    top_level.wm_geometry(f"600x450+{(screen_width//2)-300}+{(screen_height//2)}")
-
-    note_text = Text(top_level,font=("Times New Roman",20),padx=5,pady=5)
-    note_text.insert(0.0,"Notes : \n\n")
-    note_text.insert(INSERT,note_text_data)
-    note_text.configure(state=DISABLED)
-    note_text.place(relwidth=1,relheight=.9)
-
-    edit_btn = Button(top_level,command=edit_notes,textvariable=txt_done_btn_var,font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
-    edit_btn.place(relx=.4,anchor=CENTER,rely=.95,relheight=.08)
-
-    done_btn = Button(top_level,text="Done",command = lambda : on_note_close(top_level),font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue")
-    done_btn.place(relx=.6,anchor=CENTER,rely=.95,relheight=.08)
-
-    top_level.wm_protocol("WM_DELETE_WINDOW",lambda : on_note_close(top_level))
-
-    MessageBeep()
-
-    
 def on_note_close(tpr):
     tpr.destroy()
     root.deiconify()
@@ -1062,27 +925,30 @@ def show_plot(clear=False,warn=True):
                 relplace_habits_dict[key]["days_data"] = {}
 
 
-def reset():
+def reset(show_message=True):
     global data,data_base,data_java
 
-    if user==None:
+    if user==None and show_message:
         return msgbox("Login before reset")
     
     player.stop()
-    delete_files = [txt_next_step,txt_changes,txt_effects,txt_file_path,file_name,txt_notes]
+    delete_files = [file_name]
     for file_d in delete_files:
         print(f"{file_d} deleted")
         remove(file_d)
     
     root.withdraw()
+    
     data_java = start()
     convert_data("lastly_opened")
     convert_data("start_time")
     convert_data("lastly_relapsed")
     
-    write_to_firebase(data_java)
+    user.write_to_data_base(data_java)
+
     logout()
-    msgbox(title=box_title,msg="Successfully reseted",destroy_root=True)
+
+    if show_message : msgbox(title=box_title,msg="Successfully reseted",destroy_root=True)
 
 
 def login(username_or_email,password):
@@ -1125,9 +991,7 @@ def login(username_or_email,password):
                 print(data_file(mode="wb",path=app_data,to_write=save_data))
                 print("Login details saved")
 
-                data_base = user.get_data_base()
-
-                get_database_data(data_base)
+                get_database_data()
 
                 ask_frame_window()
 
@@ -1202,7 +1066,7 @@ def forget_password_fun():
         MessageBeep()
 
         label = Label(box_root,text=msg,font=("Times New Roman",18))
-        ok_msg_btn = Button(box_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = lambda : [box_root.destroy(),open_gmail()])
+        ok_msg_btn = Button(box_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = lambda : [box_root.destroy(),open_gmail(),login_window()])
         
         label.place(relx=.5,rely=.3,anchor=CENTER,relwidth=.9)
         ok_msg_btn.place(relx=0.5,rely=0.8,width=50,height=30,anchor=CENTER)
@@ -1213,6 +1077,8 @@ def forget_password_fun():
 
 
 def login_window():
+    global frame_login
+    
     frame_login.update_idletasks()
 
     title = Label(frame_login,text="Login In To Repair Brain",font=("Times New Roman",22,"bold"),fg="black",bg="pink")
@@ -1252,11 +1118,16 @@ def logout():
 
     print("Loging out")
 
+    player.stop()
+
     if isfile(app_data):
-        player.stop()
         remove(app_data)
-        frame_login = Frame()
-        login_window()
+    
+    if isfile(file_name):
+        remove(file_name)
+        
+    frame_login = Frame()
+    login_window()
 
 
 def sign_in_window():
@@ -1420,29 +1291,36 @@ def sign_in_fn(entries):
 
 
     def run_on_thread():
-        global data ,data_base
+        global data_java ,data_base,user,data
 
         canvas = show_gif(frame_signin)
 
-        logout()
-
-        new_user = User(username=username,name=firstname,last_name=lastname,email=email,password=password)
-        user_created,msg = new_user.create_user_account()
-
+        user = User(username=username,name=firstname,last_name=lastname,email=email,password=password)
+        user_created,msg = user.create_user_account()
 
         if not user_created:
             canvas.destroy()
             msgbox(msg)
         
         else:
-            data_base = user.get_data_base()
-            write_to_firebase(to_write=start())
-            new_user.send_verification_link()
+            logout()
+
+            data_java = start()
+            data = start()
+
+            print(data_java)
+
+            convert_data("lastly_opened")
+            convert_data("start_time")
+            convert_data("lastly_relapsed")
+
+            user.write_to_data_base(data_java)
+
+            user.send_verification_link()
             box,button,entry =  msgbox("Verification link has been sent")
             button.configure(command = lambda : Thread(target=on_window_delete,args=(box,)).start())
             canvas.destroy()
             frame_signin.destroy()
-            login_window()
 
 
     Thread(target=run_on_thread).start()
@@ -1483,11 +1361,8 @@ def add_temp_ok(days,tp):
     except:
         msgbox("Invalid data")
         return
-    date = time_now.day
-    month = time_now.month
-    year = time_now.year
+
     show_plot(clear=True,warn=False)
-    data[key_habits_cache] = {"cache" : data[key_replace_habits],"days":no_of_days,"start_day":datetime(year,month,date)}
     data[key_replace_habits] = OrderedDict()
     add_habit_frame(temp=True)
     frame_accuracy.destroy()
@@ -1495,35 +1370,19 @@ def add_temp_ok(days,tp):
     min_replace_habit_len = 1
 
 
-def erase_temp_data(erase_only):
-    print("Rewriting habits data")
-    if not erase_only:
-        show_plot(warn=False,clear=True)
-
-    if data[key_habits_cache] is not None:
-        data[key_replace_habits] = data[key_habits_cache]["cache"]
-        data[key_habits_cache] = None
-        msgbox("Temp tasks cleared")
-
-    else:
-        msgbox("Temp tasks not found")
-
-
-
 def start():
     data = {}
-    data[key_lastly_opened] = data[key_start_time] =  time_now
+    data[key_lastly_opened] = data[key_start_time] =  datetime.now()
     data[key_lastly_relapsed] = data[key_lastly_noted_change] = data[key_lastly_noted_side_effect] = data[key_next_step] = "Not Found"
     data[key_replace_habits] = OrderedDict() # { habit :{show_at:int,days_data:{}}}
-    data[key_habits_cache] = None
     data[key_plot_accuracy] = {"date":[],"value":[]}
     data[key_last_accuracy_percent] = 0
-    data[key_pos_list] = []
-    data[key_neg_list] = []
-    data[key_step_list] = []
     data[key_positive_effects] = {}
     data[key_negative_Effects] = {}
     data[key_next_steps] = {}
+    data[key_positive_effects+" list"] = []
+    data[key_negative_Effects+" list"] = []
+    data[key_next_steps+" list"] = []
     data_file(mode="wb",to_write=data)
     return data
 
@@ -1532,13 +1391,18 @@ def start():
 time_now = datetime.now()
 
 
-def get_database_data(data_base):
-    print(data_base)
-    try:
-        assert data_base is not None
+def get_database_data():
+    global user,data
 
+    try:
+        assert user is not None
+
+        data_base = User.get_database_reference()
         data_net = data_base.child(user.uid).get().val()
-        data_net[key_habits_cache] = data[key_habits_cache]
+
+        
+        print("Data Net",data_net)
+
         data_net[key_lastly_opened] = dict_to_datatime(data[key_lastly_opened])
         data_net[key_lastly_relapsed] = dict_to_datatime(data[key_lastly_relapsed])
         data_net[key_start_time] = dict_to_datatime(data[key_start_time])
@@ -1546,17 +1410,10 @@ def get_database_data(data_base):
 
         print("Loading data from database")
 
-    except:
+    except Exception as e:
+        print(e)
         print("Loding local data base")
         data = data_file(path=file_name)
-
-
-    if data[key_habits_cache] is not None:
-        min_replace_habit_len = 1
-        if (time_now - data[key_habits_cache]["start_day"]).days>=data[key_habits_cache]["days"]:
-            erase_temp_data(erase_only=False)
-
-
 
 
 
@@ -1568,6 +1425,9 @@ else:
 
 
 def dict_to_datatime(dict):
+    if type(dict) == type(datetime.now()):
+        return dict 
+    
     day = dict["day"]
     hour = dict["hour"]
     minute = dict["minute"]
@@ -1588,12 +1448,10 @@ if isfile(app_data):
     user = User(username=None,email=email,password=password,name=None,last_name=None)
     (success,msg) = user.login_with_email(password)
     if success:
-        data_base = user.get_data_base()
         ask_frame_window()
 
     else:
         logout()
-        login_window()
 
 
 else:
@@ -1604,20 +1462,7 @@ else:
 
 
 
-if not isfile(txt_file_path):
-    started_date = "Started Date (date,month,year) : " + time_now.strftime("%d-%m-%y")
-    started_time = "Started Time (hours,mins,secs) : " + time_now.strftime("%H:%M:%S")
-    data_file(mode="a",path=txt_file_path,to_write=f"{started_date}\n{started_time}\n\nWriting Format : Date-Month-Year Hours:Minutes:Seconds :: data\n\n")
-
-else:
-    txt_file_size = getsize(txt_file_path)
-    print("Data file size : ",txt_file_size)
-    if txt_file_size>10**5:
-        remove(txt_file_path)
-        print("Data file deleted")
-
-
-create_file_names = (txt_next_step,txt_changes,txt_effects,txt_file_path,file_name,txt_notes)
+create_file_names = (file_name,)
 for name in create_file_names:
     if not isfile(name):
         data_file(mode="a",path=name,to_write="")
@@ -1645,11 +1490,6 @@ settings_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 settings_menu.add_command(label="Add songs",command=add_songs)  
 settings_menu.add_command(label="Run on start",command=run_on_start)
 
-temp_tasks_menu = Menu(settings_menu,tearoff=0,font=("Times New Roman",12))
-temp_tasks_menu.add_command(label="Add",command=add_temp_tasks)
-temp_tasks_menu.add_command(label="Clear",command= lambda : erase_temp_data(erase_only=True))
-
-settings_menu.add_cascade(label="Temp tasks",menu=temp_tasks_menu)
 settings_menu.add_command(label="Remove replace habits",command=change_replace_habits) 
 settings_menu.add_command(label="Reset",command=reset)
 settings_menu.add_command(label="Logout",command=logout)
@@ -1673,11 +1513,6 @@ contact_developer_menu.add_cascade(label="Email",menu=email_menu)
 main_menu = Menu(root,tearoff=0,font=("Times New Roman",12))  
 # main_menu.add_cascade(label="Open",menu=open_menu)
 
-note_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
-note_menu.add_command(label="Add",command = add_note)
-#cnote_menu.add_command(label="Show",command = note_menu_cmd)
-
-main_menu.add_cascade(label="Notes",menu = note_menu)
 main_menu.add_cascade(label="Settings",menu=settings_menu)
 main_menu.add_command(label="Show plot",command=show_plot)
 main_menu.add_command(label="Open in Github",command=lambda : open_new_tab(git_link))
