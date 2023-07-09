@@ -58,7 +58,6 @@ database_url = "https://repair-brain-20-default-rtdb.firebaseio.com"
 
 week_days = ("Mon","Tue","Wed","Thur","Fri","Sat","Sun")
 
-percent = None
 msg_root = None
 replace_habits = None
 check_btn_vars = None
@@ -66,6 +65,8 @@ tp_root = None
 stop_thread = False
 data_base = None
 user = None
+data = None
+percent = None
 
 max_replace_habit_len = 7
 min_replace_habit_len = 3
@@ -343,6 +344,7 @@ def no_button_click():   # free
 def add_to_database(effect_type,effect):
     global data
     time_now = datetime.now().strftime("%a,%b %d %Y")
+    print("Add to data base : ",effect_type,effect)
     data[effect_type][effect]  = time_now
     key_name = effect_type + " list"
     print(data[key_name].append(effect))
@@ -780,6 +782,9 @@ def on_window_close():
     print("Window closed")
 
     player.stop()
+
+    if data is None: return 
+
     time_now = datetime.now()
     data[key_lastly_opened] = time_now
     
@@ -804,13 +809,13 @@ def on_window_close():
     if len_plot>show_plot_after or today==6:
         show_plot(clear=True,warn=False)
 
-    data_file("wb",to_write=data)
 
-    data_java = data_file("rb")
+    data_java = data
     
     convert_data("lastly_opened")
     convert_data("start_time")
     convert_data("lastly_relapsed")
+
 
     if user!=None:
         user.write_to_data_base(data_java)
@@ -932,10 +937,6 @@ def reset(show_message=True):
         return msgbox("Login before reset")
     
     player.stop()
-    delete_files = [file_name]
-    for file_d in delete_files:
-        print(f"{file_d} deleted")
-        remove(file_d)
     
     root.withdraw()
     
@@ -988,7 +989,6 @@ def login(username_or_email,password):
                 save_data["password"] = password_str 
                 save_data["email"] = user.email
 
-                print(data_file(mode="wb",path=app_data,to_write=save_data))
                 print("Login details saved")
 
                 get_database_data()
@@ -1122,10 +1122,10 @@ def logout():
 
     if isfile(app_data):
         remove(app_data)
-    
-    if isfile(file_name):
-        remove(file_name)
         
+    if frame_login.winfo_exists():
+        frame_login.destroy()
+
     frame_login = Frame()
     login_window()
 
@@ -1347,29 +1347,6 @@ def ask_frame_window():
     frame_ask.place(relheight=1,relwidth=1)
 
 
-def add_temp_tasks():
-    top_level,ok_button,entry = msgbox("Enter the no. of days",root,entry=True)
-    ok_button.configure(command=lambda : add_temp_ok(entry.get(),top_level))
-    
-
-def add_temp_ok(days,tp):
-    global min_replace_habit_len,frame_accuracy
-
-    tp.destroy()
-    try:
-        no_of_days = int(days)
-    except:
-        msgbox("Invalid data")
-        return
-
-    show_plot(clear=True,warn=False)
-    data[key_replace_habits] = OrderedDict()
-    add_habit_frame(temp=True)
-    frame_accuracy.destroy()
-    frame_accuracy = Frame()
-    min_replace_habit_len = 1
-
-
 def start():
     data = {}
     data[key_lastly_opened] = data[key_start_time] =  datetime.now()
@@ -1380,10 +1357,11 @@ def start():
     data[key_positive_effects] = {}
     data[key_negative_Effects] = {}
     data[key_next_steps] = {}
+    data[key_plot_accuracy] = {}
     data[key_positive_effects+" list"] = []
     data[key_negative_Effects+" list"] = []
     data[key_next_steps+" list"] = []
-    data_file(mode="wb",to_write=data)
+    
     return data
 
 
@@ -1392,42 +1370,31 @@ time_now = datetime.now()
 
 
 def get_database_data():
-    global user,data
+    global data
 
-    try:
-        assert user is not None
+    data_base = User.get_database_reference()
+    data_net = data_base.child(user.uid).get().val()
 
-        data_base = User.get_database_reference()
-        data_net = data_base.child(user.uid).get().val()
+    if data_net is None:
+        data = start()
+        return
 
-        
-        print("Data Net",data_net)
+    
+    print("Data Net",data_net)
 
-        data_net[key_lastly_opened] = dict_to_datatime(data[key_lastly_opened])
-        data_net[key_lastly_relapsed] = dict_to_datatime(data[key_lastly_relapsed])
-        data_net[key_start_time] = dict_to_datatime(data[key_start_time])
-        data = data_net
-
-        print("Loading data from database")
-
-    except Exception as e:
-        print(e)
-        print("Loding local data base")
-        data = data_file(path=file_name)
-
-
-
-if not isfile(file_name):
-    data = start()
-
-else:
-    data = data_file()
+    lastly_opened = data_net[key_lastly_opened]
+    lastly_relapsed = data_net[key_lastly_relapsed]
+    start_time = data_net[key_start_time]
+    data_net[key_lastly_opened] = dict_to_datatime(lastly_opened)
+    data_net[key_lastly_relapsed] = dict_to_datatime(lastly_relapsed)
+    data_net[key_start_time] = dict_to_datatime(start_time)
+    data = data_net
 
 
 def dict_to_datatime(dict):
-    if type(dict) == type(datetime.now()):
-        return dict 
-    
+    if type(dict)==str:
+        return dict
+
     day = dict["day"]
     hour = dict["hour"]
     minute = dict["minute"]
@@ -1457,15 +1424,6 @@ if isfile(app_data):
 else:
     print("user data not found")
     login_window()
-
-
-
-
-
-create_file_names = (file_name,)
-for name in create_file_names:
-    if not isfile(name):
-        data_file(mode="a",path=name,to_write="")
 
 
 
