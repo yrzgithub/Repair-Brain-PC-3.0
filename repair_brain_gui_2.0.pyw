@@ -772,11 +772,15 @@ def ok_button_click():
 def convert_data(key):
     global data_java
     dict_time = data_java[key]
-    if(type(dict_time)!=str):
+
+    if(type(dict_time)==datetime):
         time = {"year":dict_time.year,"month":dict_time.month,"day":dict_time.day,"hour":dict_time.hour,"minute":dict_time.minute,"second":dict_time.second}
         data_java[key] = time
         data_java["replace_habits_list"] = list(data_java[key_replace_habits].keys())
         return data_java
+
+    else:
+        print(dict_time)
 
 
 def plot_data(key_plot_name,day_name,perc):
@@ -802,7 +806,7 @@ def on_window_close():
 
     if data is None: 
         root.destroy()
-        return 
+        exit(0)
 
     time_now = datetime.now()
     data[key_lastly_opened] = time_now
@@ -845,36 +849,34 @@ def on_window_close():
 
         print("Closing thread running")
 
-
-        def close_window():
-            root.destroy()
-            print("Window closed")
-            exit("Process Completed")
-
-        print(user)    
-
         if user!=None:
-            show_gif(root)
+            canvas = show_gif(root)
+            
             success = user.write_to_data_base(data_java)
+
+            canvas.destroy()
 
             print(success)
 
             if not success:
                 root.withdraw()
                 msg_root,btn,label = msgbox("Data not updated")
-                msg_root.protocol("WM_DELETE_WINDOW",close_window)
-                btn.configure(command=close_window)
+                msg_root.protocol("WM_DELETE_WINDOW",root.destroy)
+                btn.configure(command=root.destroy)
         
             else:
                 print("Else called")
-                close_window()
+                root.destroy()
 
         else:
-            close_window()
+            root.destroy()
+        
+        exit(0)
 
 
 
-    Thread(target=run_on_thread).start()
+    close_thread = Thread(target=run_on_thread)
+    close_thread.start()
 
 
 def entry_button_click(entry):
@@ -1474,8 +1476,23 @@ frames_thread.start()
 def connect():
     global user
 
-    if isfile(app_data):
+    if isfile(app_data):   
+        gif_text = StringVar()
+
+        label = Label(width=screen_width,height=screen_height,textvariable=gif_text,font=("Times New Roman",50))
+        label.pack(fill=BOTH,expand=1)
+
+
+        def run(index):
+            gif_text.set("waiting"+"." * (index % 4))
+            
+            label.after(500,lambda : run(index+1))
+        
+        run(0)
+
         frames_thread.join()
+
+        label.destroy()
 
         canvas = show_gif(root)
 
