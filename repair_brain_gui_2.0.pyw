@@ -242,7 +242,7 @@ def check_version():
         print("Already in the latest version")
 
     except Exception as e:
-        print(e)
+        print(str(e))
         return msgbox("Can't connect to database")
 
     else:
