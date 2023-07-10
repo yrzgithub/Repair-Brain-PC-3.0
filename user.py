@@ -52,7 +52,7 @@ class User:
             
         except Exception as e:
             print(e)
-            return False,"Something went Wrong"
+            return False,str(e)
 
         else:
             print("Login is successful")
@@ -97,7 +97,7 @@ class User:
             
         except Exception as e:
             # print(e)
-            return False,"Something Went Wrong"
+            return False,str(e)
         
         else:
             append = {self.user_name:self.email}
@@ -142,7 +142,7 @@ class User:
         
         except Exception as e:
             print(e)
-            return False,"Something went wrong"
+            return False,str(e)
         
         else:
             data = user["users"][0]
