@@ -228,7 +228,7 @@ def msgbox(msg,master=root,title=box_title,destroy_root=False,entry=False,width=
 def check_version():
     try:
         database_data = User.get_database_reference().child("versions").child("latest_version").get().val()
-        print(database_data)
+        print(User.get_database_reference().get().val())
         latest_version_name = database_data["name"]
         print("Connected to data base")
         assert current_version_name<latest_version_name

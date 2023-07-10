@@ -162,6 +162,7 @@ class User:
 
     @staticmethod
     def get_database_reference():
+        print("Database ",db)
         return db
 
 
