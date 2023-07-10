@@ -851,20 +851,14 @@ def on_window_close():
             print("Window closed")
             exit("Process Completed")
 
-<<<<<<< HEAD
         print(user)    
-=======
->>>>>>> 3835f918a90568923e118a9df2cfc7c3c04459db
 
         if user!=None:
             show_gif(root)
             success = user.write_to_data_base(data_java)
 
-<<<<<<< HEAD
             print(success)
 
-=======
->>>>>>> 3835f918a90568923e118a9df2cfc7c3c04459db
             if not success:
                 root.withdraw()
                 msg_root,btn,label = msgbox("Data not updated")
@@ -872,10 +866,7 @@ def on_window_close():
                 btn.configure(command=close_window)
         
             else:
-<<<<<<< HEAD
                 print("Else called")
-=======
->>>>>>> 3835f918a90568923e118a9df2cfc7c3c04459db
                 close_window()
 
         else:
