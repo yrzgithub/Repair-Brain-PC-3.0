@@ -831,9 +831,6 @@ def on_window_close():
     if len_plot>show_plot_after or today==6:
         show_plot(clear=True,warn=False)
 
-    root.destroy()
-    print("Window closed")
-
     player.stop()
 
     data_java = data
@@ -843,11 +840,37 @@ def on_window_close():
     convert_data("lastly_relapsed")
 
 
-    if user!=None:
-        user.write_to_data_base(data_java)
+    def run_on_thread():
+        success = True
+
+        print("Closing thread running")
 
 
-    exit("Process Completed")
+        def close_window():
+            root.destroy()
+            print("Window closed")
+            exit("Process Completed")
+
+
+        if user!=None:
+            show_gif(root)
+            success = user.write_to_data_base(data_java)
+
+            if not success:
+                root.withdraw()
+                msg_root,btn,label = msgbox("Data not updated")
+                msg_root.protocol("WM_DELETE_WINDOW",close_window)
+                btn.configure(command=close_window)
+        
+            else:
+                close_window()
+
+        else:
+            close_window()
+
+
+
+    Thread(target=run_on_thread).start()
 
 
 def entry_button_click(entry):
@@ -976,7 +999,9 @@ def reset(show_message=True):
     convert_data("start_time")
     convert_data("lastly_relapsed")
     
-    user.write_to_data_base(data_java)
+    success = user.write_to_data_base(data_java)
+    if not success and show_message:
+        return msgbox("Can't connect to database")
 
     logout()
 
@@ -1147,7 +1172,10 @@ def login_window():
 
 
 def logout():
-    global frame_login
+    global frame_login,user,data
+
+    user = None
+    data = None
 
     print("Loging out")
 
