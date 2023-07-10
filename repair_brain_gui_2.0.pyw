@@ -21,7 +21,6 @@ from os.path import isfile
 import pyperclip
 import vlc
 
-
 box_title = "Repair Brain"
 screen_name = "Repair Brain"
 plot_name_accuracy_plot = "Accuracy plot"
