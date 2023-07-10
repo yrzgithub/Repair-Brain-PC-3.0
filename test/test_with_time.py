@@ -25,4 +25,5 @@ for i in range(n):
     week_day = now.weekday()
     win32api.SetSystemTime(year,month,week_day,day+1,0,0,0,0)
     print("Day : ",week_days[datetime.now().weekday()])
+    print("Opening file")
     system(r'py "D:\My Apps\Repair Brain\Version 2\Repair Brain Python\repair_brain_gui_2.0.pyw"')

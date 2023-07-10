@@ -195,37 +195,12 @@ def data_file(mode="rb",path=None,to_write=None):
     return out
 
 
-def check_version():
-    try:
-        database_data = User.get_database_reference().child("versions").child("latest_version").get().val()
-        print(database_data)
-        latest_version_name = database_data["name"]
-        print("Connected to data base")
-        assert current_version_name<latest_version_name
-        msg_root,ok_msg_btn,create = msgbox("New Version Available")
-        latest_version_link = database_data["link"]
-        ok_msg_btn.configure(text="update",command=lambda : update_app(msg_root,latest_version_link))
-        ok_msg_btn.place(relx=0.5,rely=0.73,anchor=CENTER,width=90,height=40)
-
-    except AssertionError as e:
-        print(e)
-        print("Already in the latest version")
-
-    except Exception as e:
-        print("Can't connect to database")
-        print(e)
-
-    else:
-        print("Connected to database")
-
-
 def update_app(msg_root,link):
     msg_root.destroy()
     open_new_tab(link)
     msgbox(r"Follow the instructions in this github page")
     
 
-        
 def msgbox(msg,master=root,title=box_title,destroy_root=False,entry=False,width=650,height=200):
     msg_root = Toplevel(master=master)
     msg_root.wm_geometry(f"{width}x{height}+{(screen_width//2)-(width)//2}+{(screen_height//2)+(height)//2}")
@@ -248,6 +223,30 @@ def msgbox(msg,master=root,title=box_title,destroy_root=False,entry=False,width=
     MessageBeep()
 
     return msg_root,ok_msg_btn,create
+
+
+def check_version():
+    try:
+        database_data = User.get_database_reference().child("versions").child("latest_version").get().val()
+        print(database_data)
+        latest_version_name = database_data["name"]
+        print("Connected to data base")
+        assert current_version_name<latest_version_name
+        msg_root,ok_msg_btn,create = msgbox("New Version Available")
+        latest_version_link = database_data["link"]
+        ok_msg_btn.configure(text="update",command=lambda : update_app(msg_root,latest_version_link))
+        ok_msg_btn.place(relx=0.5,rely=0.73,anchor=CENTER,width=90,height=40)
+
+    except AssertionError as e:
+        print(e)
+        print("Already in the latest version")
+
+    except Exception as e:
+        return msgbox("Can't connect to database")
+        print(e)
+
+    else:
+        print("Connected to database")
 
 
 def next():

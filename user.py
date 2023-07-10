@@ -1,8 +1,5 @@
 from pyrebase import initialize_app
 from requests.exceptions import HTTPError
-from email.message import EmailMessage
-from smtplib import SMTP
-from threading import Thread
 from json import loads
 
 
@@ -54,19 +51,25 @@ class User:
             return False,error
             
         except Exception as e:
-            #print(e)
+            print(e)
             return False,"Something went Wrong"
 
         else:
             print("Login is successful")
             self.idToken = results["idToken"]
             self.uid = results["localId"]
-            self.get_user_data()
+            success,msg = self.get_user_data()
+            if not success:
+                return False,msg
             return True,"Login Successful"
         
 
-    def login_with_username(self,entered_password):                                                   # done
-        email = db.child("ids").child(self.user_name).get().val()
+    def login_with_username(self,entered_password):        
+        try:                                           # done
+            email = db.child("ids").child(self.user_name).get().val()
+        
+        except:
+            return False,"Can't connect to data base"
 
         if email is None:
             return False,"Username Not Found"
@@ -134,14 +137,21 @@ class User:
     
 
     def get_user_data(self):
-        user = auth.get_account_info(self.idToken)
-        data = user["users"][0]
-        self.email = data["email"] 
-        self.verified = data["emailVerified"]
-        self.uid = data["localId"]
-        #print(user)
+        try:
+            user = auth.get_account_info(self.idToken)
+        
+        except Exception as e:
+            print(e)
+            return False,"Something went wrong"
+        
+        else:
+            data = user["users"][0]
+            self.email = data["email"] 
+            self.verified = data["emailVerified"]
+            self.uid = data["localId"]
+            #print(user)
 
-        return self
+            return True,"Userdata successfull fetched"
     
 
     def write_to_data_base(self,to_write):
