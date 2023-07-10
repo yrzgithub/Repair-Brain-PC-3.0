@@ -132,21 +132,22 @@ frame_login = Frame()
 frame_signin = Frame()
 
 
-# gif frames
-gif = Image.open(gif_path)
 
 frames = []
-while True:
-    frames.append(PhotoImage(gif))
-    try:
-        gif.seek(len(frames))
-    except EOFError:
-        break
+
+def get_frames():
+    # gif frames
+    gif = Image.open(gif_path)
+
+    while True:
+        frames.append(PhotoImage(gif))
+        try:
+            gif.seek(len(frames))
+        except EOFError:
+            break
 
 
-print("No of frames : ",len(frames))
-
-
+    print("No of frames : ",len(frames))
 
 
 def time_manager():
@@ -850,10 +851,13 @@ def on_window_close():
             print("Window closed")
             exit("Process Completed")
 
+        print(user)    
 
         if user!=None:
             show_gif(root)
             success = user.write_to_data_base(data_java)
+
+            print(success)
 
             if not success:
                 root.withdraw()
@@ -862,6 +866,7 @@ def on_window_close():
                 btn.configure(command=close_window)
         
             else:
+                print("Else called")
                 close_window()
 
         else:
@@ -1462,27 +1467,46 @@ def dict_to_datatime(dict):
 
 data_base = None
 
-if isfile(app_data):
-    login_data = data_file(path=app_data)
-    email = login_data["email"]
-    password = login_data["password"]
-    user = User(username=None,email=email,password=password,name=None,last_name=None)
-    (success,msg) = user.login_with_email(password)
-    if success:
-        get_database_data()
-        ask_frame_window()
+frames_thread = Thread(target=get_frames)
+frames_thread.start()
+
+
+def connect():
+    global user
+
+    if isfile(app_data):
+        frames_thread.join()
+
+        canvas = show_gif(root)
+
+        login_data = data_file(path=app_data)
+        email = login_data["email"]
+        password = login_data["password"]
+        user = User(username=None,email=email,password=password,name=None,last_name=None)
+        (success,msg) = user.login_with_email(password)
+        if success:
+            get_database_data()
+            ask_frame_window()
+
+        else:
+            logout()
+
+        canvas.destroy()
+
 
     else:
-        logout()
-
-
-else:
-    print("user data not found")
-    login_window()
+        print("user data not found")
+        login_window()
 
 
 
-Thread(target=check_version).start()
+connect_thread = Thread(target=connect)
+update_thread = Thread(target=check_version)
+
+connect_thread.start()
+update_thread.start()
+
+
        
 open_menu = Menu(root,tearoff=0,font=("Times New Roman",12))
 
