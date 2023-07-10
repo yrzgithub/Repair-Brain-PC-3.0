@@ -155,9 +155,15 @@ class User:
     
 
     def write_to_data_base(self,to_write):
-        #("Database write",to_write)
-
-        db.child(self.uid).set(to_write)
+        try:
+            db.child(self.uid).set(to_write)
+        
+        except Exception as e:
+            print(str(e))
+            return False
+        
+        else:
+            return True
     
 
     @staticmethod
