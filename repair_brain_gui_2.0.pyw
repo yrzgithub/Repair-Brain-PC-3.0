@@ -1,3 +1,5 @@
+print("Loading started")
+
 from tkinter import *
 from PIL import Image
 from PIL.ImageTk import PhotoImage
@@ -21,6 +23,8 @@ from os.path import isfile
 import pyperclip
 import vlc
 
+print("Loading completed")
+
 box_title = "Repair Brain"
 screen_name = "Repair Brain"
 plot_name_accuracy_plot = "Accuracy plot"
@@ -42,7 +46,8 @@ key_next_steps = "Next Steps"
 app_data = "pkls\\app_data.pkl"
 
 icon_name = "icon\\favicon.ico"
-gif_path = "images\\loading.gif"
+gif_path_loading = "images\\loading.gif"
+gif_path_connecting = "images\\connecting.gif"
 
 bgm_folder = "bgm"
 
@@ -110,6 +115,9 @@ free_img = PhotoImage(image=free_img)
 hand_cuffed_img = Image.open(fp="images\\hand_cuffed.jpg").resize(size=(230,230))
 hand_cuffed_img = PhotoImage(image=hand_cuffed_img)
 
+loading_image = Image.open("images\\loading.gif")
+loading_image = PhotoImage(loading_image)
+
 root.config(bg="pink")
 
 top_string = StringVar()
@@ -133,9 +141,10 @@ frame_signin = Frame()
 
 
 
-frames = []
+frames_loading = []
+frames_connecting = []
 
-def get_frames():
+def get_frames(gif_path,frames):
     # gif frames
     gif = Image.open(gif_path)
 
@@ -844,13 +853,10 @@ def on_window_close():
     convert_data("lastly_relapsed")
 
 
-    def run_on_thread():
-        success = True
-
-        print("Closing thread running")
-
-        if user!=None:
-            canvas = show_gif(root)
+    if user!=None:
+        
+        def run_on_thread():
+            canvas = show_gif(root,frames_connecting)
             
             success = user.write_to_data_base(data_java)
 
@@ -866,17 +872,15 @@ def on_window_close():
         
             else:
                 print("Else called")
-                root.destroy()
-
-        else:
-            root.destroy()
-        
-        exit(0)
+                root.withdraw()
+                root.after(500,root.destroy)
 
 
+        Thread(target=run_on_thread).start()
 
-    close_thread = Thread(target=run_on_thread)
-    close_thread.start()
+    else:
+        root.destroy()
+
 
 
 def entry_button_click(entry):
@@ -1030,7 +1034,7 @@ def login(username_or_email,password):
     def run_on_thread():
         global data_base,user
 
-        canvas = show_gif(frame_login)
+        canvas = show_gif(frame_login,frames_connecting)
 
 
         if "@gmail.com" in user_name_txt:
@@ -1072,7 +1076,7 @@ def login(username_or_email,password):
     Thread(target=run_on_thread).start()  
     
     
-def show_gif(frame):
+def show_gif(frame,frames):
    
     canvas = Canvas(frame,width=root.winfo_width(),height=root.winfo_height(),bg="white")
     canvas.pack(fill=BOTH,expand=1,anchor=CENTER)
@@ -1115,7 +1119,7 @@ def forget_password_fun():
             box_root.destroy()
             return msgbox(msg="Invalid E-mail",entry=False)
         
-        canvas = show_gif(box_root)
+        canvas = show_gif(box_root,frames_connecting)
 
         success,msg = User.send_password_reset_link(email)
 
@@ -1360,7 +1364,7 @@ def sign_in_fn(entries):
     def run_on_thread():
         global data_java ,data_base,user,data
 
-        canvas = show_gif(frame_signin)
+        canvas = show_gif(frame_signin,frames_connecting)
 
         user = User(username=username,name=firstname,last_name=lastname,email=email,password=password)
         user_created,msg = user.create_user_account()
@@ -1469,7 +1473,7 @@ def dict_to_datatime(dict):
 
 data_base = None
 
-frames_thread = Thread(target=get_frames)
+frames_thread = Thread(target = lambda :[get_frames(gif_path_connecting,frames_connecting)])
 frames_thread.start()
 
 
@@ -1477,25 +1481,17 @@ def connect():
     global user
 
     if isfile(app_data):   
-        gif_text = StringVar()
-
-        label = Label(width=screen_width,height=screen_height,textvariable=gif_text,font=("Times New Roman",50))
-        label.pack(fill=BOTH,expand=1)
-
-
-        def run(index):
-            gif_text.set("waiting"+"." * (index % 4))
-            
-            label.after(500,lambda : run(index+1))
-        
-        run(0)
+        canvas = Canvas()
+        canvas.create_image((root.winfo_width()-loading_image.width())//2,(root.winfo_height()-loading_image.height())//2,image=loading_image,anchor=NW)
+        canvas.pack(expand=1,fill=BOTH)
 
         frames_thread.join()
 
-        label.destroy()
+        # print(frames_connecting)
 
-        canvas = show_gif(root)
+        canvas.destroy()
 
+        canvas = show_gif(root,frames_connecting)
         login_data = data_file(path=app_data)
         email = login_data["email"]
         password = login_data["password"]
