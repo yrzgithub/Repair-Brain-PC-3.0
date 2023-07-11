@@ -1,13 +1,13 @@
 print("Loading started")
 
 from tkinter import *
+from threading import Thread
 from PIL import Image
 from PIL.ImageTk import PhotoImage
 from pickle import load,dump 
 from datetime import datetime
 from os.path import isfile,expanduser,isdir
 from os import listdir,system,remove,mkdir
-from threading import Thread
 from time import sleep
 from random import choice
 from tkinter.filedialog import askopenfilenames
@@ -100,7 +100,7 @@ player.set_media(media)
 
 MessageBeep()
 
-root = Tk()
+root = Tk(screenName="main_screen")
 
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenmmheight()
