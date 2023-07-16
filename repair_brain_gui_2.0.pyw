@@ -1,5 +1,6 @@
 print("Loading started")
 
+import activate
 from tkinter import *
 from threading import Thread
 from PIL import Image
