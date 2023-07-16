@@ -125,8 +125,8 @@ class User:
             message = error_json["error"]["message"].lower().replace("_"," ").title()
             return False,message
 
-        except:
-            return False,"Something Went Wrong"
+        except Exception as e:
+            return False,str(e)
 
         else:
             return True,"Password Resent Link Sent"
