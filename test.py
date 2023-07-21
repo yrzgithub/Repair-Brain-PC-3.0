@@ -227,7 +227,7 @@ def msgbox(msg,master=root,title=box_title,destroy_root=False,entry=False,width=
         create = Label(msg_root,font=("Times New Roman",18),text=msg)
         
     create.place(relx=.5,rely=.3,anchor=CENTER,relwidth=.9)
-    ok_msg_btn = Button(msg_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = msg_root.destroy if not destroy_root else root.destroy)
+    ok_msg_btn = Button(msg_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = msg_root.destroy if not destroy_root else lambda :[root.destroy(),input("Press enter to exit...")])
     ok_msg_btn.place(relx=0.5,rely=0.8,width=50,height=30,anchor=CENTER)
 
     MessageBeep()
@@ -816,6 +816,7 @@ def on_window_close():
 
     if data is None: 
         root.destroy()
+        input("Press enter to exit...")
         exit(0)
 
     time_now = datetime.now()
@@ -868,20 +869,20 @@ def on_window_close():
             if not success:
                 root.withdraw()
                 msg_root,btn,label = msgbox("Data not updated")
-                msg_root.protocol("WM_DELETE_WINDOW",root.destroy)
-                btn.configure(command=root.destroy)
+                msg_root.protocol("WM_DELETE_WINDOW",lambda :[root.destroy(),input("Press enter to exit...")])
+                btn.configure(command=lambda :[root.destroy(),input("Press enter to exit...")])
         
             else:
                 print("Else called")
                 root.withdraw()
-                root.after(500,root.destroy)
+                root.after(500,lambda :[root.destroy(),input("Press enter to exit...")])
 
 
         Thread(target=run_on_thread).start()
 
     else:
         root.destroy()
-
+        input("Press enter to exit...")
 
 
 def entry_button_click(entry):
