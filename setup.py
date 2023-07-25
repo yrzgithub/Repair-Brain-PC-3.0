@@ -1,5 +1,8 @@
 from os import system
 
+
+# sudo dnf install python3-tkinter
+
 requirements_txt = "requirements.txt"
 required_modules = []
 

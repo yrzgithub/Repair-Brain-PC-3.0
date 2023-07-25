@@ -1,8 +1,6 @@
 Pillow
-matplotlib
 pytest-shutil
+matplotlib
 pyperclip
 python-vlc
-pypi-json
-requests
 pyrebase4
