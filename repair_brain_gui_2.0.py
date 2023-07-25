@@ -7,20 +7,19 @@ from PIL import Image
 from PIL.ImageTk import PhotoImage
 from pickle import load,dump 
 from datetime import datetime
-from os.path import isfile,expanduser,isdir
-from os import listdir,system,remove,mkdir
+from os.path import isfile,expanduser,isdir,join
+from os import listdir,system,remove,mkdir,getcwd
 from time import sleep
 from random import choice
 from tkinter.filedialog import askopenfilenames
 from shutil import copy
-from winsound import MessageBeep
 from matplotlib import pyplot
 from webbrowser import open_new_tab
 from collections import OrderedDict
 from sys import exit
 from webbrowser import open_new_tab
 from user import *
-from os.path import isfile
+import platform
 import pyperclip
 import vlc
 
@@ -44,11 +43,13 @@ key_positive_effects  = "Positive Effects"
 key_negative_Effects = "Negative Effects"
 key_next_steps = "Next Steps"
 
-app_data = "pkls\\app_data.pkl"
+app_data = join(getcwd(),"pkls","app_data.pkl")
 
-icon_name = "icon\\favicon.ico"
-gif_path_loading = "images\\loading.gif"
-gif_path_connecting = "images\\connecting.gif"
+icon_name = join(getcwd(),"icon","favicon.ico")
+gif_path_loading = join(getcwd(),"images","loading.gif")
+gif_path_connecting = join(getcwd(),"images","connecting.gif")
+free_img_path = join(getcwd(),"images","free.jpg")
+hand_cuffed_img_path = join(getcwd(),"images","hand_cuffed.jpg")
 
 bgm_folder = "bgm"
 
@@ -73,6 +74,19 @@ user = None
 data = None
 percent = None
 
+
+
+current_platform = platform.system()
+print("Current Platform : ",current_platform)
+
+if current_platform=="Windows":
+    from winsound import MessageBeep as alert
+
+else:
+    alert = lambda : system("notify-send 'Repair Brain is Ready' -a 1000")
+
+
+
 max_replace_habit_len = 7
 min_replace_habit_len = 3
 show_plot_after = 7 # days
@@ -92,31 +106,31 @@ for dir in dir_list:
 
 vlc_instane = vlc.Instance()
 player = vlc_instane.media_player_new()
-media = vlc_instane.media_new(f"bgm\\{bgm}")
+media = vlc_instane.media_new(join(f"~bgm","{bgm}"))
 player.set_media(media)
 
 
 
 
 
-MessageBeep()
+alert()
 
-root = Tk(screenName="main_screen")
+root = Tk()
 
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenmmheight()
 
 root.wm_geometry(f"600x450+{(screen_width//2)-300}+{(screen_height//2)}")
-root.wm_iconbitmap(bitmap=icon_name)
+# root.wm_iconbitmap(bitmap=icon_name)
 root.wm_title(box_title)
 
-free_img = Image.open(fp="images\\free.jpg").resize(size=(230,230))
+free_img = Image.open(fp=free_img_path).resize(size=(230,230))
 free_img = PhotoImage(image=free_img)
 
-hand_cuffed_img = Image.open(fp="images\\hand_cuffed.jpg").resize(size=(230,230))
+hand_cuffed_img = Image.open(fp=hand_cuffed_img_path).resize(size=(230,230))
 hand_cuffed_img = PhotoImage(image=hand_cuffed_img)
 
-loading_image = Image.open("images\\loading.gif")
+loading_image = Image.open(gif_path_loading)
 loading_image = PhotoImage(loading_image)
 
 root.config(bg="pink")
@@ -230,7 +244,7 @@ def msgbox(msg,master=root,title=box_title,destroy_root=False,entry=False,width=
     ok_msg_btn = Button(msg_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = msg_root.destroy if not destroy_root else root.destroy)
     ok_msg_btn.place(relx=0.5,rely=0.8,width=50,height=30,anchor=CENTER)
 
-    MessageBeep()
+    alert()
 
     return msg_root,ok_msg_btn,create
 
@@ -545,7 +559,7 @@ def add_habit_frame(msg="Enter the new habit"):
 
     tp_root.protocol("WM_DELETE_WINDOW",lambda : add_replace_habits(tp_root,new_habit_entry))
 
-    MessageBeep()
+    alert()
 
     return tp_root,done,new_habit_entry
 
@@ -1132,7 +1146,7 @@ def forget_password_fun():
 
         canvas.destroy()
 
-        MessageBeep()
+        alert()
 
         label = Label(box_root,text=msg,font=("Times New Roman",18))
         ok_msg_btn = Button(box_root,text="Ok",font=("Times New Roman",18,"bold"),cursor="hand2",background="blue",foreground="white",activeforeground="white",activebackground="blue",command = lambda : [box_root.destroy(),open_gmail(),login_window()])
