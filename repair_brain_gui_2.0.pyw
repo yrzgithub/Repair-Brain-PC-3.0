@@ -17,11 +17,12 @@ from matplotlib import pyplot
 from webbrowser import open_new_tab
 from collections import OrderedDict
 from sys import exit
-from webbrowser import open_new_tab
 from user import *
 import platform
 import pyperclip
 import vlc
+
+
 
 print("Loading completed")
 
@@ -81,9 +82,11 @@ print("Current Platform : ",current_platform)
 
 if current_platform=="Windows":
     from winsound import MessageBeep as alert
+    show_icon = lambda root:root.wm_iconbitmap(bitmap=icon_name)
 
 else:
     alert = lambda : system("notify-send 'Repair Brain is Ready' -a 1000")
+    show_icon = lambda root : print("App icon not supported here")
 
 
 
@@ -119,9 +122,9 @@ root = Tk()
 
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenmmheight()
-
+show_icon(root)
 root.wm_geometry(f"600x450+{(screen_width//2)-300}+{(screen_height//2)}")
-# root.wm_iconbitmap(bitmap=icon_name)
+
 root.wm_title(box_title)
 
 free_img = Image.open(fp=free_img_path).resize(size=(230,230))
