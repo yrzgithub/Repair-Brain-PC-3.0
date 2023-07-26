@@ -83,10 +83,16 @@ print("Current Platform : ",current_platform)
 if current_platform=="Windows":
     from winsound import MessageBeep as alert
     show_icon = lambda root:root.wm_iconbitmap(bitmap=icon_name)
+    scale = 1
+    width_adjust = -300
+    heigth_adjust = 0
 
 else:
     alert = lambda : system("notify-send 'Repair Brain is Ready' -a 1000")
     show_icon = lambda root : print("App icon not supported here")
+    scale = 1.3
+    width_adjust = -350
+    heigth_adjust = 75
 
 
 
@@ -94,6 +100,7 @@ max_replace_habit_len = 7
 min_replace_habit_len = 3
 show_plot_after = 7 # days
 current_version_name = 2.0
+
 today = datetime.now().weekday()
 
 
@@ -123,7 +130,9 @@ root = Tk()
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenmmheight()
 show_icon(root)
-root.wm_geometry(f"600x450+{(screen_width//2)-300}+{(screen_height//2)}")
+wm_width = int(600 * scale)
+wm_heigth = int(450 * scale)
+root.wm_geometry(f"{wm_width}x{wm_heigth}+{(screen_width//2)+width_adjust}+{(screen_height//2)+heigth_adjust}")
 
 root.wm_title(box_title)
 
@@ -231,7 +240,7 @@ def update_app(msg_root,link):
 def msgbox(msg,master=root,title=box_title,destroy_root=False,entry=False,width=650,height=200):
     msg_root = Toplevel(master=master)
     msg_root.wm_geometry(f"{width}x{height}+{(screen_width//2)-(width)//2}+{(screen_height//2)+(height)//2}")
-    msg_root.wm_iconbitmap(bitmap=icon_name)
+    show_icon(msg_root)
     msg_root.wm_title(title)
     msg_root.wm_resizable(False,False)
 
@@ -510,7 +519,7 @@ def add_habit_frame(msg="Enter the new habit"):
     screen_height = tp_root.winfo_screenmmheight()
 
     tp_root.wm_geometry(f"400x300+{(screen_width//2)-200}+{(screen_height//2)+100}")
-    tp_root.wm_iconbitmap(bitmap=icon_name)
+    show_icon(tp_root)
     tp_root.wm_title(box_title)
 
     new_habit_entry = Entry(tp_root,font=("Times New Roman",15),fg="grey",justify=CENTER)
