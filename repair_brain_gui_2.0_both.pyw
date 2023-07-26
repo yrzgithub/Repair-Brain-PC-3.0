@@ -81,14 +81,15 @@ current_platform = platform.system()
 print("Current Platform : ",current_platform)
 
 if current_platform=="Windows":
-    from winsound import MessageBeep as alert
+    from winsound import MessageBeep 
+    alert = lambda show : MessageBeep 
     show_icon = lambda root:root.wm_iconbitmap(bitmap=icon_name)
     scale = 1
     width_adjust = -300
     heigth_adjust = 0
 
 else:
-    alert = lambda : system("notify-send 'Repair Brain is Ready' -a 1000")
+    alert = lambda show = False : system("notify-send 'Repair Brain is Ready' -h int:transient:1") if show else None   # -h TYPE : NAME : VALUE (show for short time)
     show_icon = lambda root : print("App icon not supported here")
     scale = 1.3
     width_adjust = -350
@@ -116,14 +117,14 @@ for dir in dir_list:
 
 vlc_instane = vlc.Instance()
 player = vlc_instane.media_player_new()
-media = vlc_instane.media_new(join(f"~bgm","{bgm}"))
+media = vlc_instane.media_new(join("bgm",f"{bgm}"))
 player.set_media(media)
 
 
 
 
 
-alert()
+alert(True)
 
 root = Tk()
 
@@ -987,6 +988,10 @@ def show_plot(clear=False,warn=True):
             return
 
     relplace_habits_dict = data[key_replace_habits]
+
+    print(*relplace_habits_dict)
+    print(data)
+
     x_names = relplace_habits_dict.keys()
     y_values = [(sum(relplace_habits_dict[key]["days_data"].values())*100)//len(relplace_habits_dict[key]["show_on"]) for key in x_names]
 
