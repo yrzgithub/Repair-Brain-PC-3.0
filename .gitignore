@@ -1,16 +1,3 @@
 __pycache__
-test.pyw
-app_setup_2.0.exe
+venv
 pkls/app_data.pkl
-text/steps.txt
-text/positive effects.txt
-text/negative effects.txt
-text/data file.txt
-pkls/data.pkl
-utils/private_key.json
-utils/google-services.json
-utils/service.json
-text/notes.txt
-pytoexe.json
-temp/temp.py
-temp/user.py
