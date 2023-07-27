@@ -4,3 +4,4 @@ matplotlib
 pyperclip
 python-vlc
 pyrebase4
+requests
