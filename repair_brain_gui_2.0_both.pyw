@@ -1,3 +1,4 @@
+#!/
 print("Loading started")
 
 import activate
