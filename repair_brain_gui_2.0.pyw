@@ -393,7 +393,28 @@ def show_changes_side_effects_click(destroy=True):
     done_button.place(relx=.6,anchor=CENTER,rely=.95,relheight=.08)
 
     # txt_format = f"{key_next_steps} :\n\n   {next_steps}\n\n\n {key_positive_effects} :\n\n   {changes}\n\n\n{key_negative_Effects} :\n\n   {effects}"
-    txt_format = f"{key_positive_effects} :\n\n   {changes}\n\n\n{key_negative_Effects} :\n\n   {effects}\n\n\n{key_next_steps} :\n\n   {next_steps}"
+
+    positive_effects_list = data[key_positive_effects+" list"]
+    negative_effects_list = data[key_negative_Effects+" list"]
+    next_steps_list = data[key_next_steps+" list"]
+
+    changes = [f"{effect} ({data[key_positive_effects][effect]})" for effect in positive_effects_list]
+    effects = [f"{effect} ({data[key_negative_Effects][effect]})" for effect in negative_effects_list]
+    next_steps = [f"{effect} ({data[key_next_steps][effect]})" for effect in next_steps_list]
+
+    changes_str = ""
+    for eff in changes:
+        changes_str+=eff + "\n   "
+
+    effects_str = ""
+    for eff in effects:
+        effects_str+=eff + "\n   "
+
+    next_str = ""
+    for eff in next_steps:
+        next_str+=eff + "\n   "
+
+    txt_format = f"{key_positive_effects} :\n\n   {changes_str}\n\n\n{key_negative_Effects} :\n\n   {effects_str}\n\n\n{key_next_steps} :\n\n   {next_str}"
     text_widget = Text(frame_edit,font=("Times New Roman",20),padx=5,pady=5)
     text_widget.insert(END,txt_format)
     text_widget.configure(state=DISABLED)
@@ -438,12 +459,11 @@ def tp_root_check(checked_vars):
                 
 
 
-def add_habit_frame(msg="Enter the new habit",temp=False):
+def add_habit_frame(msg="Enter the new habit"):
     global days_list,check_btn_vars_tp,days_var_dict,tp_root
 
-    if not temp:
-        add_button.configure(state=DISABLED,bg="grey",disabledforeground="white")
-        done_button.configure(state=DISABLED,bg="grey",disabledforeground="white")
+    add_button.configure(state=DISABLED,bg="grey",disabledforeground="white")
+    done_button.configure(state=DISABLED,bg="grey",disabledforeground="white")
 
     if len(data[key_replace_habits])>=max_replace_habit_len:
         msgbox(title=box_title,msg="Maximum limit reached")
@@ -584,6 +604,9 @@ def remove_habits(int_vars):
 
 def change_replace_habits():
     global int_var_list
+
+    if user is None:
+        return msgbox("Login is required")
 
     replace_habits_dict = data[key_replace_habits]
     replace_habits_len = len(replace_habits_dict)
@@ -778,17 +801,17 @@ def on_window_close():
 
     stop_thread = True
 
-    root.destroy()
-    print("Window closed")
-
-    player.stop()
-
-    if data is None: return 
+    if data is None: 
+        root.destroy()
+        return 
 
     time_now = datetime.now()
     data[key_lastly_opened] = time_now
-    
+
+    print(data[key_plot_accuracy])
+
     len_plot = len(data[key_plot_accuracy]["date"])
+
     print("Plot data length",len_plot)
 
     replace_habits = data[key_replace_habits].keys()
@@ -809,6 +832,10 @@ def on_window_close():
     if len_plot>show_plot_after or today==6:
         show_plot(clear=True,warn=False)
 
+    root.destroy()
+    print("Window closed")
+
+    player.stop()
 
     data_java = data
     
@@ -885,7 +912,12 @@ def contact_developer(media_name):
 
 
 def show_plot(clear=False,warn=True):
+    if user is None:
+        return msgbox("Login is required")
+
+
     colors = ["red","cyan","blue","yellow","green","magenta"]
+
     date = data[key_plot_accuracy]["date"]
     value = data[key_plot_accuracy]["value"]
 
@@ -988,6 +1020,8 @@ def login(username_or_email,password):
 
                 save_data["password"] = password_str 
                 save_data["email"] = user.email
+
+                data_file(mode="wb",to_write=save_data,path=app_data)
 
                 print("Login details saved")
 
@@ -1357,7 +1391,6 @@ def start():
     data[key_positive_effects] = {}
     data[key_negative_Effects] = {}
     data[key_next_steps] = {}
-    data[key_plot_accuracy] = {}
     data[key_positive_effects+" list"] = []
     data[key_negative_Effects+" list"] = []
     data[key_next_steps+" list"] = []
@@ -1365,30 +1398,25 @@ def start():
     return data
 
 
-
-time_now = datetime.now()
-
-
 def get_database_data():
     global data
 
-    data_base = User.get_database_reference()
-    data_net = data_base.child(user.uid).get().val()
+    data = start()
 
-    if data_net is None:
-        data = start()
+    data_base = User.get_database_reference()
+    data_net_database = data_base.child(user.uid).get().val()
+
+    if data_net_database is None:
         return
 
-    
-    print("Data Net",data_net)
+    lastly_opened = data_net_database[key_lastly_opened]
+    lastly_relapsed = data_net_database[key_lastly_relapsed]
+    start_time = data_net_database[key_start_time]
+    data_net_database[key_lastly_opened] = dict_to_datatime(lastly_opened)
+    data_net_database[key_lastly_relapsed] = dict_to_datatime(lastly_relapsed)
+    data_net_database[key_start_time] = dict_to_datatime(start_time)
 
-    lastly_opened = data_net[key_lastly_opened]
-    lastly_relapsed = data_net[key_lastly_relapsed]
-    start_time = data_net[key_start_time]
-    data_net[key_lastly_opened] = dict_to_datatime(lastly_opened)
-    data_net[key_lastly_relapsed] = dict_to_datatime(lastly_relapsed)
-    data_net[key_start_time] = dict_to_datatime(start_time)
-    data = data_net
+    data.update(data_net_database)
 
 
 def dict_to_datatime(dict):
@@ -1415,6 +1443,7 @@ if isfile(app_data):
     user = User(username=None,email=email,password=password,name=None,last_name=None)
     (success,msg) = user.login_with_email(password)
     if success:
+        get_database_data()
         ask_frame_window()
 
     else:
