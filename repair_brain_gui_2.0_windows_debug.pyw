@@ -1376,8 +1376,6 @@ def sign_in_fn(entries):
             msgbox(msg)
         
         else:
-            logout()
-
             data_java = start()
             data = start()
 
@@ -1388,8 +1386,10 @@ def sign_in_fn(entries):
             convert_data("lastly_relapsed")
 
             user.write_to_data_base(data_java)
-
             user.send_verification_link()
+
+            logout()
+            
             box,button,entry =  msgbox("Verification link has been sent")
             button.configure(command = lambda : Thread(target=on_window_delete,args=(box,)).start())
             canvas.destroy()
