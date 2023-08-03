@@ -156,7 +156,7 @@ class User:
 
     def write_to_data_base(self,to_write):
         try:
-            db.child(self.uid).set(to_write)
+            db.child(self.uid).update(to_write)
         
         except Exception as e:
             print(str(e))
