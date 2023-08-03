@@ -139,10 +139,10 @@ root.wm_geometry(f"{wm_width}x{wm_heigth}+{(screen_width//2)+width_adjust}+{(scr
 
 root.wm_title(box_title)
 
-free_img = Image.open(fp=free_img_path).resize(size=(230,230))
+free_img = Image.open(fp=free_img_path).resize(size=(int(230*scale),int(230*scale)))
 free_img = PhotoImage(image=free_img)
 
-hand_cuffed_img = Image.open(fp=hand_cuffed_img_path).resize(size=(230,230))
+hand_cuffed_img = Image.open(fp=hand_cuffed_img_path).resize(size=(int(230*scale),int(230*scale)))
 hand_cuffed_img = PhotoImage(image=hand_cuffed_img)
 
 loading_image = Image.open(gif_path_loading)
