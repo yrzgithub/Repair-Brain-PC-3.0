@@ -42,9 +42,9 @@ key_next_step = "next_step"
 key_replace_habits = "replace_habits"
 key_plot_accuracy = "accuracy_plot"
 key_last_accuracy_percent = "last_accuracy_percent"
-key_positive_effects  = "Positive Effects"
-key_negative_Effects = "Negative Effects"
-key_next_steps = "Next Steps"
+key_positive_effects  = "positive_effects"
+key_negative_Effects = "negative_effects"
+key_next_steps = "next_steps"
 
 app_data = join(getcwd(),"pkls","app_data.pkl")
 
