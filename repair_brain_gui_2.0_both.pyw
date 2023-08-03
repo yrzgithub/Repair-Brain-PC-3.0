@@ -384,7 +384,7 @@ def add_to_database(effect_type,effect):
     time_now = datetime.now().strftime("%a,%b %d %Y")
     print("Add to data base : ",effect_type,effect)
     data[effect_type][effect]  = time_now
-    key_name = effect_type + " list"
+    key_name = effect_type + "_list"
     print(data[key_name].append(effect))
 
 
@@ -432,9 +432,9 @@ def show_changes_side_effects_click(destroy=True):
 
     # txt_format = f"{key_next_steps} :\n\n   {next_steps}\n\n\n {key_positive_effects} :\n\n   {changes}\n\n\n{key_negative_Effects} :\n\n   {effects}"
 
-    positive_effects_list = data[key_positive_effects+" list"]
-    negative_effects_list = data[key_negative_Effects+" list"]
-    next_steps_list = data[key_next_steps+" list"]
+    positive_effects_list = data[key_positive_effects+"_list"]
+    negative_effects_list = data[key_negative_Effects+"_list"]
+    next_steps_list = data[key_next_steps+"_list"]
 
     changes = [f"{effect} ({data[key_positive_effects][effect]})" for effect in positive_effects_list]
     effects = [f"{effect} ({data[key_negative_Effects][effect]})" for effect in negative_effects_list]
@@ -1462,9 +1462,9 @@ def start():
     data[key_positive_effects] = {}
     data[key_negative_Effects] = {}
     data[key_next_steps] = {}
-    data[key_positive_effects+" list"] = []
-    data[key_negative_Effects+" list"] = []
-    data[key_next_steps+" list"] = []
+    data[key_positive_effects+"_list"] = []
+    data[key_negative_Effects+"_list"] = []
+    data[key_next_steps+"_list"] = []
     
     return data
 
