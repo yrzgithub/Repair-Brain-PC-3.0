@@ -34,10 +34,10 @@ plot_name_habit_replace = "Replace plot"
 
 # keys
 key_lastly_relapsed = "lastly_relapsed"
-key_lastly_noted_change = "lastly_noted_change"
-key_lastly_noted_side_effect = "lastly_noted_side_effect"
+key_lastly_noted_change = "lastly_noted_positive_effect"
+key_lastly_noted_side_effect = "lastly_noted_negative_effect"
 key_start_time = "start_time"
-key_next_step = "next_step"
+key_next_step = "lastly_noted_next_step"
 key_replace_habits = "replace_habits"
 key_plot_accuracy = "accuracy_plot"
 key_last_accuracy_percent = "last_accuracy_percent"
