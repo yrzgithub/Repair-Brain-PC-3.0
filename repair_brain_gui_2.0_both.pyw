@@ -33,7 +33,6 @@ plot_name_accuracy_plot = "Accuracy plot"
 plot_name_habit_replace = "Replace plot"
 
 # keys
-key_lastly_opened = "lastly_opened"
 key_lastly_relapsed = "lastly_relapsed"
 key_lastly_noted_change = "lastly_noted_change"
 key_lastly_noted_side_effect = "lastly_noted_side_effect"
@@ -365,7 +364,7 @@ def next():
 
 
 def relaped_click():   # addicted
-    data[key_lastly_relapsed] = data[key_start_time] = data[key_lastly_opened] = datetime.now()
+    data[key_lastly_relapsed] = data[key_start_time] = datetime.now()
     next()
     time_manager_thread = Thread(target=time_manager)
     time_manager_thread.start()
@@ -432,13 +431,22 @@ def show_changes_side_effects_click(destroy=True):
 
     # txt_format = f"{key_next_steps} :\n\n   {next_steps}\n\n\n {key_positive_effects} :\n\n   {changes}\n\n\n{key_negative_Effects} :\n\n   {effects}"
 
-    positive_effects_list = data[key_positive_effects+"_list"]
-    negative_effects_list = data[key_negative_Effects+"_list"]
-    next_steps_list = data[key_next_steps+"_list"]
+    positive_effects = data[key_positive_effects]
+    negative_effects = data[key_negative_Effects]
+    next_steps = data[key_next_step]
 
-    changes = [f"{effect} ({data[key_positive_effects][effect]})" for effect in positive_effects_list]
-    effects = [f"{effect} ({data[key_negative_Effects][effect]})" for effect in negative_effects_list]
-    next_steps = [f"{effect} ({data[key_next_steps][effect]})" for effect in next_steps_list]
+    changes = ""
+    effects = ""
+    next_steps = ""
+
+    if isinstance(positive_effects,dict):
+        changes = [f"{effect} ({day})" for effect,day in positive_effects.items()]
+
+    if isinstance(negative_effects,dict):
+        effects = [f"{effect} ({day})" for effect,day in negative_effects.items()]
+    
+    if isinstance(next_steps,dict):
+        next_steps = [f"{effect} ({day})" for effect,day in next_steps.items()]
 
     changes_str = ""
     for eff in changes:
@@ -841,6 +849,8 @@ def plot_data(key_plot_name,day_name,perc):
 def on_window_close():
     global percent,stop_thread,data_java
 
+    print(data)
+
     stop_thread = True
 
     if data is None: 
@@ -848,7 +858,6 @@ def on_window_close():
         exit(0)
 
     time_now = datetime.now()
-    data[key_lastly_opened] = time_now
 
     print(data[key_plot_accuracy])
 
@@ -878,7 +887,6 @@ def on_window_close():
 
     data_java = data
     
-    convert_data("lastly_opened")
     convert_data("start_time")
     convert_data("lastly_relapsed")
 
@@ -1039,7 +1047,6 @@ def reset(show_message=True):
     root.withdraw()
     
     data_java = start()
-    convert_data("lastly_opened")
     convert_data("start_time")
     convert_data("lastly_relapsed")
     
@@ -1413,7 +1420,6 @@ def sign_in_fn(entries):
 
             print(data_java)
 
-            convert_data("lastly_opened")
             convert_data("start_time")
             convert_data("lastly_relapsed")
 
@@ -1454,7 +1460,7 @@ def ask_frame_window():
 
 def start():
     data = {}
-    data[key_lastly_opened] = data[key_start_time] =  datetime.now()
+    data[key_start_time] =  datetime.now()
     data[key_lastly_relapsed] = data[key_lastly_noted_change] = data[key_lastly_noted_side_effect] = data[key_next_step] = "Not Found"
     data[key_replace_habits] = OrderedDict() # { habit :{show_at:int,days_data:{}}}
     data[key_plot_accuracy] = {"date":[],"value":[]}
@@ -1462,9 +1468,6 @@ def start():
     data[key_positive_effects] = {}
     data[key_negative_Effects] = {}
     data[key_next_steps] = {}
-    data[key_positive_effects+"_list"] = []
-    data[key_negative_Effects+"_list"] = []
-    data[key_next_steps+"_list"] = []
     
     return data
 
@@ -1480,10 +1483,8 @@ def get_database_data():
     if data_net_database is None:
         return
 
-    lastly_opened = data_net_database[key_lastly_opened]
     lastly_relapsed = data_net_database[key_lastly_relapsed]
     start_time = data_net_database[key_start_time]
-    data_net_database[key_lastly_opened] = dict_to_datatime(lastly_opened)
     data_net_database[key_lastly_relapsed] = dict_to_datatime(lastly_relapsed)
     data_net_database[key_start_time] = dict_to_datatime(start_time)
 
