@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+Pillow
+pytest-shutil
+matplotlib
+pyperclip
+python-vlc
+pyrebase4
+=======
 Pillow
 pytest-shutil
 matplotlib
@@ -5,3 +13,4 @@ pyperclip
 python-vlc
 pyrebase4
 requests
+>>>>>>> 3b90e3103f0161de480f3ee55dc41029ccb9faeb
